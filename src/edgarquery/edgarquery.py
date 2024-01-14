@@ -80,6 +80,7 @@ class EDGARquery():
         self.xfurl    = "https://data.sec.gov/api/xbrl/frames"
 
     def gency(self):
+        'gency - generate a CY type I vslue for the previous quarter '
         dt = datetime.datetime.now()
         y  = dt.year
         if dt.month >=1 and dt.month <=3: # previous year
@@ -107,6 +108,10 @@ class EDGARquery():
             sys.exit(1)
 
     def storequery(self, qresp, tf):
+        'storequery - store the query response in a file \
+        resp - the query response
+        tf   - filename that will hold the query response
+        '
         if not qresp: 
             print('storequery: no content', file=sys.stderr)
             sys.exit(1)
@@ -126,7 +131,7 @@ class EDGARquery():
         'companyconcept - all xbrl disclosures for one company in JSON \
          cik             - 10-digit Central Index Key - required        \
          frame - reporting frame e.g us-gaap, ifrs-full, dei, srt            \
-         fact - fact to collect e.g AccountsPayableCurrent, USD-per-shares   \
+         fact - fact to collect e.g AccountsPayableCurrent   \
         '
 
         if not cik or not fact:
@@ -202,14 +207,6 @@ class EDGARquery():
             tf=os.path.abspath('%s/submissions.zip' % self.tdir )
         resp=self.query(self.subzip)
         self.storequery(resp, tf)
-
-    def dumbciksearch(self, cik=None, filing=None, latest=None, tf=None):
-        ' dumbciksearch -  not yet implemented \
-        '
-        if not tf:
-            tf='%s/CIK%s.%s.%s' % (self.tdir, cik.zfill(10), filing, latest)
-        pass
-
 
 def main():
     EQ = EDGARquery()

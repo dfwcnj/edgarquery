@@ -1,0 +1,168 @@
+
+
+# EDGARquery
+
+- [sources of information]
+
+  # for a list of company concepts, first retrieve the company facts
+  # file for a CIK and search the json file
+
+  # from SEC
+
+  # SEC contact information
+  https://www.sec.gov/contact-information/sec-directory
+
+  # SEC data resources
+  https://www.sec.gov/sec-data-resources
+
+  # SEC webmaster FAQ
+  https://www.sec.gov/os/webmaster-faq
+
+  # contaiشs some generalaccess instructions
+  #     User-Agent rule
+  #     contains urls for daily index and for full index
+  #     shows some directory structure
+  #     describes format for accession numbers CIK-YY-f#
+  #     describes web browsing by CIK or accession number
+  #     has links to risk analysis data
+  https://www.sec.gov/os/accessing-edgar-data
+  #     query by CIK and accession number
+  https://www.sec.gov/Archives/edgar/data/$CIK/
+
+  # RESTFUL API documentation
+  # Currently included in the APIs are the submissions history by filer
+  # and the XBRL data from financial statements
+  # (forms 10-Q, 10-K,8-K, 20-F, 40-F, 6-K, and their variants).
+  # In addition, a bulk ZIP file is available to download all JSON structures
+  # for an API.
+  # This ZIP file is updated and republished nightly at approximately
+  # 3:00 a.m. ET.
+  https://www.sec.gov/edgar/sec-api-documentation
+
+  # contains some access instructions
+  #    contains urls to company search, latest filings search
+  #    contains this example:
+  #    https://www.sec.gov/cgi-bin/browse-edgar?
+  #        action=getcurrent&type=10-k&company=&dateb=&owner=include&
+  #        start=0&count=40&output=atom
+  #    daily archives
+  #       tar.gz files for each filing day - by year
+  #    Oldloads
+  #        daily concatenated gzipped archive files for filings - by year
+  https://www.sec.gov/developer
+
+  # contains html page for indices for each year
+  #     sitemap.xml contains xml urls for each quarter
+  https://www.sec.gov/Archives/edgar/daily-index/
+
+  # contains urls to quarterly index xml files
+  # each quarterly index contains urls to filings
+  https://www.sec.gov/Archives/edgar/daily-index/sitemap.xml
+
+  # conatains monthly data xbrlrss-YYYY-MM.xml
+  # filings for the month 10-K 10-Q etc
+  https://www.sec.gov/Archives/edgar/monthly/
+
+  # contains html page for indices each year
+  #    files in gz, idx, Z, zip formats
+  #    company.zip form.zip master.zip xbrl.zip
+  # contains directories from 1993 to current year
+  # each year contains directories for QTR[1-7]
+  # each quarter has company.zip form.zip master.zip xbrl.zip
+  # e.g.
+  # 2023/QTR1/form[gz,idx,Z,zip]
+  https://www.sec.gov/Archives/edgar/full-index/
+
+  # contains company crawler form master xbrl files
+  # contains urls to quarterly indexes
+  #    seems to go from 1993 to 2012
+  #    quarterly indexes contain paths to indices for each quarter
+  #    quarterly index for a quarter contain paths to filing html pages
+  https://www.sec.gov/Archives/edgar/full-index/sitemap.quarterlyindexes.xml
+
+  # paths to sec filings - change .txt to -index.htm
+  # Novavax 8-K
+  # e.g edgar/data/1000694/0001104659-24-002100.txt
+  # becomed https://www.sec.gov/Archives/edgar/data/1000694/0001104659-24-002100-index.htm
+  https://www.sec.gov/Archives/edgar/full-index/xbrl.zip
+
+  # pdf files of some filings submitted as paper
+  https://www.sec.gov/Archives/edgar/vprr/index.html
+
+  # search company, ticker, cik, or person
+  # returns a page to links to filings
+  https://www.sec.gov/edgar/searchedgar/companysearch
+
+  # company ticker files in json format
+  https://www.sec.gov/files/company_tickers.json
+  https://www.sec.gov/files/company_tickers_exchange.json
+  https://www.sec.gov/files/company_tickers_mf.json
+
+  # filings guidance mutual fund ETF annuity
+  # forms 10-K 10-Q 8-K
+  # proxy statements PRE 14A, DEF 14A
+  https://www.sec.gov/filings/edgar-guide
+  # insider trading forms 3, 4, 5
+  https://www.investor.gov/introduction-investing/general-resources/news-alerts/alerts-bulletins/investor-bulletins-69
+  # beneficial ownership >5% voting securities SC 13[DG], DEF 14A, 13F-HR
+  # business combinations
+  # public offerings
+  # securities based crowd funding
+  # regulation A offering
+  # etc
+
+  # investment advisors
+  https://adviserinfo.sec.gov/
+
+  # XML technical specifications
+  https://www.sec.gov/edgar/filer/technical-specifications
+
+  # EDGAR company database
+  https://www.edgarcompany.sec.gov/
+
+
+  # from bellingcat
+  https://www.bellingcat.com/resources/2023/12/18/new-tools-dig-deeper-into-hard-to-aggregate-us-corporate-data/
+  https://www.sec.gov/files/company_tickers.json
+  https://www.sec.gov/Archives/edgar/xbrlrss.all.xml
+
+  https://www.sec.gov/edgar/searchedgar/cik
+  example page for amazon com inc
+  https://www.sec.gov/edgar/browse/?CIK=1018724
+  example page for tesla motors inc
+  https://www.sec.gov/edgar/browse/?CIK=1318605
+  example page for nvidia corp
+  https://www.sec.gov/edgar/browse/?CIK=1045810
+  example warren buffett
+  https://www.sec.gov/edgar/search/#/ciks=0000315090&entityName=BUFFETT%2520WARREN%2520E%2520(CIK%25200000315090)
+
+
+  https://data.sec.gov/submissions/CIK##########.json
+
+  XBRL Extensible Business Markup Language(XML)
+
+  company facts json file has concepts for company concepts
+  facts, concepts and xbrl  json files contain two json dictionaries each
+  this sedfile converts them to a two item array of dictionaries
+  sedfile s/^\([{].*[}]\)\([{].*[}]\)$/[\1,\2]/
+
+  https://www.sec.gov/Archives/edgar/xbrlrss.all.xml
+
+  https://data.sec.gov/api/xbrl/companyconcept/CIK##########/us-gaap/AccountsPayableCurrent.json
+  https://data.sec.gov/api/xbrl/companyconcept/CIK##########/us-gaap/AccountsAndNotesReceivableNet.json
+  https://data.sec.gov/api/xbrl/companyfacts/CIK##########.json
+  https://data.sec.gov/api/xbrl/frames/us-gaap/AccountsPayableCurrent/USD/CY2019Q1I.json
+  https://data.sec.gov/api/xbrl/frames/us-gaap/AccountsAndNotesReceivableNet/USD/CY2019Q1I.json
+  CY#### for annual datao
+  CY####Q# for quarterly data
+  CY####Q#I for instantaneous data
+
+  https://www.sec.gov/Archives/edgar/daily-index/xbrl/companyfacts.zip
+  https://www.sec.gov/Archives/edgar/daily-index/bulkdata/submissions.zip
+
+  https://www.sec.gov/edgar/search-and-access
+  https://www.sec.gov/edgar/search/
+
+  tax 
+  https://americansfortaxfairness.org/ultra-wealthys-8-5-trillion-untaxed-income/
+  https://www.federalreserve.gov/econres/aboutscf.htm

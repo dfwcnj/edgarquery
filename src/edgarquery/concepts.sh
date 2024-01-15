@@ -6,5 +6,5 @@ for F in $(ls $EQODIR/CompanyFacts*.csv |xargs basename); do
         CC=${FA[3]}
         echo $CC
     done
-done | /usr/bin/sort -u > $EQODIR/Concepts.txt
+done | sort -u > $EQODIR/Concepts.txt
 

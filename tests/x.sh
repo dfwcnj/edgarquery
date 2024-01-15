@@ -83,6 +83,7 @@ for F in $(ls $EQODIR/XBRLFrames*.json |xargs basename); do
     done
 done
 
+$EQDIR/Concepts.sh
 
 ##############################################################################
 exit

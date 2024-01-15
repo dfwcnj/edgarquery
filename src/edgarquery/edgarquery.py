@@ -10,15 +10,8 @@ import datetime
 import sys
 import argparse
 from functools import partial
-import shutil
 import re
 import urllib.request
-
-# import xml
-# import json
-# for json files too large to process
-# https://github.com/ICRAR/ijson
-# import ijson
 
 class EDGARquery():
 

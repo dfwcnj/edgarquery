@@ -73,7 +73,7 @@ class EDGARquery():
         self.chunksize = 4194304
         self.argp      = None
         self.content   = None
-        # self.hdr     = {'User-Agent' : os.environ['EQEMAILADDR'] }
+        # self.hdr     = {'User-Agent' : os.environ['EQEMAIL'] }
         self.hdr       = None
 
         # xbrlframes is not yet well defined
@@ -109,8 +109,8 @@ class EDGARquery():
 
     def storequery(self, qresp, tf):
         'storequery - store the query response in a file \
-        resp - the query response
-        tf   - filename that will hold the query response
+        resp - the query response \
+        tf   - filename that will hold the query response \
         '
         if not qresp: 
             print('storequery: no content', file=sys.stderr)
@@ -130,7 +130,7 @@ class EDGARquery():
     def companyconcept(self, cik=None, frame='us-gaap', fact=None, tf=None):
         'companyconcept - all xbrl disclosures for one company in JSON \
          cik             - 10-digit Central Index Key - required        \
-         frame - reporting frame e.g us-gaap, ifrs-full, dei, srt            \
+         frame - reporting frame e.g us-gaap, ifrs-full, dei, srt       \
          fact - fact to collect e.g AccountsPayableCurrent   \
         '
 
@@ -212,7 +212,7 @@ def main():
     EQ = EDGARquery()
 
     EQ.argp = argparse.ArgumentParser(description="query SEC EDGAR site\
-        NOTE thæt EQEMAILADDR env variable is required and\
+        NOTE thæt EQEMAIL env variable is required and\
         must contain a valid User-Agent such as your email address")
 
     EQ.argp.add_argument("--cik", required=False,
@@ -257,9 +257,9 @@ def main():
     args = EQ.argp.parse_args()
 
     try:
-        EQ.hdr = {'User-Agent' : os.environ['EQEMAILADDR'] }
+        EQ.hdr = {'User-Agent' : os.environ['EQEMAIL'] }
     except KeyError:
-        print('EQEMAILADDR env variable required\n', file=sys.stderr)
+        print('EQEMAIL env variable required\n', file=sys.stderr)
         EQ.argp.print_help()
         sys.exit(1)
 

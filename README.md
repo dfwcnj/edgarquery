@@ -17,13 +17,18 @@ pip install edgarquery
 
 -[Usage]
 
+Right now, three environmental variables are needed:
+EQDIR - the location of the python scripts
+EQODIR - the location to store the output
+EQEMAIL - required by the SEC to download some of the files with curl.
+
 Use edgarquery.py as a command to retrieve EDGAR files, then use the
 appropriate *tocsv.py file as a command to generate CSV file(s)
 
 edgarquery.py retrieves files described in
 https://www.sec.gov/edgar/sec-api-documentation
 
-query SEC EDGAR site NOTE thæt EQEMAILADDR env variable is required and must
+query SEC EDGAR site NOTE thæt EQEMAIL env variable is required and must
 contain a valid User-Agent such as your email address
 
 options:

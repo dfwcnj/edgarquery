@@ -4,6 +4,8 @@
 
 - [sources of information]
 
+  # Note: only a few fact names are returned by EDGAR for a CY
+  #       it seems that only I type CYs are returned
   # for a list of company concepts, first retrieve the company facts
   # file for a CIK and search the json file
 

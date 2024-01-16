@@ -1,5 +1,14 @@
 #! /bin/env python
 
+#
+# companyconcepttocsv.py.py.py - parse sec edgar companyconcept json file for a CIK
+#     company concept for a CIK seem to come in two parts so I have to
+#     edit the file to enclose its contents in brackets[] separateѕ by ,
+#     otherwise the python json library excepts complaining about an extra
+#     character when it finishes the first part and encounters the
+#     second part
+#
+
 import os
 import sys
 import argparse

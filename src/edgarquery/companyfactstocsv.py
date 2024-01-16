@@ -1,10 +1,10 @@
 #! /usr/bin/env python
 
 #
-# factparse.py - parse sec edgarquery companyfacts json file for a CIK
+# companyfactstocsv.py.py - parse sec edgar company facts json file for a CIK
 #     company facts for a CIK seem to come in two parts so I have to
 #     edit the file to enclose its contents in brackets[] separateѕ by ,
-#     otherwise the python json library complains about an extra
+#     otherwise the python json library excepts complaining about an extra
 #     character when it finishes the first part and encounters the
 #     second part
 #

@@ -1,5 +1,14 @@
 #! /bin/env python
 
+#
+# xbrlframestocsv.py.py.py.py - parse sec edgar xbrl frame file for a CY
+#     xbrl frame for a CY seem to come in two parts so I have to
+#     edit the file to enclose its contents in brackets[] separateѕ by ,
+#     otherwise the python json library excepts complaining about an extra
+#     character when it finishes the first part and encounters the
+#     second part
+#
+
 import os
 import sys
 import argparse

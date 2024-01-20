@@ -35,11 +35,25 @@
   # Currently included in the APIs are the submissions history by filer
   # and the XBRL data from financial statements
   # (forms 10-Q, 10-K,8-K, 20-F, 40-F, 6-K, and their variants).
+  # how to read a 10-K/10-Q
+  # https://www.investor.gov/introduction-investing/general-resources/news-alerts/alerts-bulletins/investor-bulletins/how-read
   # In addition, a bulk ZIP file is available to download all JSON structures
   # for an API.
   # This ZIP file is updated and republished nightly at approximately
   # 3:00 a.m. ET.
   https://www.sec.gov/edgar/sec-api-documentation
+
+  https://www.sec.gov/edgar/searchedgar/cik
+  example page for amazon com inc
+  https://www.sec.gov/edgar/browse/?CIK=1018724
+  example page for tesla motors inc
+  https://www.sec.gov/edgar/browse/?CIK=1318605
+  example page for nvidia corp
+  https://www.sec.gov/edgar/browse/?CIK=1045810
+  example page for american vanguard corp 10-K
+  https://www.sec.gov/edgar/search/#/dateRange=custom&category=custom&ciks=0000005981&entityName=AMERICAN%2520VANGUARD%2520CORP%2520(AVD)%2520(CIK%25200000005981)&startdt=2023-01-01&enddt=2024-01-20&forms=10-K
+  example warren buffett
+  https://www.sec.gov/edgar/search/#/ciks=0000315090&entityName=BUFFETT%2520WARREN%2520E%2520(CIK%25200000315090)
 
   # contains some access instructions
   #    contains urls to company search, latest filings search
@@ -99,12 +113,14 @@
 
   # search company, ticker, cik, or person
   # returns a page to links to filings
+  # how to use the companysearch page
+  # https://www.sec.gov/filings/edgar-guide
   https://www.sec.gov/edgar/searchedgar/companysearch
 
   # company ticker files in json format
-  https://www.sec.gov/files/company_tickers.json
-  https://www.sec.gov/files/company_tickers_exchange.json
-  https://www.sec.gov/files/company_tickers_mf.json
+  https://www.sec.gov/files/company_tickers.json          companies
+  https://www.sec.gov/files/company_tickers_exchange.json by exchange
+  https://www.sec.gov/files/company_tickers_mf.json       mutual funds
 
   # filings guidance mutual fund ETF annuity
   # forms 10-K 10-Q 8-K
@@ -133,16 +149,6 @@
   https://www.bellingcat.com/resources/2023/12/18/new-tools-dig-deeper-into-hard-to-aggregate-us-corporate-data/
   https://www.sec.gov/files/company_tickers.json
   https://www.sec.gov/Archives/edgar/xbrlrss.all.xml
-
-  https://www.sec.gov/edgar/searchedgar/cik
-  example page for amazon com inc
-  https://www.sec.gov/edgar/browse/?CIK=1018724
-  example page for tesla motors inc
-  https://www.sec.gov/edgar/browse/?CIK=1318605
-  example page for nvidia corp
-  https://www.sec.gov/edgar/browse/?CIK=1045810
-  example warren buffett
-  https://www.sec.gov/edgar/search/#/ciks=0000315090&entityName=BUFFETT%2520WARREN%2520E%2520(CIK%25200000315090)
 
 
   https://data.sec.gov/submissions/CIK##########.json

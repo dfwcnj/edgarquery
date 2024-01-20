@@ -11,6 +11,7 @@ PY=~/anaconda3/bin/python
 # ~/anaconda3/bin/python $EQDIR/edgarquery.py --companyfactsarchivezip \
 #                                             --cik 1018724
 # ~/anaconda3/bin/python $EQDIR/edgarquery.py --submissionszip
+~/anaconda3/bin/python $EQDIR/edgarquery.py --submissionszip
 
 # doesn't work for people
 # ~/anaconda3/bin/python $EQDIR/edgarquery.py --companyfactsarchivezip --cik 315090
@@ -83,7 +84,20 @@ for F in $(ls $EQODIR/XBRLFrames*.json |xargs basename); do
     done
 done
 
+$PY $EQDIR/submissionsziptocsv.py --zipfile $EQODIR/submissions.zip \
+    --files CIK0000831001.json,CIK0001665650.json,CIK0000019617.json \
+    --combine
+
+#$PY $EQDIR/submissionszipṫocsv.py --zipfile $EQODIR/submissions.zip \
+#    --all
+
+# one huge csv file
+#$PY $EQDIR/submissionszipṫocsv.py --zipfile $EQODIR/submissions.zip \
+#    --all --combine
+
 $EQDIR/Concepts.sh
+
+$EQDIR/tickerstocsv.py
 
 ##############################################################################
 exit

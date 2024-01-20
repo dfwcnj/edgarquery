@@ -17,10 +17,12 @@ import re
 
 class EDGARCompanyFactstoCSV():
 
-    def __init(self, jsonfile=None, odir='/tmp'):
+    def __init(self, jsonfile=None, odir=None):
         self.argp     = None
         self.jsonfile = jsonfile
-        self.odir     = odir
+        if odir: self.odir = odir
+        elif os.environ['EQODIR']: self.odir = os.environ['EQODIR']
+        else: self.odir = '/tmp'
         self.jsondict = None
         self.cik      = None
         self.enm      = None
@@ -33,10 +35,10 @@ class EDGARCompanyFactstoCSV():
 
     # recurse over the json to show its structure
     def recdesc(self, js, ix):
-        ' recdesc parse an SEC EDGAR company facts json file   \
+        """ recdesc parse an SEC EDGAR company facts json file   \
           js - dictionary returned by python json.load()       \
           id - indent index to make the hierarchy more visible \
-        '
+        """
         ind = ' ' * ix
         if type(js) == type([]): # array
             print('    type array')
@@ -53,13 +55,18 @@ class EDGARCompanyFactstoCSV():
             return
 
     def jsonparts(self): # files seem to be in 2 parts
-        ' jsonparts - traverse the top level json array \
+        """ jsonparts - if the json file was just one dictionary
+            just traverse the dictionary or else
+            traverse the top level json array
           that I added to the SEC EDGAR file            \
-        '
-        assert type(self.jsondict) == type([]), 'jsonparts: js not an array'
-        pts =  [p for p in self.jsondict]
-        for pt in pts:
-            self.jsonpart(pt)
+        """
+        if type(self.jsondict) == type({}):
+            self.jsonpart(self.jsondict)
+        else:
+            type(self.jsondict) == type([]), 'jsonparts: js not an array'
+            pts =  [p for p in self.jsondict]
+            for pt in pts:
+                self.jsonpart(pt)
 
     def jsonpart(self, pt):
         assert type(pt) == type({}), 'jsonpart: part not a dictionary'

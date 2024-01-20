@@ -15,8 +15,8 @@ import urllib.request
 
 class EDGARquery():
 
-    def __init__(self, cik=None, cy=None):
-        'EDGARquery - search the SEC EDGAR site                          \
+    def __init__(self, cik=None, cy=None, odir=None):
+        """EDGARquery - search the SEC EDGAR site                          \
          --cik        - 10-digit Central Index Key                       \
          --cy         - calendar year e.g. CY2023, CY2023Q1, CY2023Q4I   \
          --tf         - file to store output                             \
@@ -43,9 +43,12 @@ class EDGARquery():
             --tf - default /tmp/companyfact.zip                          \
         --submissionzip -  public EDGAR filing history for all filers    \
             --tf - default /tmp/submissions.zip                          \
-        '
+        """
         self.cik        = cik
         self.cy         = cy
+        if odir: self.odir = odir
+        elif os.environ['EQODIR']: self.odir = os.environ['EQODIR']
+        else: self.odir = '/tmp'
 
         # https://www.bellingcat.com/resources/2023/12/18/
         #     new-tools-dig-deeper-into-hard-to-aggregate-us-corporate-data/
@@ -61,8 +64,6 @@ class EDGARquery():
         self.cfzip      = '%s/xbrl/companyfacts.zip'    % self.edi
         self.subzip     = '%s/bulkdata/submissions.zip' % self.edi
 
-        self.tdir       = '/tmp'
-
         self.chunksize = 4194304
         self.argp      = None
         self.content   = None
@@ -73,7 +74,8 @@ class EDGARquery():
         self.xfurl    = "https://data.sec.gov/api/xbrl/frames"
 
     def gency(self):
-        'gency - generate a CY type I vslue for the previous quarter '
+        """gency - generate a CY type I vslue for the previous quarter
+        """
         dt = datetime.datetime.now()
         y  = dt.year
         if dt.month >=1 and dt.month <=3: # previous year
@@ -87,10 +89,10 @@ class EDGARquery():
         return cy
 
     def query(self, url=None):
-        'query - query an EDGAR URL             \
+        """query - query an EDGAR URL             \
          url  - EDGAR URL to query - required  \
          not yet implemented \
-        '
+        """
         try:
             req = urllib.request.Request(url, headers=self.hdr)
             resp = urllib.request.urlopen(req)
@@ -101,10 +103,10 @@ class EDGARquery():
             sys.exit(1)
 
     def storequery(self, qresp, tf):
-        'storequery - store the query response in a file \
+        """storequery - store the query response in a file \
         resp - the query response \
         tf   - filename that will hold the query response \
-        '
+        """
         if not qresp: 
             print('storequery: no content', file=sys.stderr)
             sys.exit(1)
@@ -117,15 +119,17 @@ class EDGARquery():
             parts = iter(partial(qresp.read, self.chunksize), b'')
             for c in parts:
                 f.write(c)
-            if c: f.write(c)
+            #if c: f.write(c)
+            f.flush()
+            os.fsync(f.fileno() )
             return
 
     def companyconcept(self, cik=None, frame='us-gaap', fact=None, tf=None):
-        'companyconcept - all xbrl disclosures for one company in JSON \
+        """companyconcept - all xbrl disclosures for one company in JSON \
          cik             - 10-digit Central Index Key - required        \
          frame - reporting frame e.g us-gaap, ifrs-full, dei, srt       \
          fact - fact to collect e.g AccountsPayableCurrent   \
-        '
+        """
 
         if not cik or not fact:
             print('companyconcept(frame, cik, fact)', file=sys.stderr)
@@ -134,22 +138,22 @@ class EDGARquery():
 
         if not tf:
             tf=os.path.abspath('%s/CompanyConcept.CIK%s.%s.%s.json' %
-                (self.tdir, cik.zfill(10), frame, fact) )
+                (self.odir, cik.zfill(10), frame, fact) )
         url = '%s/CIK%s/%s/%s.json' % (self.ccurl, cik.zfill(10), frame, fact)
         resp = self.query(url)
         self.storequery(resp, tf)
 
     def companyfacts(self, cik=None, tf=None):
-        'companyfacts - all the company concepts data for a company   \
+        """companyfacts - all the company concepts data for a company   \
         cik - 10-digit Central Index Key required                     \
-        '
+        """
         if not cik:
             print('companyfacts(cik)', file=sys.stderr)
             self.argp.print_help()
             sys.exit(1)
 
         if not tf:
-            tf=os.path.abspath('%s/CompanyFacts.CIK%s.json' % (self.tdir,
+            tf=os.path.abspath('%s/CompanyFacts.CIK%s.json' % (self.odir,
                                cik.zfill(10)) )
         url = '%s/CIK%s.json' % (self.cfurl, cik.zfill(10))
         resp = self.query(url)
@@ -157,14 +161,14 @@ class EDGARquery():
 
     def xbrlframes(self, frame='us-gaap', fact=None,
                    units='USD', cy=None, tf=None):
-        'xbrlframes - aggregates one fact for each reporting entity that is  \
+        """xbrlframes - aggregates one fact for each reporting entity that is  \
          last filed that most closely fits the calendrical period requested. \
          This API supports for annual, quarterly and instantaneous data:     \
          frame - reporting frame e.g us-gaap, ifrs-full, dei, srt            \
          fact - fact to collect e.g AccountsPayableCurrent, USD-per-shares   \
          cy   - calendar year e.g. CY2023, CY2023Q1, CY2023Q4I               \
          only the I version seems to be available                            \
-        '
+        """
         if not frame or not fact or not units or not cy:
             print('xbrlframes(frame, fact, units, cy)', file=sys.stderr)
             self.argp.print_help()
@@ -176,19 +180,19 @@ class EDGARquery():
             print('xbrlframes: CY forms CY2023, cy2023Q1, or CY2023Q1I',
                   file=sys.stderr)
         if not tf:
-            tf=os.path.abspath('%s/XBRLFrames.%s.%s.%s.%s.json' % (self.tdir,
+            tf=os.path.abspath('%s/XBRLFrames.%s.%s.%s.%s.json' % (self.odir,
                                frame, fact, units, cy))
         url = '%s/%s/%s/%s/%s.json' % (self.frurl, frame, fact, units, cy)
         resp = self.query(url)
         self.storequery(resp, tf)
 
     def companyfactsarchivezip(self, tf=None):
-        'companyfactsearchzip - all the data from the XBRL Frame API \
+        """companyfactsearchzip - all the data from the XBRL Frame API \
             and the XBRL Company Facts in a zip file                 \
          tf - file to store output                                   \
-        '
+        """
         if not tf:
-            tf=os.path.abspath('%s/companyfacts.zip' % self.tdir )
+            tf=os.path.abspath('%s/companyfacts.zip' % self.odir )
         resp=self.query(self.cfzip)
         self.storequery(resp, tf)
 
@@ -197,7 +201,7 @@ class EDGARquery():
          tf - file to store output                                   \
         '
         if not tf:
-            tf=os.path.abspath('%s/submissions.zip' % self.tdir )
+            tf=os.path.abspath('%s/submissions.zip' % self.odir )
         resp=self.query(self.subzip)
         self.storequery(resp, tf)
 
@@ -241,8 +245,7 @@ def main():
            --cy required")
     EQ.argp.add_argument("--companyfactsarchivezip",
        action='store_true', default=False,
-       help="returns daily companyfacts index in a zip file\n\
-           --cik required")
+       help="returns daily companyfacts index in a zip file")
     EQ.argp.add_argument("--submissionszip",
        action='store_true', default=False,
        help="returns daily index of submissions in a zip file")
@@ -326,13 +329,10 @@ def main():
         EQ.companyfacts(cik=args.cik)
         sys.exit()
 
-    if args.companyfactsarchivezip and not args.cik:
-        EQ.argp.print_help()
-        sys.exit()
-    if args.companyfactsarchivezip and args.cik and args.tf:
+    if args.companyfactsarchivezip and args.tf:
         EQ.companyfactsarchivezip(tf=args.tf)
         sys.exit()
-    elif args.companyfactsarchivezip and args.cik:
+    elif args.companyfactsarchivezip:
         EQ.companyfactsarchivezip()
         sys.exit()
 

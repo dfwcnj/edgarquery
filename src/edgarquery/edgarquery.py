@@ -49,6 +49,7 @@ class EDGARquery():
         if odir: self.odir = odir
         elif os.environ['EQODIR']: self.odir = os.environ['EQODIR']
         else: self.odir = '/tmp'
+        self.odir = os.path.abspath(self.odir)
 
         # https://www.bellingcat.com/resources/2023/12/18/
         #     new-tools-dig-deeper-into-hard-to-aggregate-us-corporate-data/
@@ -137,8 +138,8 @@ class EDGARquery():
             sys.exit(1)
 
         if not tf:
-            tf=os.path.abspath('%s/CompanyConcept.CIK%s.%s.%s.json' %
-                (self.odir, cik.zfill(10), frame, fact) )
+            tf = os.path.join(self.odir,
+              'CompanyConcept.CIK%s.%s.%s.json' % (cik.zfill(10), frame, fact) )
         url = '%s/CIK%s/%s/%s.json' % (self.ccurl, cik.zfill(10), frame, fact)
         resp = self.query(url)
         self.storequery(resp, tf)
@@ -153,8 +154,8 @@ class EDGARquery():
             sys.exit(1)
 
         if not tf:
-            tf=os.path.abspath('%s/CompanyFacts.CIK%s.json' % (self.odir,
-                               cik.zfill(10)) )
+            tf=os.path.join(self.odir,
+                'CompanyFacts.CIK%s.json' % (cik.zfill(10)) )
         url = '%s/CIK%s.json' % (self.cfurl, cik.zfill(10))
         resp = self.query(url)
         self.storequery(resp, tf)
@@ -180,8 +181,8 @@ class EDGARquery():
             print('xbrlframes: CY forms CY2023, cy2023Q1, or CY2023Q1I',
                   file=sys.stderr)
         if not tf:
-            tf=os.path.abspath('%s/XBRLFrames.%s.%s.%s.%s.json' % (self.odir,
-                               frame, fact, units, cy))
+            tf=os.path.join(self.odir, 'XBRLFrames.%s.%s.%s.%s.json' %
+                  (frame, fact, units, cy))
         url = '%s/%s/%s/%s/%s.json' % (self.frurl, frame, fact, units, cy)
         resp = self.query(url)
         self.storequery(resp, tf)
@@ -192,7 +193,7 @@ class EDGARquery():
          tf - file to store output                                   \
         """
         if not tf:
-            tf=os.path.abspath('%s/companyfacts.zip' % self.odir )
+            tf=os.path.join(self.odir, 'companyfacts.zip')
         resp=self.query(self.cfzip)
         self.storequery(resp, tf)
 
@@ -201,7 +202,7 @@ class EDGARquery():
          tf - file to store output                                   \
         '
         if not tf:
-            tf=os.path.abspath('%s/submissions.zip' % self.odir )
+            tf=os.path.join(self.odir, 'submissions.zip')
         resp=self.query(self.subzip)
         self.storequery(resp, tf)
 

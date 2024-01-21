@@ -14,6 +14,7 @@ class EDGARTickerstoCSV():
         if odir: self.odir = odir
         elif os.environ['EQODIR']: self.odir = os.environ['EQODIR']
         else: self.odir = '/tmp'
+        self.odir = os.path.abspath(self.odir)
         self.hdr     = {'User-Agent' : os.environ['EQEMAIL'] }
         self.turla = [
             'https://www.sec.gov/files/company_tickers.json',
@@ -56,13 +57,13 @@ class EDGARTickerstoCSV():
         for u in self.turla:
             if '_exchange' in u:
                 hdr="'cik','title','ticker','exchange'"
-                ofn = os.path.abspath('%s/tickers_exchange.csv' % (self.odir) )
+                ofn = os.path.join(self.odir, 'tickers_exchange.csv')
             elif '_mf' in u:
                 hdr="'cik','seriesId','classId','symbol'"
-                ofn = os.path.abspath('%s/tickers_mf.csv' % (self.odir) )
+                ofn = os.path.join(self.odir, 'tickers_mf.csv')
             else:
                 hdr="'cik','ticker','title'"
-                ofn = os.path.abspath('%s/tickers.csv' % (self.odir) )
+                ofn = os.path.join(self.odir, 'tickers.csv')
             with open(ofn, 'w') as ofp:
                 print(hdr, file=ofp)
                 #print(hdr, file=sys.stdout)

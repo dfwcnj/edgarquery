@@ -23,6 +23,7 @@ class EDGARCompanyFactstoCSV():
         if odir: self.odir = odir
         elif os.environ['EQODIR']: self.odir = os.environ['EQODIR']
         else: self.odir = '/tmp'
+        self.odir = os.path.abspath(self.odir)
         self.jsondict = None
         self.cik      = None
         self.enm      = None
@@ -99,8 +100,9 @@ class EDGARCompanyFactstoCSV():
         if '/' in self.units:
             self.units = re.sub('/', '', self.units)
             print('\t%s' % (self.units), file=sys.stderr)
-        fn = ('%s/CompanyFacts.CIK%s.%s.%s.%s.csv' % (self.odir,
-              self.cik, self.facttype, self.factnm, self.units) )
+        fn = os.path.join(self.odir,
+             'CompanyFacts.CIK%s.%s.%s.%s.csv' % ( self.cik, self.facttype,
+                                                   self.factnm, self.units) )
         # print('factparse: %s' % (fn), file=sys.stderr )
         try:
             with open(fn, 'w') as filep:

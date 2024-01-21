@@ -14,6 +14,7 @@ class EDGARSubmissionsziptoCSV():
         if odir: self.odir = odir # output directory
         elif os.environ['EQODIR']: self.odir = os.environ['EQODIR']
         else: self.odir = '/tmp'
+        self.odir = os.path.abspath(self.odir)
         self.argp    = None       # argument parser
         self.js      = None       # json object
         self.ziplist = None       # list of files in zip file
@@ -107,7 +108,8 @@ class EDGARSubmissionsziptoCSV():
             jsstr=self.zipread(f).decode("utf-8") 
             js = json.loads(jsstr)
             # json filename is $cik.json
-            jn = '%s/submissions.%s.csv' % (self.odir, f.split('.')[0])
+            jn = os.path.join(self.odir, 'submissions.%s.csv' % (self.odir,
+                              f.split('.')[0]) )
             try:
                 with open(jn, 'w') as fp:
                     self.jstocsv(js, ofp=fp, hdr=self.hdr)

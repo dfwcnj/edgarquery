@@ -24,6 +24,7 @@ class EDGARCompanyConcepttoCSV():
         if odir: self.odir = odir
         elif os.environ['EQODIR']: self.odir = os.environ['EQODIR']
         else: self.odir = '/tmp'
+        self.odir = os.path.abspath(self.odir)
         self.jsondict = None
         self.cik      = None
         self.enm      = None
@@ -85,8 +86,9 @@ class EDGARCompanyConcepttoCSV():
         unit = re.sub('/', '', unit)
         # have to open the file here because the file contains two
         # json dictionaries
-        ofn = '%s/CompanyConcept.CIK%s.%s.%s.%s.csv' % (self.odir, self.cik,
-                                         self.tag, self.cik, unit)
+        ofn = os.path.join(self.odir,
+            'CompanyConcept.CIK%s.%s.%s.%s.csv' % (self.cik,
+                                         self.tag, self.cik, unit) )
         print(ofn)
         try:
             self.of = open(ofn, 'w')

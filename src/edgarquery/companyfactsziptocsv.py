@@ -15,6 +15,7 @@ class EDGARCompanyFactsziptoCSV():
         if odir: self.odir = odir  # output directory
         elif os.environ['EQODIR']: self.odir = os.environ['EQODIR']
         else self.odir = '/tmp'
+        self.odir = os.path.abspath(self.odir)
         self.argp    = None       # argument parser
         self.js      = None       # json object
         self.ziplist = None       # list of files in zip file

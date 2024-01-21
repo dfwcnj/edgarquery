@@ -11,7 +11,7 @@ PY=~/anaconda3/bin/python
 # ~/anaconda3/bin/python $EQDIR/edgarquery.py --companyfactsarchivezip \
 #                                             --cik 1018724
 # ~/anaconda3/bin/python $EQDIR/edgarquery.py --submissionszip
-~/anaconda3/bin/python $EQDIR/edgarquery.py --submissionszip
+#~/anaconda3/bin/python $EQDIR/edgarquery.py --submissionszip
 
 # doesn't work for people
 # ~/anaconda3/bin/python $EQDIR/edgarquery.py --companyfactsarchivezip --cik 315090
@@ -29,8 +29,6 @@ done
 
 
 for cik in 1318605 1018724 1045810; do
-    $PY $EQDIR/edgarquery.py --companyfacts --cik $cik
-    $PY $EQDIR/edgarquery.py --companyfacts --cik $cik
     $PY $EQDIR/edgarquery.py --companyfacts --cik $cik
 done
 
@@ -94,6 +92,10 @@ $PY $EQDIR/submissionsziptocsv.py --zipfile $EQODIR/submissions.zip \
 # one huge csv file
 #$PY $EQDIR/submissionszipṫocsv.py --zipfile $EQODIR/submissions.zip \
 #    --all --combine
+
+for cik in 1318605 1018724 1045810; do
+    $PY $EQDIR/latest10K.py --cik $cik
+done
 
 $EQDIR/Concepts.sh
 

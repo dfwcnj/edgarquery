@@ -22,6 +22,7 @@ class EDGARXBRLFramestoCSV():
         if odir: self.odir = odir # output directory
         elif os.environ['EQODIR']: self.odir = os.environ['EQODIR']
         else: self.odir = '/tmp'
+        self.odir = os.path.abspath(self.odir)
         self.jsondict = None
         self.cy       = None
         self.enm      = None
@@ -77,8 +78,8 @@ class EDGARXBRLFramestoCSV():
         print('%s %s %s' % (self.cy, self.label, pt['description']) )
         # have to open the file here because the file contains two
         # json dictionaries
-        ofn = '%s/XBRLFrame.%s.%s.%s.%s.csv' % (self.odir, self.cy,
-                        self.tag, self.taxonomy, self.uom)
+        ofn = os.path.join(self.odir, 'XBRLFrame.%s.%s.%s.%s.csv' % (self.cy,
+                                     self.tag, self.taxonomy, self.uom) )
         print(ofn)
         try:
             self.of = open(ofn, 'w')

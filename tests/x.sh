@@ -53,7 +53,7 @@ for F in $(ls $EQODIR/CompanyFacts*.json |xargs basename); do
         echo  $OF
         sed -f $EQDIR/sedfile $EQODIR/$F > $EQODIR/CF.$OF
         ls -l $EQODIR/CF.$OF
-        $PY $EQDIR/companyfactstocsv.py --file $EQODIR/CF.$OF --odir $EQODIR
+        $PY $EQDIR/edgarcompanyfactstocsv.py --file $EQODIR/CF.$OF --odir $EQODIR
         break
     done
 done
@@ -65,7 +65,7 @@ for F in $(ls $EQODIR/CompanyConcept*.json |xargs basename); do
         echo  $OF
         sed -f $EQDIR/sedfile $EQODIR/$F > $EQODIR/CC.$OF
         ls -l $EQODIR/CC.$OF
-        $PY $EQDIR/companyconcepttocsv.py --file $EQODIR/CC.$OF --odir $EQODIR
+        $PY $EQDIR/edgarcompanyconcepttocsv.py --file $EQODIR/CC.$OF --odir $EQODIR
         break
     done
 done
@@ -77,32 +77,32 @@ for F in $(ls $EQODIR/XBRLFrames*.json |xargs basename); do
         echo  $OF
         sed -f $EQDIR/sedfile $EQODIR/$F > $EQODIR/XF.$OF
         ls -l $EQODIR/XF.$OF
-        $PY $EQDIR/xbrlframestocsv.py --file $EQODIR/XF.$OF --odir $EQODIR
+        $PY $EQDIR/edgarxbrlframestocsv.py --file $EQODIR/XF.$OF --odir $EQODIR
         break
     done
 done
 
-$PY $EQDIR/submissionsziptocsv.py --zipfile $EQODIR/submissions.zip \
+$PY $EQDIR/edgarsubmissionsziptocsv.py --zipfile $EQODIR/submissions.zip \
     --files CIK0000831001.json,CIK0001665650.json,CIK0000019617.json \
     --combine
 
-#$PY $EQDIR/submissionszipṫocsv.py --zipfile $EQODIR/submissions.zip \
+#$PY $EQDIR/edgarsubmissionszipṫocsv.py --zipfile $EQODIR/submissions.zip \
 #    --all
 
 # one huge csv file
-#$PY $EQDIR/submissionszipṫocsv.py --zipfile $EQODIR/submissions.zip \
+#$PY $EQDIR/edgarsubmissionszipṫocsv.py --zipfile $EQODIR/submissions.zip \
 #    --all --combine
 
 for cik in 5981 1318605 1018724 1045810; do
-    #$PY $EQDIR/latest10K.py --cik $cik
-    #$PY $EQDIR/latestsubmissions.py --cik $cik
-    $PY $EQDIR/submissions.py --cik $cik
-    $PY $EQDIR/submissions.py --cik $cik --year 2008
+    #$PY $EQDIR/edgarlatest10K.py --cik $cik
+    #$PY $EQDIR/edgarlatestsubmissions.py --cik $cik
+    $PY $EQDIR/edgarsubmissions.py --cik $cik
+    $PY $EQDIR/edgarsubmissions.py --cik $cik --year 2008
 done
 
 $EQDIR/Concepts.sh
 
-$EQDIR/tickerstocsv.py
+$EQDIR/edgartickerstocsv.py
 
 ##############################################################################
 exit

@@ -89,33 +89,36 @@ EDGARquery.companyfactsearchzip - all the data from the XBRL Frame API
 
 EDGARquery.submissionzip -  public EDGAR filing history for all filers
 
-companyfactstocsv.py
+edgarcompanyfactstocsv.py
 EDGARCompanyFactstoCSV class generates csv files from the json file
           returned by EDGARquery.companyfacts. Note that a somewhat
           large number of csv files are generated
 
-companyconceptstocsv.py
+edgarcompanyconceptstocsv.py
 EDGARCompanyConcepttoCSV convert the companyconcepts.json file retrieved
 by edgarquery.py and convert to csv files
 
-xbrlframestocsv.py
+edgarxbrlframestocsv.py
 EDGARXBRLFramestoCSV class generates a csv file for the json file
           returned by EDGARquery.xbrlframes
 
-companyfactsziptocsv.py
+edgarcompanyfactsziptocsv.py
 EDGARCompanyFactsziptoCSV - not yet implemented
 
-submissionsziptocsv.py
+edgarsubmissionsziptocsv.py
 EDGARSubmissionsziptoCSV convert the json files in the submissions.zip
 EDGAR file to csv files for each submitter
 
-latest10k.py
+edgarlatest10k.py
 EDGARLatest10K class find the url to the latest 10-K for a CIK
 
-submissions.py
-EDGARSubmissions class to return links to submissions for a year
+edgarlatestsubmissions.py
+EDGARLatest10K class return the latest submissions for a CIK
 
-tickerstocsv.py
+edgarsubmissions.py
+EDGARSubmissions class to return links to submissions for a CIK for a year
+
+edgartickerstocsv.py
 EDGARTickerstoCSV class to convert EDGAR company_tickers.json
 company_tickers_exchange.json and company_tickers_mf.json to csv files
 

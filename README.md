@@ -112,6 +112,9 @@ EDGAR file to csv files for each submitter
 latest10k.py
 EDGARLatest10K class find the url to the latest 10-K for a CIK
 
+submissions.py
+EDGARSubmissions class to return links to submissions for a year
+
 tickerstocsv.py
 EDGARTickerstoCSV class to convert EDGAR company_tickers.json
 company_tickers_exchange.json and company_tickers_mf.json to csv files

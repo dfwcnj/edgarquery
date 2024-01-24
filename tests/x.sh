@@ -93,8 +93,11 @@ $PY $EQDIR/submissionsziptocsv.py --zipfile $EQODIR/submissions.zip \
 #$PY $EQDIR/submissionszipṫocsv.py --zipfile $EQODIR/submissions.zip \
 #    --all --combine
 
-for cik in 1318605 1018724 1045810; do
-    $PY $EQDIR/latest10K.py --cik $cik
+for cik in 5981 1318605 1018724 1045810; do
+    #$PY $EQDIR/latest10K.py --cik $cik
+    #$PY $EQDIR/latestsubmissions.py --cik $cik
+    $PY $EQDIR/submissions.py --cik $cik
+    $PY $EQDIR/submissions.py --cik $cik --year 2008
 done
 
 $EQDIR/Concepts.sh

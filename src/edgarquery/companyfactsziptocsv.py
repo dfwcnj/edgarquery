@@ -1,4 +1,3 @@
-
 #! env python
 
 import os
@@ -14,7 +13,7 @@ class EDGARCompanyFactsziptoCSV():
         self.zfo     = None       # zip file object
         if odir: self.odir = odir  # output directory
         elif os.environ['EQODIR']: self.odir = os.environ['EQODIR']
-        else self.odir = '/tmp'
+        else: self.odir = '/tmp'
         self.odir = os.path.abspath(self.odir)
         self.argp    = None       # argument parser
         self.js      = None       # json object

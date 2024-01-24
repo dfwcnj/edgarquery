@@ -100,7 +100,7 @@ for cik in 5981 1318605 1018724 1045810; do
     $PY $EQDIR/edgarsubmissions.py --cik $cik --year 2008
 done
 
-$EQDIR/Concepts.sh
+$EQDIR/edgarconcepts.sh
 
 $EQDIR/edgartickerstocsv.py
 

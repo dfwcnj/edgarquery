@@ -9,6 +9,7 @@
 
 - [Installation](#installation)
 ```console
+NOT YET
 pip install edgarquery
 ```
 
@@ -18,9 +19,14 @@ pip install edgarquery
 -[Usage]
 
 Right now, three environmental variables are needed:
-EQDIR - the location of the python scripts
-EQODIR - the location to store the output
+EQDIR   - the location of the python scripts used only by x.sh
+
+EQODIR  - the location to store the output
 EQEMAIL - required by the SEC to download some of the files with curl.
+
+Each script is standalone although some depend upon data downloaded by 
+edgarqyery.py or by something like curl. The x.sh(I know) test script
+shows some of the usage
 
 Use edgarquery.py as a command to retrieve EDGAR files, then use the
 appropriate *tocsv.py file as a command to generate CSV file(s)

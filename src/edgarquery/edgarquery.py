@@ -50,6 +50,11 @@ class EDGARquery():
         elif os.environ['EQODIR']: self.odir = os.environ['EQODIR']
         else: self.odir = '/tmp'
         self.odir = os.path.abspath(self.odir)
+        if 'EQEMAIL' in os.environ:
+            self.hdr     = {'User-Agent' : os.environ['EQEMAIL'] }
+        else:
+            print('EQEMAIL environmental variable must be set to a valid \
+                   HTTP User-Agent value such as an email address')
 
         # https://www.bellingcat.com/resources/2023/12/18/
         #     new-tools-dig-deeper-into-hard-to-aggregate-us-corporate-data/
@@ -68,8 +73,6 @@ class EDGARquery():
         self.chunksize = 4194304
         self.argp      = None
         self.content   = None
-        # self.hdr     = {'User-Agent' : os.environ['EQEMAIL'] }
-        self.hdr       = None
 
         # xbrlframes is not yet well defined
         self.xfurl    = "https://data.sec.gov/api/xbrl/frames"
@@ -252,13 +255,6 @@ def main():
        help="returns daily index of submissions in a zip file")
 
     args = EQ.argp.parse_args()
-
-    try:
-        EQ.hdr = {'User-Agent' : os.environ['EQEMAIL'] }
-    except KeyError:
-        print('EQEMAIL env variable required\n', file=sys.stderr)
-        EQ.argp.print_help()
-        sys.exit(1)
 
     if not args.companyconcept and not args.companyfacts and \
        not args.xbrlframes and not args.companyfactsarchivezip and \

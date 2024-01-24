@@ -11,7 +11,7 @@ import subprocess
 import urllib.request
 from functools import partial
 
-class EDGARLatest10K():
+class EDGARLatestsubmissions():
 
     def __init__(self, odir=None):
         self.sprefix = 'https://www.sec.gov/Archives/edgar/full-index'
@@ -23,12 +23,11 @@ class EDGARLatest10K():
                    HTTP User-Agent value such as an email address')
         self.now     = datetime.datetime.now()
         self.cik     = None
-        self.link    = True
         if odir: self.odir = odir
         elif os.environ['EQODIR']: self.odir = os.environ['EQODIR']
         else: self.odir = '/tmp'
         self.odir = os.path.abspath(self.odir)
-        self.chunksize =4294967296
+        self.chunksize =4294967296 # 4M
 
     def query(self, url=None):
         """query - query an EDGAR URL
@@ -78,14 +77,14 @@ class EDGARLatest10K():
                 if rc.search(line):
                     return line
 
-    def dogrep(self, cik=None, fn=None):
+    def dogrep(self, cik=None, sub=None, fn=None):
         """ dpgrep - desparately try to grep for something
         """
-        if not fn and not cik:
-            print('dogrep: fn and cik required')
+        if not fn and not sub and not cik:
+            print('dogrep: fn, sub, and cik required')
             sys.exit(1)
         cmd=None
-        pat = '10-K.* %s ' % cik
+        pat = '%s.* %s ' % (sub, cik)
         if os.path.exists(os.path.join('/', 'bin', 'grep') ):
             cmd = os.path.join('bin', 'grep')
         elif os.path.exists(os.path.join('/', 'usr', 'bin', 'grep') ):
@@ -106,7 +105,7 @@ class EDGARLatest10K():
                     err = se.decode('utf-8')
                     print(err)
                     sys.exit(1)
-                os.unlink(fn)
+                #os.unlink(fn)
             except Exception as e:
                 print('grep url: %s' % (e), file=sys.stderr)
                 sys.exit(1)
@@ -114,8 +113,9 @@ class EDGARLatest10K():
             res = self.pgrep(pat, fn)
             return res
 
-    def get10kfromhtml(self, url, link):
-        """parse the html table to find relative link to 10-K html file
+    def getsubfromhtml(self, url, sub):
+        """parse the html table to find relative link to the
+           submission html file
            complete the url and either return it or
            store the 10-k html file
         """
@@ -125,22 +125,27 @@ class EDGARLatest10K():
         class MyHTMLParser(HTMLParser):
             def handle_starttag(self, tag, attrs):
                 if tag == 'a':
-                    if 'ix?doc' in attrs[0][1]:
-                        tkurl =  '%s%s' % ('https://www.sec.gov',
-                             attrs[0][1].split('=')[1])
-                        self.data = tkurl
-                        print(tkurl)
-            def handle_endtag(self, tag):
-                pass
+                    if hasattr(self, 'data') and sub == self.data:
+                        if sub=='10-K' and '/ix?doc' in attrs[0][1]:
+                            tkurl =  '%s%s' % ('https://www.sec.gov',
+                                 attrs[0][1].split('=')[1])
+                            self.data = tkurl
+                            #print(tkurl)
+                        elif sub!='10-K':
+                            tkurl =  '%s%s' % ('https://www.sec.gov',
+                                               attrs[0][1])
+                            self.data = tkurl
+                            #print(tkurl)
             def handle_data(self, data):
-                pass
+                if sub == data and not hasattr(self, 'data'):
+                    self.data = sub
+                    #print('data: %s' % (data) )
+
         parser = MyHTMLParser()
         parser.feed(rstr)
-        tkurl = parser.data
-        if not link:
-            tkresp = self.query(tkurl)
-            ofn = os.path.join(self.odir, 'CIK%s.10-K.htm' % (self.cik.zfill(10) ) )
-            self.storequery(tkresp, ofn)
+        if hasattr(parser, 'data'):
+            tkurl = parser.data
+            return tkurl
 
     def gensearchurls(self):
         """ gensearchurls - 10-k files are published once a year or so
@@ -177,39 +182,45 @@ class EDGARLatest10K():
             surla.append('%s/%d/QTR4/form.idx' % (self.sprefix, yr) )
         return surla
 
-    def search10K(self, cik, link):
-        """ search10K - search in the form.idx files for a page that
-            contains a link to the 10-k for a cik
+    def searchsubmissions(self, cik):
+        """ searchsubmissions - search in the form.idx files for a page that
+            contains a link to the submissions for a cik
             cik - central index key, required
-            link - if true, just return a url link to the 10-K html page
-                   if false, store the html page
+            return a dictionary containing the lastest submissions
         """
         surla = self.gensearchurls()
         ofn   = os.path.join(self.odir, 'form.idx')
+        suba = ['10-Q','10-K','8-Q','8-K','20-F','40-F','6-K']
+        latest={}
+        for k in suba: latest[k]=''
         tktbl = None
+        # search for submission types for each form.idx file
         for url in surla:
             resp = self.query(url)
             self.storequery(resp, tf=ofn)
-            res = self.dogrep(cik, ofn)
-            if res:
-                tktbl = res
-        if tktbl:
-            self.get10kfromhtml(tktbl, link)
+            for sub in suba:
+                tktbl = self.dogrep(cik, sub, ofn)
+                if tktbl:
+                    tkurl=self.getsubfromhtml(tktbl, sub)
+                    if tkurl:
+                        latest[sub]=tkurl
+        os.unlink(ofn)
+        return latest
 
 def main():
-    LT = EDGARLatest10K()
+    LT = EDGARLatestsubmissions()
 
     argp = argparse.ArgumentParser(
-              description='find the most recent 10-K for cik')
+              description='find the most recent submissions for cik')
     argp.add_argument("--cik", required=True,
         help="10-digit Central Index Key")
-    argp.add_argument("--link",
-          action='store_true', default=False,
-          help="return the url for the latest 10-K")
 
     args = argp.parse_args()
 
     LT.cik = args.cik
-    LT.search10K(args.cik, link=args.link)
+    latest = LT.searchsubmissions(args.cik)
+    for k in latest.keys():
+        if len(latest[k]) > 0:
+            print('%s\t%s' % (k, latest[k]) )
 
 main()

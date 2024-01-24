@@ -15,7 +15,11 @@ class EDGARTickerstoCSV():
         elif os.environ['EQODIR']: self.odir = os.environ['EQODIR']
         else: self.odir = '/tmp'
         self.odir = os.path.abspath(self.odir)
-        self.hdr     = {'User-Agent' : os.environ['EQEMAIL'] }
+        if 'EQEMAIL' in os.environ:
+            self.hdr     = {'User-Agent' : os.environ['EQEMAIL'] }
+        else:
+            print('EQEMAIL environmental variable must be set to a valid \
+                   HTTP User-Agent value such as an email address')
         self.turla = [
             'https://www.sec.gov/files/company_tickers.json',
             'https://www.sec.gov/files/company_tickers_exchange.json',

@@ -27,8 +27,8 @@ class EDGARTickerstoCSV():
         ]
 
     def query(self, url=None):
-        """query - query an EDGAR URL and return the response
-         url  - EDGAR URL to query - required 
+        """query - query a url
+         url  - required 
         """
         try:
             req = urllib.request.Request(url, headers=self.hdr)

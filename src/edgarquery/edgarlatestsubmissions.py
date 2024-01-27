@@ -30,9 +30,8 @@ class EDGARLatestsubmissions():
         self.chunksize =4294967296 # 4M
 
     def query(self, url=None):
-        """query - query an EDGAR URL
-         url  - EDGAR URL to query - required 
-         not yet implemented
+        """query - query a URL
+         url  - required 
         """
         try:
             req = urllib.request.Request(url, headers=self.hdr)

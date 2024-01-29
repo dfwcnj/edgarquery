@@ -16,33 +16,39 @@ import urllib.request
 class EDGARquery():
 
     def __init__(self, cik=None, cy=None, odir=None):
-        """EDGARquery - search the SEC EDGAR site                          \
-         --cik        - 10-digit Central Index Key                       \
-         --cy         - calendar year e.g. CY2023, CY2023Q1, CY2023Q4I   \
-         --tf         - file to store output                             \
-        --companyconcept - company concept json file                     \
-           --cik                                                         \
-               leading 0s optional                                       \
-           --frame - reporting frame, default us-gaap                    \
-               e.g us-gaap, ifrs-full, dei, srt                          \
-           --fact - fact to collect, default URS-per-shares              \
-               e.g AccountsPayableCurrent, AccountsAndNotesReceivableNet \
-           --tf - default /tmp/companyconcept.$frame.$fact.json          \
-        or                                                               \
-        --companyfacts - all the company concepts data for a company     \
-            --cik                                                        \
-            --tf - default /tmp/$cik.json                                \
-        or                                                               \
-        --xbrlframes Extensible Business Markup Language                 \
-            --frame                                                      \
-            --fact                                                       \
-            --cy                                                         \
-        or                                                               \
-        --companyfactsearchzip - all the data from the XBRL Frame API    \
-            and the XBRL Company Facts in a zip file                     \
-            --tf - default /tmp/companyfact.zip                          \
-        --submissionzip -  public EDGAR filing history for all filers    \
-            --tf - default /tmp/submissions.zip                          \
+        """EDGARquery - search the SEC EDGAR site
+         --cik        - 10-digit Central Index Key
+         --cy         - calendar year e.g. CY2023, CY2023Q1, CY2023Q4I
+         --tf         - file to store output
+        --companyconcept - company concept json file
+           --cik
+               leading 0s optional
+           --frame - reporting frame, default us-gaap
+               e.g us-gaap, ifrs-full, dei, srt
+           --fact - fact to collect, default URS-per-shares
+               e.g AccountsPayableCurrent, AccountsAndNotesReceivableNet
+           --tf - default /tmp/companyconcept.$frame.$fact.json
+        or
+        --companyfacts - all the company concepts data for a company
+            --cik
+            --tf - default /tmp/$cik.json
+        or
+        --xbrlframes Extensible Business Markup Language
+            --frame
+            --fact
+            --cy
+        or
+        --companyfactsearchzip - all the data from the XBRL Frame API
+            and the XBRL Company Facts in a zip file
+            --tf - default /tmp/companyfact.zip
+        --submissionzip -  public EDGAR filing history for all filers
+            --tf - default /tmp/submissions.zip
+        or
+        --financialstatementandnotesdataset - data extracted from
+          reports filed from 2009 to present. does not include certain
+          metadata filed. filed quarterly until 11/2020. filed monthly
+          after that
+          --cy calendar year e.g. CY2015Q2, CY2023M12
         """
         self.cik        = cik
         self.cy         = cy
@@ -69,6 +75,7 @@ class EDGARquery():
         self.edi        = 'https://www.sec.gov/Archives/edgar/daily-index'
         self.cfzip      = '%s/xbrl/companyfacts.zip'    % self.edi
         self.subzip     = '%s/bulkdata/submissions.zip' % self.edi
+        self.fsanurl    = 'https://www.sec.gov/files/dera/data/financial-statement-and-notes-data-sets'
 
         self.chunksize = 4194304
         self.argp      = None
@@ -200,12 +207,47 @@ class EDGARquery():
         self.storequery(resp, tf)
 
     def submissionszip(self, tf=None):
-        'submissionzip -  public EDGAR filing history for all filers \
-         tf - file to store output                                   \
-        '
+        """submissionzip -  public EDGAR filing history for all filers
+         tf - file to store output
+        """
         if not tf:
             tf=os.path.join(self.odir, 'submissions.zip')
         resp=self.query(self.subzip)
+        self.storequery(resp, tf)
+
+    def financialstatementandnotesdataset(self, cy=None, tf=None):
+        """ financialstatementandnotesdataset text summaries in a zip file
+          cy - YYYYQ[1-4] from 2009-112020 YYYYMM after 11/2020
+        """
+        if not tf:
+            tf=os.path.join(self.odir, 'fsan.zip')
+        if 'CY' in cy or 'Q' in cy:
+            if 'CY' in cy:
+                cy = cy[2:]
+            if 'Q' in cy:
+                cya =  cy.split('Q')
+            if len(cya) != 2 or int(cya[0]) > 2020 or int(cy[1]) > 4:
+                print('financialstatementandnotesdataset cy in wrong format')
+                sys.exit(1)
+            url = '%s/%sq%s_notes.zip' % (self.fsanurl, cya[0],
+                                          cya[1]) 
+        else:
+            assert int(cy), 'cy not an integer'
+            now = datetime.datetime.now()
+            if 'M' in cy:
+                cya = cy.split('M')
+            else:
+                cya = [cy[0:4], cy[4:]]
+            if int(cya[0]) < 2022 or int(cya[0]) > now.year:
+                print('cy not a legal year', file=sys.stderr)
+                sys.exit(1)
+            if int(cya[1]) > 12:
+                print('cy not a legal month', file=sys.stderr)
+                sys.exit(1)
+            y = cya[0]
+            m = cya[1]
+            url = '%s/%s_%s_notes.zip' % (self.fsanurl, y, m.zfill(2) )
+        resp=self.query(url)
         self.storequery(resp, tf)
 
 def main():
@@ -252,12 +294,16 @@ def main():
     EQ.argp.add_argument("--submissionszip",
        action='store_true', default=False,
        help="returns daily index of submissions in a zip file")
+    EQ.argp.add_argument("--financialstatementandnotesdataset",
+       action='store_true', default=False,
+       help="returns zip file with financial statement and notes summaries\n\
+           --cy required")
 
     args = EQ.argp.parse_args()
 
     if not args.companyconcept and not args.companyfacts and \
        not args.xbrlframes and not args.companyfactsarchivezip and \
-       not args.submissionszip:
+       not args.submissionszip and not args.financialstatementandnotesdataset:
         EQ.argp.print_help()
         sys.exit(1)
 
@@ -337,6 +383,16 @@ def main():
         sys.exit()
     elif args.submissionszip:
         EQ.submissionszip()
+        sys.exit()
+
+    if args.financialstatementandnotesdataset and not args.cy:
+        EQ.argp.print_help()
+        sys.exit()
+    elif args.financialstatementandnotesdataset and args.tf:
+        EQ.financialstatementandnotesdataset(cy=args.cy, tf=args.tf)
+        sys.exit()
+    elif args.financialstatementandnotesdataset:
+        EQ.financialstatementandnotesdataset(cy=args.cy)
         sys.exit()
 
 main()

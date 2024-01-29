@@ -95,6 +95,9 @@ EDGARquery.companyfactsearchzip - all the data from the XBRL Frame API
 
 EDGARquery.submissionzip -  public EDGAR filing history for all filers
 
+EDGARquery.financialstatementandnotesdataset - numeric summariæs of financial
+        statements. 
+
 edgarcompanyfactstocsv.py
 EDGARCompanyFactstoCSV class generates csv files from the json file
           returned by EDGARquery.companyfacts. Note that a somewhat

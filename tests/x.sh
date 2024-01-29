@@ -11,18 +11,19 @@ PY=~/anaconda3/bin/python
 # ~/anaconda3/bin/python $EQDIR/edgarquery.py --companyfactsarchivezip \
 #                                             --cik 1018724
 # ~/anaconda3/bin/python $EQDIR/edgarquery.py --submissionszip
-#~/anaconda3/bin/python $EQDIR/edgarquery.py --submissionszip
+# ~/anaconda3/bin/python $EQDIR/edgarquery.py --submissionszip
 
-# doesn't work for people
-# ~/anaconda3/bin/python $EQDIR/edgarquery.py --companyfactsarchivezip --cik 315090
+$PY $EQDIR/edgarsubmissionsziptocsv.py --zipfile $EQODIR/submissions.zip \
+    --files CIK0000831001.json,CIK0001665650.json,CIK0000019617.json \
+    --combine
 
 # SEC needs a user-agent
 curl --user-agent $EQEMAIL --output /private/tmp/sitemap.xml \
      https://www.sec.gov/Archives/edgar/daily-index/sitemap.xml
 curl --user-agent $EQEMAIL --output /private/tmp/company_tickers.json \
      https://www.sec.gov/files/company_tickers.json
-for f in company.zip crawler.idx form.zip master.zip \
-         xbrl.zip sitemap.quarterlyindexes.xml; do
+for f in company.idx crawler.idx form.idx master.idx \
+         xbrl.idx sitemap.quarterlyindexes.xml; do
     curl --user-agent $EQEMAIL --output $EQODIR/$f \
          https://www.sec.gov/Archives/edgar/full-index/$f
 done
@@ -81,10 +82,6 @@ for F in $(ls $EQODIR/XBRLFrames*.json |xargs basename); do
         break
     done
 done
-
-$PY $EQDIR/edgarsubmissionsziptocsv.py --zipfile $EQODIR/submissions.zip \
-    --files CIK0000831001.json,CIK0001665650.json,CIK0000019617.json \
-    --combine
 
 #$PY $EQDIR/edgarsubmissionszipṫocsv.py --zipfile $EQODIR/submissions.zip \
 #    --all

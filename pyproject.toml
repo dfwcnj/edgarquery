@@ -27,9 +27,9 @@ classifiers = [
 dependencies = []
 
 [project.urls]
-Documentation = "https://github.com/unknown/edgarquery#readme"
-Issues = "https://github.com/unknown/edgarquery/issues"
-Source = "https://github.com/unknown/edgarquery"
+Documentation = "https://github.com/dfwcnj/edgarquery#readme"
+Issues = "https://github.com/dfwcnj/edgarquery/issues"
+Source = "https://github.com/dfwcnj/edgarquery"
 
 [tool.hatch.version]
 path = "src/edgarquery/__about__.py"

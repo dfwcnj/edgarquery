@@ -14,6 +14,10 @@ from functools import partial
 class EDGARLatest10K():
 
     def __init__(self, odir=None):
+        """
+
+        retrieve the latest 10-K data
+        """
         self.sprefix = 'https://www.sec.gov/Archives/edgar/full-index'
         self.rprefix = 'https://www.sec.gov/Archives'
         if 'EQEMAIL' in os.environ:
@@ -31,8 +35,9 @@ class EDGARLatest10K():
         self.chunksize =4294967296
 
     def query(self, url=None):
-        """query - query a URL
-         url  - required 
+        """query(url)
+
+        url  - retrieve a url
         """
         try:
             req = urllib.request.Request(url, headers=self.hdr)
@@ -44,8 +49,10 @@ class EDGARLatest10K():
             sys.exit(1)
 
     def storequery(self, qresp, tf):
-        """storequery - store the query response in a file \
-        resp - the query response \
+        """storequery(qresp, tf)
+
+        store the query response in a file
+        resp - the query response
         tf   - filename that will hold the query response
         """
         if not qresp:
@@ -66,7 +73,11 @@ class EDGARLatest10K():
             return
 
     def pgrep(self, pat=None, fn=None):
-        """ pgrep - simulate grap when command does not exist
+        """ pgrep
+
+        simulate grap when command does not exist
+        pat - regular expression pattern to match
+        fn  - name of file to search
         """
         if not fn and not pat:
             print('pgrep pat and fn required')
@@ -78,7 +89,11 @@ class EDGARLatest10K():
                     return line
 
     def dogrep(self, cik=None, fn=None):
-        """ dpgrep - desparately try to grep for something
+        """ dpgrep(cik, fn)
+
+        desparately try to grep for something
+        cik - SEC central index key
+        fn - name of file to search
         """
         if not fn and not cik:
             print('dogrep: fn and cik required')
@@ -114,9 +129,14 @@ class EDGARLatest10K():
             return res
 
     def get10kfromhtml(self, url, link):
-        """parse the html table to find relative link to 10-K html file
-           complete the url and either return it or
-           store the 10-k html file
+        """ get10kfromhtml(url, link)
+
+        parse the html table to find relative link to 10-K html file
+        complete the url and either return it or
+        store the 10-k html file
+        url - url containing the links to 10-K files
+        link - if true, just return a url link to the 10-K html page
+               if false, store the html page
         """
         resp = self.query(url)
         rstr    = resp.read().decode('utf-8')
@@ -142,10 +162,12 @@ class EDGARLatest10K():
             self.storequery(tkresp, ofn)
 
     def gensearchurls(self):
-        """ gensearchurls - 10-k files are published once a year or so
-            and can be published on a schedule controlled by the company
-            return a set of links to form files where the 10-K link
-            may reside
+        """ gensearchurls()
+
+        10-k files are published once a year or so
+        and can be published on a schedule controlled by the company
+        return a set of links to form files where the 10-K link
+        may reside
         """
         surla = []
         yr = self.now.year
@@ -177,11 +199,13 @@ class EDGARLatest10K():
         return surla
 
     def search10K(self, cik, link):
-        """ search10K - search in the form.idx files for a page that
-            contains a link to the 10-k for a cik
-            cik - central index key, required
-            link - if true, just return a url link to the 10-K html page
-                   if false, store the html page
+        """ search10K
+
+        search in the form.idx files for a page that contains a link
+        to the 10-k for a cik
+        cik - central index key, required
+        link - if true, just return a url link to the 10-K html page
+               if false, store the html page
         """
         surla = self.gensearchurls()
         ofn   = os.path.join(self.odir, 'form.idx')

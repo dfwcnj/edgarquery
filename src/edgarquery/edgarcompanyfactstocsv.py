@@ -1,12 +1,7 @@
 #! /usr/bin/env python
 
 #
-# companyfactstocsv.py.py - parse sec edgar company facts json file for a CIK
-#     company facts for a CIK seem to come in two parts so I have to
-#     edit the file to enclose its contents in brackets[] separateѕ by ,
-#     otherwise the python json library excepts complaining about an extra
-#     character when it finishes the first part and encounters the
-#     second part
+# companyfactstocsv.py.py
 #
 
 import os
@@ -18,6 +13,15 @@ import re
 class EDGARCompanyFactstoCSV():
 
     def __init(self, jsonfile=None, odir=None):
+        """
+
+        parse sec edgar company facts json file for a CIK
+        facts for a CIK seem to come in two parts so I have to
+        the file to enclose its contents in brackets[] separateѕ by ,
+        the python json library excepts complaining about an extra
+        when it finishes the first part and encounters the
+        part
+        """
         self.argp     = None
         self.jsonfile = jsonfile
         if odir: self.odir = odir
@@ -36,9 +40,11 @@ class EDGARCompanyFactstoCSV():
 
     # recurse over the json to show its structure
     def recdesc(self, js, ix):
-        """ recdesc parse an SEC EDGAR company facts json file   \
-          js - dictionary returned by python json.load()       \
-          id - indent index to make the hierarchy more visible \
+        """ recdesc(js, ix)
+
+        parse an SEC EDGAR company facts json file   \
+        js - dictionary returned by python json.load()       \
+        id - indent index to make the hierarchy more visible \
         """
         ind = ' ' * ix
         if type(js) == type([]): # array
@@ -56,10 +62,12 @@ class EDGARCompanyFactstoCSV():
             return
 
     def jsonparts(self): # files seem to be in 2 parts
-        """ jsonparts - if the json file was just one dictionary
-            just traverse the dictionary or else
-            traverse the top level json array
-          that I added to the SEC EDGAR file            \
+        """ jsonparts
+
+        if the json file was just one dictionary
+        just traverse the dictionary or else
+        traverse the top level json array
+        that I added to the SEC EDGAR file
         """
         if type(self.jsondict) == type({}):
             self.jsonpart(self.jsondict)
@@ -70,12 +78,20 @@ class EDGARCompanyFactstoCSV():
                 self.jsonpart(pt)
 
     def jsonpart(self, pt):
+        """ jsonpart(pt)
+
+        pt - json to parse
+        """
         assert type(pt) == type({}), 'jsonpart: part not a dictionary'
         self.cik = pt['cik']
         self.enm = pt['entityName']
         self.jsonfacts(pt['facts'])
 
     def jsonfacts(self, facts):
+        """ jsonfacts(facts) parse companyfacts json file
+
+        facts - json file containing SEC EDGAR companyfacts
+        """
         assert type(facts) == type({}), 'jsonfacts: facts not a dictionary'
         fka = [k for k in facts]
         for k in fka:
@@ -97,6 +113,10 @@ class EDGARCompanyFactstoCSV():
                     self.jsonfactcsv(facts[k][t]['units'][ut])
 
     def jsonfactcsv(self, recs):
+        """ jsonfactcsv(recs) - dump company facts file to csv
+
+        recs - individual company facts
+        """
         if '/' in self.units:
             self.units = re.sub('/', '', self.units)
             print('\t%s' % (self.units), file=sys.stderr)
@@ -120,35 +140,36 @@ class EDGARCompanyFactstoCSV():
             print('%s %s: %s' % (self.jsonfile, fn, e), file=sys.stderr )
             sys.exit(1)
 
-def main():
-    EP = EDGARCompanyFactstoCSV()
-    argp = argparse.ArgumentParser(description="Parse an SEC EDGAR\
-        companyfacts json file after it has been altered to deal with its\
-    multipart character and generate CSV files from its content")
+if __name__ == '__main__':
+    def main():
+        EP = EDGARCompanyFactstoCSV()
+        argp = argparse.ArgumentParser(description="Parse an SEC EDGAR\
+            companyfacts json file after it has been altered to deal with its\
+        multipart character and generate CSV files from its content")
 
-    argp.add_argument('--file', help="json file to process")
-    argp.add_argument('--odir', help="where to deposit the csv fileѕ",
-                      default='/tmp')
+        argp.add_argument('--file', help="json file to process")
+        argp.add_argument('--odir', help="where to deposit the csv fileѕ",
+                          default='/tmp')
 
-    args = argp.parse_args()
+        args = argp.parse_args()
 
-    if not args.file:
-        argp.print_help()
-        sys.exit(11)
-    EP.argp = argp
-    if args.odir: EP.odir = args.odir
+        if not args.file:
+            argp.print_help()
+            sys.exit(11)
+        EP.argp = argp
+        if args.odir: EP.odir = args.odir
 
-    EP.jsonfile = args.file
-    try:
-        with open(args.file, 'r') as f:
-            jd = json.load(f)
-            EP.jsondict = jd
-    except Error as e:
-        print('%s parse failed' % args.file)
-        sys.exit(1)
+        EP.jsonfile = args.file
+        try:
+            with open(args.file, 'r') as f:
+                jd = json.load(f)
+                EP.jsondict = jd
+        except Error as e:
+            print('%s parse failed' % args.file)
+            sys.exit(1)
 
-    EP.jsonparts()
-    #EP.recdesc(jd, 1)
+        EP.jsonparts()
+        #EP.recdesc(jd, 1)
 
 
-main()
+    main()

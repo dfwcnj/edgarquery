@@ -1,12 +1,7 @@
 #! /usr/bin/env python
 
 #
-# xbrlframestocsv.py.py.py.py - parse sec edgar xbrl frame file for a CY
-#     xbrl frame for a CY seem to come in two parts so I have to
-#     edit the file to enclose its contents in brackets[] separateѕ by ,
-#     otherwise the python json library excepts complaining about an extra
-#     character when it finishes the first part and encounters the
-#     second part
+# xbrlframestocsv.py
 #
 
 import os
@@ -17,6 +12,14 @@ import json
 class EDGARXBRLFramestoCSV():
 
     def __init(self, jsonfile=None, odir=None):
+        """
+
+        parse sec edgar xbrl frame file for a CY
+        frame for a CY seem to come in two parts so I have to
+        the file to enclose its contents in brackets[] separateѕ by ,
+        the python json library excepts complaining about an extra
+        when it finishes the first part and encounters the second part
+        """
         self.argp     = None
         self.jsonfile = jsonfile
         if odir: self.odir = odir # output directory
@@ -37,9 +40,11 @@ class EDGARXBRLFramestoCSV():
 
     # recurse over the json to show its structure
     def recdesc(self, js, ix):
-        """ recdesc parse an SEC EDGAR company facts json file   \
-          js - dictionary returned by python json.load()       \
-          id - indent index to make the hierarchy more visible \
+        """ recdesc(js, ix)
+
+        parse an SEC EDGAR company facts json file
+        js - dictionary returned by python json.load()
+        ix - indent index to make the hierarchy more visible
         """
         ind = ' ' * ix
         if type(js) == type([]): # array
@@ -57,8 +62,11 @@ class EDGARXBRLFramestoCSV():
             return
 
     def jsonparts(self, js):
-        """ jsonparts - traverse the top level json array \
-          that I added to the SEC EDGAR file            \
+        """jsonparts(js)
+
+        traverse the top level json array that I added to the SEC EDGAR file
+        this may no longer be necessary
+        js - json file whose top level structure is an array
         """
         if type(self.jsondict) == type({}):
             self.jsonpart(self.jsondict)
@@ -69,6 +77,11 @@ class EDGARXBRLFramestoCSV():
                 self.jsonpart(pt)
 
     def jsonpart(self, pt):
+        """ jsonpart(pt)
+
+        parse the xbrl frames json data
+        pt - the json to parse
+        """
         assert type(pt) == type({}), 'jsonpart: part not a dictionary'
         self.cy = pt['ccp']
         self.taxonomy = pt['taxonomy']
@@ -92,6 +105,11 @@ class EDGARXBRLFramestoCSV():
         self.jsonxbrlframecsv(pt['data'])
 
     def jsonxbrlframecsv(self, data):
+        """ jsonxbrlframecsv(data)
+
+        write the xbrl frames data to a csv file
+        data - contents of the xbrl frames json 'data' key
+        """
         assert type(data) == type([]), 'xbrlframes: data not a array'
         for d in data:
             assert type(d) == type({}), 'xbrlframes: datum not a dictionay'
@@ -101,35 +119,36 @@ class EDGARXBRLFramestoCSV():
 
 
 
-def main():
-    EP = EDGARXBRLFramestoCSV()
-    argp = argparse.ArgumentParser(description="Parse an SEC EDGAR\
-        xbrlframes json file after it has been altered to deal with its\
-    multipart character and generate a csv file from its contents")
+if __name__ == '__main__':
+    def main():
+        EP = EDGARXBRLFramestoCSV()
+        argp = argparse.ArgumentParser(description="Parse an SEC EDGAR\
+            xbrlframes json file after it has been altered to deal with its\
+        multipart character and generate a csv file from its contents")
 
-    argp.add_argument('--file', help="json file to process")
-    argp.add_argument('--odir', help="where to deposit the fileѕ",
-                      default='/tmp')
+        argp.add_argument('--file', help="json file to process")
+        argp.add_argument('--odir', help="where to deposit the fileѕ",
+                          default='/tmp')
 
-    args = argp.parse_args()
+        args = argp.parse_args()
 
-    if not args.file:
-        argp.print_help()
-        sys.exit(1)
-    EP.argp = argp
-    if args.odir: EP.odir = args.odir
+        if not args.file:
+            argp.print_help()
+            sys.exit(1)
+        EP.argp = argp
+        if args.odir: EP.odir = args.odir
 
-    EP.jsonfile = args.file
-    try:
-        with open(args.file, 'r') as f:
-            jd = json.load(f)
-            EP.jsondict = jd
-    except Error as e:
-        print('%s parse failed' % args.file)
-        sys.exit(1)
+        EP.jsonfile = args.file
+        try:
+            with open(args.file, 'r') as f:
+                jd = json.load(f)
+                EP.jsondict = jd
+        except Error as e:
+            print('%s parse failed' % args.file)
+            sys.exit(1)
 
-    EP.jsonparts(jd)
-    #EP.recdesc(jd, 1)
+        EP.jsonparts(jd)
+        #EP.recdesc(jd, 1)
 
-main()
+    main()
 

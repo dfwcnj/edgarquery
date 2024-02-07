@@ -9,6 +9,11 @@ import zipfile
 class EDGARSubmissionsziptoCSV():
 
     def __init__(self, zipfile=None, odir=None):
+        """
+
+        export the contents of the submissions.zip file retrieved from
+        SEC to csv files
+        """
         self.zipfile = zipfile    # zip filename
         self.zfo     = None       # zip file object
         if odir: self.odir = odir # output directory
@@ -23,9 +28,11 @@ class EDGARSubmissionsziptoCSV():
 
     # recurse over the json to show its structure
     def recdesc(self, js, ix):
-        """ recdesc parse an SEC EDGAR company facts json file   \
-          js - dictionary returned by python json.load()       \
-          ix - indent index to make the hierarchy more visible \
+        """ recdesc(js, ix)
+
+        recdesc parse an SEC EDGAR company facts json file   \
+        js - dictionary returned by python json.load()       \
+        ix - indent index to make the hierarchy more visible \
         """
         ind = ' ' * ix
         if type(js) == type([]): # array
@@ -55,11 +62,13 @@ class EDGARSubmissionsziptoCSV():
         return self.zfo.read(file)
 
     def jstocsv(self, js, ofp, hdr=None):
-        """jstocsv - extract js contents to a csv file\n\
-         js  - json dictionary to convert\n\
-         fp  - file object to contain the csv\n\
-         hdr - header of column labels\n\
-         NOTE: not all of the top level data is extracted
+        """jstocsv(js, ofp, hdr)
+
+        extract js contents to a csv file\n\
+        NOTE: not all of the top level data is extracted
+        js  - json dictionary to convert\n\
+        ofp  - file object to contain the csv\n\
+        hdr - header of column labels\n\
         """
         if not js or not ofp:
             self.argp.print_help()
@@ -95,11 +104,13 @@ class EDGARSubmissionsziptoCSV():
 
 
     def sometocsv(self, fa):
-        """sometocsv - convert list of json files from zip file to csv\n\
-         fa - list containing files to convert\n\
-         NOTE: not all of the top level data is extracted\n\
-         NOTE there will one csv file per json file\n\
-         NOTE json files containing the string "submission" are skipped
+        """sometocsv(fa)
+
+        convert list of json files from zip file to csv\n\
+        fa - list containing files to convert\n\
+        NOTE: not all of the top level data is extracted\n\
+        NOTE there will one csv file per json file\n\
+        NOTE json files containing the string "submission" are skipped
         """
         for f in fa:
             # not sure how these json file fit in here
@@ -118,11 +129,13 @@ class EDGARSubmissionsziptoCSV():
                 sys.exit(1)
 
     def combinesometocsv(self, fa, fn):
-        """combineseometocsv - convert json files into one large csv file\n\
-         fa - list of json files to convert\n\
-         fn - name of file that will contain the csv\n\
-         NOTE: not all of the top level data is extracted\n\
-         NOTE json files containing the string "submission" are skipped
+        """combineseometocsv(fa)
+
+        convert json files into one large csv file\n\
+        NOTE: not all of the top level data is extracted\n\
+        NOTE json files containing the string "submission" are skipped
+        fa - list of json files to convert\n\
+        fn - name of file that will contain the csv\n\
         """
         try:
             with open(fn, 'w') as fp:
@@ -138,68 +151,69 @@ class EDGARSubmissionsziptoCSV():
             print('%s: %s' % (fn, e), file=sys.stderr )
             sys.exit(1)
 
-def main():
-    'EDGARSubmissionsziptoCSV - convert json files in submissions.zip\n\
-     to csv\n\
-     --zipfile - path to the submissions.zip file\n\
-     --odir    - directory to store the output, default /tmp\n\
-     --files   - name(s) of json file to convert\n\
-     --all     - process all json files(w/o submission in name)\n\
-     --combine - combine csvs into one file'
-    ES = EDGARSubmissionsziptoCSV()
-    argp = argparse.ArgumentParser(description='Extract one or more json\
-    files from an SEC EDGAR submissions.zip file and convert to CSV')
+if __name__ == '__main__':
+    def main():
+        'EDGARSubmissionsziptoCSV - convert json files in submissions.zip\n\
+         to csv\n\
+         --zipfile - path to the submissions.zip file\n\
+         --odir    - directory to store the output, default /tmp\n\
+         --files   - name(s) of json file to convert\n\
+         --all     - process all json files(w/o submission in name)\n\
+         --combine - combine csvs into one file'
+        ES = EDGARSubmissionsziptoCSV()
+        argp = argparse.ArgumentParser(description='Extract one or more json\
+        files from an SEC EDGAR submissions.zip file and convert to CSV')
 
-    argp.add_argument('--zipfile', help="submissions.zip file to process\
-     - required")
-    argp.add_argument('--odir', help="where to deposit the output",
-                      default='/tmp')
-    argp.add_argument('--files', help="comma separated(no spaces) content\
-                                 file(s) to process")
-    argp.add_argument('--all', action='store_true', default=False,
-                      help="process all submissions.zip files")
-    argp.add_argument('--combine', action='store_true', default=False,
-                      help="convert all/some submissions.zip json\
-                                   files into one csv file")
+        argp.add_argument('--zipfile', help="submissions.zip file to process\
+         - required")
+        argp.add_argument('--odir', help="where to deposit the output",
+                          default='/tmp')
+        argp.add_argument('--files', help="comma separated(no spaces) content\
+                                     file(s) to process")
+        argp.add_argument('--all', action='store_true', default=False,
+                          help="process all submissions.zip files")
+        argp.add_argument('--combine', action='store_true', default=False,
+                          help="convert all/some submissions.zip json\
+                                       files into one csv file")
 
-    args = argp.parse_args()
+        args = argp.parse_args()
 
-    if not args.zipfile:
-        argp.print_help()
-        sys.exit(1)
+        if not args.zipfile:
+            argp.print_help()
+            sys.exit(1)
 
-    ES.argp = argp
-    if args.odir: ES.odir = args.odir
-    elif os.environ['EQODIR']: ES.odir = os.environ['EQODIR']
+        ES.argp = argp
+        if args.odir: ES.odir = args.odir
+        elif os.environ['EQODIR']: ES.odir = os.environ['EQODIR']
 
-    try:
-        with zipfile.ZipFile(args.zipfile, mode='r') as ES.zfo:
-            ES.zipfile = args.zipfile
-            ES.listzip()
+        try:
+            with zipfile.ZipFile(args.zipfile, mode='r') as ES.zfo:
+                ES.zipfile = args.zipfile
+                ES.listzip()
 
-            if args.all and args.combine:
-                ES.combinesometocsv(ES.ziplist,
-                    fn='%s/allsubmissions.csv' % (ES.odir))
-                sys.exit(0)
-            elif args.all:
-                ES.sometocsv(self.ziplist)
-                sys.exit(0)
-
-            if args.files:
-                if ',' in args.files:
-                    fa = args.files.split(',')
-                else: fa = [args.files]
-                if args.combine:
-                    ES.combinesometocsv(fa,
-                    fn='%s/somesubmissions.csv' % (ES.odir))
+                if args.all and args.combine:
+                    ES.combinesometocsv(ES.ziplist,
+                        fn='%s/allsubmissions.csv' % (ES.odir))
                     sys.exit(0)
-                else:
-                    ES.sometocsv(fa)
+                elif args.all:
+                    ES.sometocsv(self.ziplist)
                     sys.exit(0)
 
-    except zipfile.BadZipfile as e:
-       print('open %s: %s', (args.zipfile, e) )
-       sys.exit(1)
+                if args.files:
+                    if ',' in args.files:
+                        fa = args.files.split(',')
+                    else: fa = [args.files]
+                    if args.combine:
+                        ES.combinesometocsv(fa,
+                        fn='%s/somesubmissions.csv' % (ES.odir))
+                        sys.exit(0)
+                    else:
+                        ES.sometocsv(fa)
+                        sys.exit(0)
+
+        except zipfile.BadZipfile as e:
+           print('open %s: %s', (args.zipfile, e) )
+           sys.exit(1)
 
 
-main()
+    main()

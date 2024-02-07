@@ -14,15 +14,19 @@ from functools import partial
 class EDGARSubmissions():
 
     def __init__(self, odir=None):
+        """edgarsubmissions
+
+        retrieve submissions for a CIK for some year
+        if the year is the current year, get submissions so far
+        """
         self.sprefix = 'https://www.sec.gov/Archives/edgar/full-index'
         self.rprefix = 'https://www.sec.gov/Archives'
         if 'EQEMAIL' in os.environ:
             self.hdr     = {'User-Agent' : os.environ['EQEMAIL'] }
         else:
-            print('EQEMAIL environmental variable must be set to a valid \
+            print('EQEMAIL environmental variable must be set to a valid\
                    HTTP User-Agent value such as an email address')
         self.now     = datetime.datetime.now()
-        self.cik     = None
         if odir: self.odir = odir
         elif os.environ['EQODIR']: self.odir = os.environ['EQODIR']
         else: self.odir = '/tmp'
@@ -30,8 +34,8 @@ class EDGARSubmissions():
         self.chunksize =4294967296 # 4M
 
     def query(self, url=None):
-        """query - query a url
-         url  - required 
+        """query - retrieve a url
+         url - url to retrieve
         """
         try:
             req = urllib.request.Request(url, headers=self.hdr)
@@ -43,8 +47,8 @@ class EDGARSubmissions():
             sys.exit(1)
 
     def storequery(self, qresp, tf):
-        """storequery - store the query response in a file \
-        resp - the query response \
+        """storequery - store the query response in a file
+        resp - the query response
         tf   - filename that will hold the query response
         """
         if not qresp:
@@ -65,9 +69,13 @@ class EDGARSubmissions():
             return
 
     def pgrep(self, pat=None, fn=None):
-        """ pgrep - simulate grap when command does not exist
+        """ pgrep
+
+        simulate grap when command does not exist
+        pat - regular expression to match
+        fn - name of file to search
         """
-        if not fn and not pat:
+        if not pat and not fn:
             print('pgrep pat and fn required')
             sys.exit(1)
         rc = re.compile(pat)
@@ -77,11 +85,16 @@ class EDGARSubmissions():
                     return line
 
     def dogrep(self, cik=None, fn=None):
-        """ dpgrep - desparately try to grep for something
+        """ dpgrep
+
+        desparately try to grep for something
+        cik - central index key for which to search
+        fn - name of file to search
         """
-        if not fn and not cik:
+        if not cik and not fn:
             print('dogrep: fn, and cik required')
             sys.exit(1)
+
         cmd=None
         pat = ' %s ' % (cik)
         if os.path.exists(os.path.join('/', 'bin', 'grep') ):
@@ -120,10 +133,14 @@ class EDGARSubmissions():
             return res
 
     def getsubfromhtml(self, subtype, url):
-        """parse the html table to find relative link to the
-           submission html file
-           complete the url and either return it or
-           store the 10-k html file
+        """
+
+        parse the html table to find relative link to the
+        submission html file
+        complete the url and either return it or
+        store the 10-k html file
+        subtype - pattern to find
+        url - url whose contents to search
         """
         #print('\tSEARCHING %s %s' % (subtype, url), file=sys.stderr)
         print('\tSEARCHING %s %s' % (subtype, url) )
@@ -166,8 +183,10 @@ class EDGARSubmissions():
             return tkurl
 
     def gensearchurls(self, yr):
-        """ gensearchurls - return form urls to search
-            yr - year to search
+        """ gensearchurls(yr)
+
+        generate url set to search for submissions
+        yr - year to search
         """
         surla = []
         if yr == datetime.datetime.now().year:
@@ -190,10 +209,13 @@ class EDGARSubmissions():
         return surla
 
     def searchsubmissions(self, cik, year):
-        """ searchsubmissions - search in the form.idx files for a page that
-            contains a link to the submissions for a cik
-            cik - central index key, required
-            return a dictionary containing the lastest submissions
+        """ searchsubmissions(cik, year)
+
+        search in the form.idx files for a page that
+        contains a link to the submissions for a cik
+        return a dictionary containing the lastest submissions
+        cik - central index key
+        year - year to search
         """
         surla = self.gensearchurls(year)
         ofn   = os.path.join(self.odir, 'form.idx')
@@ -210,24 +232,25 @@ class EDGARSubmissions():
                     tkurl=self.getsubfromhtml(k, tkdict[k])
         os.unlink(ofn)
 
-def main():
-    LS = EDGARSubmissions()
+if __name__ == '__main__':
+    def main():
+        LS = EDGARSubmissions()
 
-    now = datetime.datetime.now()
-    year = now.year
+        now = datetime.datetime.now()
+        year = now.year
 
-    argp = argparse.ArgumentParser(
-              description='find the most recent submissions for cik')
-    argp.add_argument("--cik", required=True,
-        help="10-digit Central Index Key")
-    argp.add_argument("--year", required=False,
-        help="year to search for submissions if not current year")
+        argp = argparse.ArgumentParser(
+                  description='find the most recent submissions for cik')
+        argp.add_argument("--cik", required=True,
+                help="10-digit Central Index Key")
+        argp.add_argument("--year", required=False,
+            help="year to search for submissions if not current year")
 
-    args = argp.parse_args()
+        args = argp.parse_args()
 
-    if args.year: year = int(args.year)
+        if args.year: year = int(args.year)
 
-    LS.cik = args.cik
-    LS.searchsubmissions(args.cik, year)
+        LS.cik = args.cik
+        LS.searchsubmissions(args.cik, year)
 
-main()
+    main()

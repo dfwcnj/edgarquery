@@ -8,7 +8,9 @@ import urllib.request
 class EDGARTickerstoCSV():
 
     def __init__(self, odir=None):
-        """ EDGARTickerstoCSV - retrieve the three ticker json files,
+        """ EDGARTickerstoCSV
+
+        retrieve the three ticker json files,
         parse them, and combine them into a single csv file
         """
         if odir: self.odir = odir
@@ -27,8 +29,9 @@ class EDGARTickerstoCSV():
         ]
 
     def query(self, url=None):
-        """query - query a url
-         url  - required 
+        """query - retrieve a url
+
+        url  - url to retrieve
         """
         try:
             req = urllib.request.Request(url, headers=self.hdr)
@@ -40,11 +43,22 @@ class EDGARTickerstoCSV():
             sys.exit(1)
 
     def getjson(self, url):
+        """getjson(url)
+
+        retrieve a csv file and load it into a python json object
+        url - url to a json object
+        """
         resp = self.query(url)
         js   = json.loads(resp.read())
         return js
 
     def putcsv(self, js, ofp):
+        """ putcsv(js, ofp)
+
+        convert the json to csv and write to a csv file
+        js - ticker json to convert
+        ofp - file pointer to write to
+        """
         keys = js.keys()
 
         if 'data' in js.keys():
@@ -58,6 +72,11 @@ class EDGARTickerstoCSV():
                                              js[k]['title']), file=ofp)
 
     def urljstocsv(self):
+        """ urljstocsv()
+
+        retrieve the SEC FRED ticker urls and write their contents
+        to csv files
+        """
         for u in self.turla:
             if '_exchange' in u:
                 hdr="'cik','title','ticker','exchange'"
@@ -76,9 +95,9 @@ class EDGARTickerstoCSV():
                 #self.putcsv(js, sys.stdout)
 
 
-def main():
-    tc = EDGARTickerstoCSV()
-    tc.urljstocsv()
+if __name__ == '__main__':
+    def main():
+        tc = EDGARTickerstoCSV()
+        tc.urljstocsv()
 
-
-main()
+    main()

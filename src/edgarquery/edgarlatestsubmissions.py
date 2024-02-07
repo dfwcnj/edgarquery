@@ -14,6 +14,11 @@ from functools import partial
 class EDGARLatestsubmissions():
 
     def __init__(self, odir=None):
+        """
+
+        retrieve the latest submissions for a CIK
+        a CIK is a central index key used by the SEC to identify a company
+        """
         self.sprefix = 'https://www.sec.gov/Archives/edgar/full-index'
         self.rprefix = 'https://www.sec.gov/Archives'
         if 'EQEMAIL' in os.environ:
@@ -30,8 +35,9 @@ class EDGARLatestsubmissions():
         self.chunksize =4294967296 # 4M
 
     def query(self, url=None):
-        """query - query a URL
-         url  - required 
+        """query(url)
+
+        url - url to retrieve
         """
         try:
             req = urllib.request.Request(url, headers=self.hdr)
@@ -43,8 +49,10 @@ class EDGARLatestsubmissions():
             sys.exit(1)
 
     def storequery(self, qresp, tf):
-        """storequery - store the query response in a file \
-        resp - the query response \
+        """storequery(qresp, tf)
+
+        store the query response in a file
+        resp - response object of the url retrieved
         tf   - filename that will hold the query response
         """
         if not qresp:
@@ -65,7 +73,11 @@ class EDGARLatestsubmissions():
             return
 
     def pgrep(self, pat=None, fn=None):
-        """ pgrep - simulate grap when command does not exist
+        """ pgrep(pat, fn)
+
+        simulate grap when command does not exist
+        pat - regular expression to match
+        fn - filename to search
         """
         if not fn and not pat:
             print('pgrep pat and fn required')
@@ -77,7 +89,13 @@ class EDGARLatestsubmissions():
                     return line
 
     def dogrep(self, cik=None, sub=None, fn=None):
-        """ dpgrep - desparately try to grep for something
+        """ dpgrep(cik, sub, fn)
+
+        desparately try to grep for something
+        construct a search command and search for the cik
+        cik - central index key
+        sub - forms part of a regular expression pattern
+        fn - filename to search
         """
         if not fn and not sub and not cik:
             print('dogrep: fn, sub, and cik required')
@@ -113,10 +131,13 @@ class EDGARLatestsubmissions():
             return res
 
     def getsubfromhtml(self, url, sub):
-        """parse the html table to find relative link to the
-           submission html file
-           complete the url and either return it or
-           store the 10-k html file
+        """ getsubfromhtml(url, sub)
+
+        parse the html table to find relative link to the submission html file
+        complete the url and either return it or
+        store the 10-k html file
+        url - url to the submission
+        sub - part os a pattern to search
         """
         resp = self.query(url)
         rstr    = resp.read().decode('utf-8')
@@ -147,10 +168,12 @@ class EDGARLatestsubmissions():
             return tkurl
 
     def gensearchurls(self):
-        """ gensearchurls - 10-k files are published once a year or so
-            and can be published on a schedule controlled by the company
-            return a set of links to form files where the 10-K link
-            may reside
+        """ gensearchurls()
+
+        gensearchurls - 10-k files are published once a year or so
+        and can be published on a schedule controlled by the company
+        return a set of links to form files where the 10-K link may reside
+        other submission files can be published at some schedule
         """
         surla = []
         yr = self.now.year
@@ -182,10 +205,12 @@ class EDGARLatestsubmissions():
         return surla
 
     def searchsubmissions(self, cik):
-        """ searchsubmissions - search in the form.idx files for a page that
-            contains a link to the submissions for a cik
-            cik - central index key, required
-            return a dictionary containing the lastest submissions
+        """ searchsubmissions(cik)
+
+        search in the form.idx files for a time interval
+        for a page that contains a link to the submissions for a cik
+        return a dictionary containing the lastest submissions
+        cik - central index key, required
         """
         surla = self.gensearchurls()
         ofn   = os.path.join(self.odir, 'form.idx')
@@ -206,20 +231,21 @@ class EDGARLatestsubmissions():
         os.unlink(ofn)
         return latest
 
-def main():
-    LT = EDGARLatestsubmissions()
+if __name__ == '__main__':
+    def main():
+        LT = EDGARLatestsubmissions()
 
-    argp = argparse.ArgumentParser(
-              description='find the most recent submissions for cik')
-    argp.add_argument("--cik", required=True,
-        help="10-digit Central Index Key")
+        argp = argparse.ArgumentParser(
+                  description='find the most recent submissions for cik')
+        argp.add_argument("--cik", required=True,
+            help="10-digit Central Index Key")
 
-    args = argp.parse_args()
+        args = argp.parse_args()
 
-    LT.cik = args.cik
-    latest = LT.searchsubmissions(args.cik)
-    for k in latest.keys():
-        if len(latest[k]) > 0:
-            print('%s\t%s' % (k, latest[k]) )
+        LT.cik = args.cik
+        latest = LT.searchsubmissions(args.cik)
+        for k in latest.keys():
+            if len(latest[k]) > 0:
+                print('%s\t%s' % (k, latest[k]) )
 
-main()
+    main()

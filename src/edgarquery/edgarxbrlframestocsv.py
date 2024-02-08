@@ -12,7 +12,7 @@ import json
 class EDGARXBRLFramestoCSV():
 
     def __init(self, jsonfile=None, odir=None):
-        """
+        """ EDGARXBRLFramestoCSV
 
         parse sec edgar xbrl frame file for a CY
         frame for a CY seem to come in two parts so I have to

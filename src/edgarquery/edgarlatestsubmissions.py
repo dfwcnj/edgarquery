@@ -14,7 +14,7 @@ from functools import partial
 class EDGARLatestsubmissions():
 
     def __init__(self, odir=None):
-        """
+        """ EDGARLatestsubmissions
 
         retrieve the latest submissions for a CIK
         a CIK is a central index key used by the SEC to identify a company

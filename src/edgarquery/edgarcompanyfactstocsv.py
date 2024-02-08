@@ -13,7 +13,7 @@ import re
 class EDGARCompanyFactstoCSV():
 
     def __init(self, jsonfile=None, odir=None):
-        """
+        """ EDGARCompanyFactstoCSV
 
         parse sec edgar company facts json file for a CIK
         facts for a CIK seem to come in two parts so I have to

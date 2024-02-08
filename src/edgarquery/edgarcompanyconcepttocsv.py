@@ -14,7 +14,7 @@ import re
 class EDGARCompanyConcepttoCSV():
 
     def __init(self, jsonfile=None, odir=None):
-        """
+        """ EDGARCompanyConcepttoCSV
 
         companyconcepttocsv.py.py.py - parse sec edgar companyconcept json file
         for a CIK

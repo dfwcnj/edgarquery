@@ -14,7 +14,7 @@ from functools import partial
 class EDGARSubmissions():
 
     def __init__(self, odir=None):
-        """edgarsubmissions
+        """ EDGARSubmissions
 
         retrieve submissions for a CIK for some year
         if the year is the current year, get submissions so far

@@ -14,7 +14,7 @@ from functools import partial
 class EDGARLatest10K():
 
     def __init__(self, odir=None):
-        """
+        """ EDGARLatest10K
 
         retrieve the latest 10-K data
         """
@@ -219,20 +219,21 @@ class EDGARLatest10K():
         if tktbl:
             self.get10kfromhtml(tktbl, link)
 
-def main():
-    LT = EDGARLatest10K()
+if __name__ == '__main__':
+    def main():
+        LT = EDGARLatest10K()
 
-    argp = argparse.ArgumentParser(
-              description='find the most recent 10-K for cik')
-    argp.add_argument("--cik", required=True,
-        help="10-digit Central Index Key")
-    argp.add_argument("--link",
-          action='store_true', default=False,
-          help="return the url for the latest 10-K")
+        argp = argparse.ArgumentParser(
+                  description='find the most recent 10-K for cik')
+        argp.add_argument("--cik", required=True,
+            help="10-digit Central Index Key")
+        argp.add_argument("--link",
+              action='store_true', default=False,
+              help="return the url for the latest 10-K")
 
-    args = argp.parse_args()
+        args = argp.parse_args()
 
-    LT.cik = args.cik
-    LT.search10K(args.cik, link=args.link)
+        LT.cik = args.cik
+        LT.search10K(args.cik, link=args.link)
 
-main()
+    main()

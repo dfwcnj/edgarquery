@@ -9,7 +9,7 @@ import zipfile
 class EDGARCompanyFactsziptoCSV():
 
     def __init__(self, zipfile=None, odir=None):
-        """
+        """ EDGARCompanyFactsziptoCSV
 
         convert the contents of a submissions.zip file retrieved from
         the SEC FRED site and convert to csv
@@ -32,7 +32,7 @@ class EDGARCompanyFactsziptoCSV():
         js - dictionary returned by python json.load()       \
         id - indent index to make the hierarchy more visible \
         """
-        ind = ' ' * ix
+        ind = '  ' * ix
         if type(js) == type([]): # array
             print('    type array')
             da = [d for d in js]
@@ -60,6 +60,69 @@ class EDGARCompanyFactsziptoCSV():
         """
         return self.zfo.read(file)
 
+    def jstocsv(self, js):
+        """jstocsv(js)
+
+        extract js contents to csv files
+        NOTE: not all of the top level data is extracted
+        js  - json dictionary to convert
+        """
+        if not js:
+            self.argp.print_help()
+            sys.exit(1)
+        assert type(js) == type({}), 'jstocsv: js is not a dictionary'
+
+        # json filename is $cik.json
+        ncik = '%s' % (js['cik'])
+        cik = 'CIK%s' % (ncik.zfill(10) )
+        entityName = js['entityName']
+        fta = js['facts'].keys()
+        for ft in fta:
+            fna = js['facts'][ft].keys()
+            for fn in fna:
+                lbl = js['facts'][ft][fn]['label']
+                #descr = js['facts'][ft][fn]['description']
+                units = js['facts'][ft][fn]['units']
+                unit = None
+                for k in units.keys():
+                    unit = k
+                if '/' in unit:
+                    unit = ''.join(unit.split('/') )
+                fnm = '%s.%s.%s.facts.csv' % (cik, fn, unit)
+                jn = os.path.join(self.odir, fnm)
+                with open(jn, 'w') as fp:
+                    ha = []
+                    for fact in js['facts'][ft][fn]['units'][unit]:
+                        if len(ha) == 0:
+                            for n in fact.keys():
+                                ha.append("'%s'," % (n) )
+                            print(''.join(ha), file=fp )
+                        ra = []
+                        for n in fact.keys():
+                            ra.append("'%s'," % (fact[n]) )
+                        print(''.join(ra), file=fp )
+
+
+
+
+    def sometocsv(self, fa):
+        """sometocsv(fa)
+
+        convert list of json files from zip file to csv\n\
+        fa - list containing files to convert\n\
+        NOTE: not all of the top level data is extracted\n\
+        NOTE there will one csv file per json file\n\
+        NOTE json files containing the string "submission" are skipped
+        """
+        for f in fa:
+            # not sure how these json file fit in here
+            if 'submission' in f:
+                pass
+            jsstr=self.zipread(f).decode("utf-8") 
+            js = json.loads(jsstr)
+            #self.recdesc(js, ix=1)
+            self.jstocsv(js)
+
 
 if __name__ == '__main__':
     def main():
@@ -71,13 +134,9 @@ if __name__ == '__main__':
          - required")
         argp.add_argument('--odir', help="where to deposit the output",
                           default='/tmp')
-        argp.add_argument('--files', help="comma separates(no spaces) content\
-                                     file(s) to process")
-        argp.add_argument('--all', action='store_true', default=False,
-            help="process all submissions.zip files")
-        argp.add_argument('--combine', action='store_true', default=False,
-            help="combine all submissions.zip files into one csv file")
-
+        argp.add_argument('--files', help="comma separated(no spaces) content\
+                                     file(s) to process a subset of\
+                                     the files in the zip file")
 
         args = argp.parse_args()
 
@@ -90,16 +149,15 @@ if __name__ == '__main__':
         try:
             with zipfile.ZipFile(args.zipfile, mode='r') as ES.zfo:
                 ES.zipfile = args.zipfile
-                ES.listzip()
-
-                js = json.loads(ES.zipread('CIK0001099219.json') )
-                ES.recdesc(js, 1)
 
                 if args.files:
                     if ',' in args.files:
                         fa = args.files.split(',')
+                else:
+                    ES.listzip()
+                    fa = ES.ziplist
 
-                pass
+                ES.sometocsv(fa)
 
         except zipfile.BadZipfile as e:
            print('open %s: %s', (args.zipfile, e) )

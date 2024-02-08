@@ -34,6 +34,22 @@ Source = "https://github.com/dfwcnj/edgarquery"
 [tool.hatch.version]
 path = "src/edgarquery/__about__.py"
 
+[tool.hatch.build.targets.sdist]
+include = [
+"src/edgarquery/__about__.py",
+"src/edgarquery/__init__.py",
+"src/edgarquery/edgarcompanyconcepttocsv.py",
+"src/edgarquery/edgarcompanyfactstocsv.py",
+"src/edgarquery/edgarcompanyfactsziptocsv.py",
+"src/edgarquery/edgarlatest10K.py",
+"src/edgarquery/edgarlatestsubmissions.py",
+"src/edgarquery/edgarquery.py",
+"src/edgarquery/edgarsubmissions.py",
+"src/edgarquery/edgarsubmissionsziptocsv.py",
+"src/edgarquery/edgartickerstocsv.py",
+"src/edgarquery/edgarxbrlframestocsv.py"
+]
+
 [tool.hatch.envs.default]
 dependencies = [
   "coverage[toml]>=6.5",

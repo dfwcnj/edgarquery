@@ -6,7 +6,6 @@
 import edgarquery.edgarcompanyconcepttocsv
 import edgarquery.edgarcompanyfactstocsv
 import edgarquery.edgarcompanyfactsziptocsv
-import edgarquery.edgarconcepts.sh
 import edgarquery.edgarlatest10K
 import edgarquery.edgarlatestsubmissions
 import edgarquery.edgarquery

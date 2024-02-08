@@ -43,7 +43,7 @@ include = [
 "src/edgarquery/edgarcompanyfactsziptocsv.py",
 "src/edgarquery/edgarlatest10K.py",
 "src/edgarquery/edgarlatestsubmissions.py",
-"src/edgarquery/edgarquery.py",
+"src/edgarquery/query.py",
 "src/edgarquery/edgarsubmissions.py",
 "src/edgarquery/edgarsubmissionsziptocsv.py",
 "src/edgarquery/edgartickerstocsv.py",

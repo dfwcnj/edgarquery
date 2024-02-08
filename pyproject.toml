@@ -38,16 +38,16 @@ path = "src/edgarquery/__about__.py"
 include = [
 "src/edgarquery/__about__.py",
 "src/edgarquery/__init__.py",
-"src/edgarquery/edgarcompanyconcepttocsv.py",
-"src/edgarquery/edgarcompanyfactstocsv.py",
-"src/edgarquery/edgarcompanyfactsziptocsv.py",
-"src/edgarquery/edgarlatest10K.py",
-"src/edgarquery/edgarlatestsubmissions.py",
+"src/edgarquery/companyconcepttocsv.py",
+"src/edgarquery/companyfactstocsv.py",
+"src/edgarquery/companyfactsziptocsv.py",
+"src/edgarquery/latest10K.py",
+"src/edgarquery/latestsubmissions.py",
 "src/edgarquery/query.py",
-"src/edgarquery/edgarsubmissions.py",
-"src/edgarquery/edgarsubmissionsziptocsv.py",
-"src/edgarquery/edgartickerstocsv.py",
-"src/edgarquery/edgarxbrlframestocsv.py"
+"src/edgarquery/submissions.py",
+"src/edgarquery/submissionsziptocsv.py",
+"src/edgarquery/tickerstocsv.py",
+"src/edgarquery/xbrlframestocsv.py"
 ]
 
 [tool.hatch.envs.default]

@@ -1,5 +1,9 @@
 #! /usr/bin/env python
 
+#
+# EDGARTickerstoCSV
+#
+
 import os
 import sys
 import json

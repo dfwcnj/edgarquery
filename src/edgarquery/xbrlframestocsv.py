@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 
 #
-# xbrlframestocsv.py
+# EDGARXBRLFramestoCSV
 #
 
 import os

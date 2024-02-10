@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 
 #
-# companyfactstocsv.py.py
+# EDGARCompanyFactstoCSV
 #
 
 import os

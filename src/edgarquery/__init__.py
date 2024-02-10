@@ -8,7 +8,7 @@ import edgarquery.companyfactstocsv
 import edgarquery.companyfactsziptocsv
 import edgarquery.latest10K
 import edgarquery.latestsubmissions
-import edgarquery.query
+import edgarquery.doquery
 import edgarquery.submissions
 import edgarquery.submissionsziptocsv
 import edgarquery.tickerstocsv

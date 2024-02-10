@@ -9,7 +9,7 @@
 
 - [Installation](#installation)
 ```console
-NOT YET
+NOT YET only in test.pypi for now
 pip install edgarquery
 ```
 

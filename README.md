@@ -1,10 +1,5 @@
 # EDGARquery
 
-[![PyPI - Version](https://img.shields.io/pypi/v/edgarquery.svg)](https://pypi.org/project/edgarquery)
-[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/edgarquery.svg)](https://pypi.org/project/edgarquery)
-
------
-
 **Table of Contents**
 
 - [Installation](#installation)

@@ -50,6 +50,10 @@ include = [
 "src/edgarquery/xbrlframestocsv.py"
 ]
 
+[project.scripts]
+edgarquery = "edgarquery.query.cli:main"
+edgarsubmissions = "edgarquery.submissions.cli:main"
+
 [tool.hatch.envs.default]
 dependencies = [
   "coverage[toml]>=6.5",

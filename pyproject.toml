@@ -36,8 +36,6 @@ path = "src/edgarquery/__about__.py"
 
 [tool.hatch.build.targets.sdist]
 include = [
-"src/edgarquery/__about__.py",
-"src/edgarquery/__init__.py",
 "src/edgarquery/companyconcepttocsv.py",
 "src/edgarquery/companyfactstocsv.py",
 "src/edgarquery/companyfactsziptocsv.py",

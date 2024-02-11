@@ -48,9 +48,30 @@ include = [
 "src/edgarquery/xbrlframestocsv.py"
 ]
 
+[tool.hatch.build.target.sdist.force-include]
+"scripts/mycompanyfactstocsv.py" = "src/edgarquery/mycompanyfactstocsv.py"
+"scripts/mycompanyfactsziptocsv.py" = "src/edgarquery/mycompanyfactsziptocsv.py"
+"scripts/mydoquery.py" = "src/edgarquery/mydoquery.py"
+"scripts/mylatest10K.py" = "src/edgarquery/mylatest10K.py"
+"scripts/mylatestsubmissions.py" = "src/edgarquery/mylatestsubmissions.py"
+"scripts/mysubmissions.py" = "src/edgarquery/mysubmissions.py"
+"scripts/mysubmissionsziptocsv.py" = "src/edgarquery/mysubmissionsziptocsv.py"
+"scripts/mytickerstocsv.py" = "src/edgarquery/mytickerstocsv.py"
+"scripts/myxbrlframestocsv.py" = "src/edgarquery/myxbrlframestocsv.py"
+
 [project.scripts]
-# edgarquery = "edgarquery.query:main"
-# edgarsubmissions = "edgarquery.submissions:main"
+edgarcompanyfactstocsv = "edgarquery/mycompanyfactstocsv"
+edgarcompanyfactsziptocsv = "edgarquery/mycompanyfactsziptocsv"
+edgarquery = "edgarquery/mydoquery"
+edgarlatest10K = "edgarquery/mylatest10K"
+edgarlatestsubmissions = "edgarquery/mylatestsubmissions"
+edgarsubmissions = "edgarquery/mysubmissions"
+edgarsubmissionsziptocsv = "edgarquery/mysubmissionsziptocsv"
+edgartickerstocsv = "edgarquery/mytickerstocsv"
+edgarxbrlframestocsv = "edgarquery/myxbrlframestocsv"
+
+#scripts/__pycache__:
+#edgarquery.cpython-311.pyc
 
 [tool.hatch.envs.default]
 dependencies = [

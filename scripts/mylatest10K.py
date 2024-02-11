@@ -18,18 +18,24 @@ from functools import partial
 
 import edgarquery
 
-LT = edgarquery.latest10K.EDGARLatest10K()
+def main():
+    LT = edgarquery.latest10K.EDGARLatest10K()
 
-argp = argparse.ArgumentParser(
-          description='find the most recent 10-K for cik')
-argp.add_argument("--cik", required=True,
-    help="10-digit Central Index Key")
-argp.add_argument("--link",
-      action='store_true', default=False,
-      help="return the url for the latest 10-K")
+    argp = argparse.ArgumentParser(
+              description='find the most recent 10-K for cik')
+    argp.add_argument("--cik", required=True,
+        help="10-digit Central Index Key")
+    argp.add_argument("--link",
+          action='store_true', default=False,
+          help="return the url for the latest 10-K")
+    argp.add_argument("--directory", help="directory to store the output")
 
-args = argp.parse_args()
+    args = argp.parse_args()
 
-LT.cik = args.cik
-LT.search10K(args.cik, link=args.link)
+    LT.cik = args.cik
+    if args.directory:
+        LT.search10K(args.cik, link=args.link, odir=args.directory)
+    else:
+        LT.search10K(args.cik, link=args.link)
 
+main()

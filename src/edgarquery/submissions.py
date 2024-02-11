@@ -370,6 +370,9 @@ if __name__ == '__main__':
 
         LS.cik = args.cik
         LS.searchformindices(args.cik, year)
-        LS.reportsubmissions(args.file)
+        if args.file:
+            LS.reportsubmissions(args.file)
+        else:
+            LS.reportsubmissions()
 
     main()

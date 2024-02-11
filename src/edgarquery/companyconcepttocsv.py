@@ -24,7 +24,6 @@ class EDGARCompanyConcepttoCSV():
         character when it finishes the first part and encounters the
         """
 
-        self.argp     = None
         self.jsonfile = jsonfile
         if odir: self.odir = odir
         elif os.environ['EQODIR']: self.odir = os.environ['EQODIR']
@@ -64,7 +63,7 @@ class EDGARCompanyConcepttoCSV():
             print('%s value: %s' % (ind, js))             # value
             return
 
-    def jsonparts(self, js):
+    def jsonparts(self, js, odir):
         """ jsonparts(js)
 
          js - json to parse 
@@ -73,18 +72,20 @@ class EDGARCompanyConcepttoCSV():
          that I added to the SEC EDGAR file
         """
         if type(self.jsondict) == type({}):
-            self.jsonpart(self.jsondict)
+            self.jsonpart(self.jsondict, odir)
         else:
             assert type(self.jsondict) == type([]), 'jsonparts: js not an array'
             pts =  [p for p in self.jsondict]
             for pt in pts:
-                self.jsonpart(pt)
+                self.jsonpart(pt, odir)
 
-    def jsonpart(self, pt):
-        """ jsonpart(js)
+    def jsonpart(self, pt, odir):
+        """ jsonpart(js, odir)
 
         js - json to parse
+        odir - output directory
         """
+        if not odir: odir=self.odir
         assert type(pt) == type({}), 'jsonpart: part not a dictionary'
         self.cik = pt['cik']
         self.taxonomy = pt['taxonomy']
@@ -99,7 +100,7 @@ class EDGARCompanyConcepttoCSV():
         unit = re.sub('/', '', unit)
         # have to open the file here because the file contains two
         # json dictionaries
-        ofn = os.path.join(self.odir,
+        ofn = os.path.join(odir,
             'CompanyConcept.CIK%s.%s.%s.%s.csv' % (self.cik,
                                          self.tag, self.cik, unit) )
         print(ofn)
@@ -137,16 +138,13 @@ if __name__ == '__main__':
             with its multipart character and generate a csv file from \
             its contents")
 
-        argp.add_argument('--file', help="json file to process")
+        argp.add_argument('--file', required=True,
+                   help="json file to process")
         argp.add_argument('--odir', help="where to deposit the fileѕ",
                           default='/tmp')
 
         args = argp.parse_args()
 
-        if not args.file:
-            argp.print_help()
-            sys.exit(1)
-        EP.argp = argp
         if args.odir: EP.odir = args.odir
 
         EP.jsonfile = args.file
@@ -158,7 +156,7 @@ if __name__ == '__main__':
             print('%s parse failed' % args.file)
             sys.exit(1)
 
-        EP.jsonparts(jd)
+        EP.jsonparts(jd, odir=args.odir)
         #EP.recdesc(jd, 1)
 
 

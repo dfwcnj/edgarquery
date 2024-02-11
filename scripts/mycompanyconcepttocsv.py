@@ -2,7 +2,8 @@
 #! /usr/bin/env python
 
 #
-# EDGARCompanyFactstoCSV
+# EDGARCCompanyConcept
+#     second part
 #
 
 import os
@@ -13,20 +14,22 @@ import re
 
 import edgarquery
 
-
 if __name__ == '__main__':
     def main():
-        EP = edgarquery.companyfactstocsv.EDGARCompanyFactstoCSV()
+        EP = edgarquery.companyconcepttocsv.EDGARCompanyConcepttoCSV()
         argp = argparse.ArgumentParser(description="Parse an SEC EDGAR\
-            companyfacts json file after it has been altered to deal with its\
-        multipart character and generate CSV files from its content")
+            companyconcepts json file after it has been altered to deal\
+            with its multipart character and generate a csv file from \
+            its contents")
 
         argp.add_argument('--file', required=True,
-                    help="json file to process")
-        argp.add_argument('--odir', help="where to deposit the csv fileѕ",
+                   help="json file to process")
+        argp.add_argument('--odir', help="where to deposit the fileѕ",
                           default='/tmp')
 
         args = argp.parse_args()
+
+        if args.odir: EP.odir = args.odir
 
         EP.jsonfile = args.file
         try:
@@ -37,11 +40,12 @@ if __name__ == '__main__':
             print('%s parse failed' % args.file)
             sys.exit(1)
 
-        if args.odir:
-            EP.jsonparts(args.file, odir=args.odir)
-        else:
-            EP.jsonparts(args.file)
+        EP.jsonparts(jd, odir=args.odir)
         #EP.recdesc(jd, 1)
 
 
+
+
     main()
+
+

@@ -7,6 +7,7 @@
 import os
 import sys
 import json
+import argparse
 import urllib.request
 
 class EDGARTickerstoCSV():
@@ -71,26 +72,36 @@ class EDGARTickerstoCSV():
                 print("'%s','%s','%s','%s'" % (dta[i][0], dta[i][1],
                                                dta[i][2], dta[i][3]), file=ofp )
         else:
-            for k in keys:
-                print("'%s','%s','%s'" % (js[k]['cik_str'], js[k]['ticker'],
-                                             js[k]['title']), file=ofp)
+            ha=[]
+            for i in keys:
+                if len(ha)==0:
+                     for k in js[i].keys():
+                         ha.append("'%s'," % k)
+                     print(''.join(ha), file=ofp)
+                ra = []
+                for k in js[i].keys():
+                    ra.append("'%s'," % (js[i][k]) )
+                print(''.join(ra), file=ofp)
+                #print("'%s','%s','%s'" % (js[k]['cik_str'], js[k]['ticker'],
+                #                             js[k]['title']), file=ofp)
 
-    def urljstocsv(self):
+    def urljstocsv(self, odir):
         """ urljstocsv()
 
         retrieve the SEC FRED ticker urls and write their contents
         to csv files
         """
+        if not odir: odir=self.odir
         for u in self.turla:
             if '_exchange' in u:
                 hdr="'cik','title','ticker','exchange'"
-                ofn = os.path.join(self.odir, 'tickers_exchange.csv')
+                ofn = os.path.join(odir, 'tickers_exchange.csv')
             elif '_mf' in u:
                 hdr="'cik','seriesId','classId','symbol'"
-                ofn = os.path.join(self.odir, 'tickers_mf.csv')
+                ofn = os.path.join(odir, 'tickers_mf.csv')
             else:
                 hdr="'cik','ticker','title'"
-                ofn = os.path.join(self.odir, 'tickers.csv')
+                ofn = os.path.join(odir, 'tickers.csv')
             with open(ofn, 'w') as ofp:
                 print(hdr, file=ofp)
                 #print(hdr, file=sys.stdout)
@@ -101,7 +112,17 @@ class EDGARTickerstoCSV():
 
 if __name__ == '__main__':
     def main():
-        tc = EDGARTickerstoCSV()
-        tc.urljstocsv()
 
-    main()
+        argp = argparse.ArgumentParser(description="collect EDGAR\
+        companyticker json files and convert them to csv")
+
+        argp.add_argument('--odir', default='/tmp/',
+                       help="where to deposit the fileѕ")
+
+        args = argp.parse_args()
+
+        tc = EDGARTickerstoCSV()
+
+        tc.urljstocsv(odir=args.odir)
+
+main()

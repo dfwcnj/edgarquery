@@ -11,7 +11,6 @@ import urllib.request
 
 import edgarquery
 
-
 def main():
     EQ = edgarquery.doquery.EDGARquery()
 
@@ -23,13 +22,15 @@ def main():
         help="10-digit Central Index Key")
     EQ.argp.add_argument("--cy", required=False,
         help="calendar year e.g. CY2023, CY2023Q1, CY2023Q4I")
+
     EQ.argp.add_argument("--frame", required=False,
         help="reporting frame e.g us-gaap, ifrs-full, dei, srt")
     EQ.argp.add_argument("--units", required=False,
         default='USD', help="USD or shares")
     EQ.argp.add_argument("--fact", required=False,
         help="fact to collect e.g AccountsPayableCurrent, USD-per-shares")
-    EQ.argp.add_argument("--tf", required=False,
+
+    EQ.argp.add_argument("--file", required=False,
        help="file in which to store the output\n\
            argument allowed for each query type\n\
            defaults provided for each download in /tmp")
@@ -84,23 +85,23 @@ def main():
         EQ.argp.print_help()
         sys.exit(1)
     if args.companyconcept and args.cik and args.frame and args.fact:
-        if args.tf:
+        if args.file:
             EQ.companyconcept(cik=args.cik, frame=args.frame, fact=args.fact,
-                        tf=args.tf)
+                        file=args.file)
             sys.exit()
         else:
             EQ.companyconcept(cik=args.cik, frame=args.frame, fact=args.fact)
             sys.exit()
     elif args.companyconcept and args.cik and args.fact:
-        if args.tf:
-            EQ.companyconcept(cik=args.cik, fact=args.fact, tf=args.tf)
+        if args.file:
+            EQ.companyconcept(cik=args.cik, fact=args.fact, file=args.file)
             sys.exit()
         else:
             EQ.companyconcept(cik=args.cik, fact=args.fact)
             sys.exit()
     elif args.companyconcept:
-        if args.tf:
-            EQ.companyconcept(cik=args.cik, tf=args.tf)
+        if args.file:
+            EQ.companyconcept(cik=args.cik, file=args.file)
             sys.exit()
         else:
             EQ.companyconcept(cik=args.cik)
@@ -126,22 +127,22 @@ def main():
     if args.companyfacts and not args.cik:
         EQ.argp.print_help()
         sys.exit()
-    if args.companyfacts and args.cik and args.tf:
-        EQ.companyfacts(cik=args.cik, tf=args.tf)
+    if args.companyfacts and args.cik and args.file:
+        EQ.companyfacts(cik=args.cik, file=args.file)
         sys.exit()
     elif args.companyfacts:
         EQ.companyfacts(cik=args.cik)
         sys.exit()
 
-    if args.companyfactsarchivezip and args.tf:
-        EQ.companyfactsarchivezip(tf=args.tf)
+    if args.companyfactsarchivezip and args.file:
+        EQ.companyfactsarchivezip(file=args.file)
         sys.exit()
     elif args.companyfactsarchivezip:
         EQ.companyfactsarchivezip()
         sys.exit()
 
-    if args.submissionszip and args.tf:
-        EQ.submissionszip(tf=args.tf)
+    if args.submissionszip and args.file:
+        EQ.submissionszip(file=args.file)
         sys.exit()
     elif args.submissionszip:
         EQ.submissionszip()
@@ -150,8 +151,8 @@ def main():
     if args.financialstatementandnotesdataset and not args.cy:
         EQ.argp.print_help()
         sys.exit()
-    elif args.financialstatementandnotesdataset and args.tf:
-        EQ.financialstatementandnotesdataset(cy=args.cy, tf=args.tf)
+    elif args.financialstatementandnotesdataset and args.file:
+        EQ.financialstatementandnotesdataset(cy=args.cy, file=args.file)
         sys.exit()
     elif args.financialstatementandnotesdataset:
         EQ.financialstatementandnotesdataset(cy=args.cy)

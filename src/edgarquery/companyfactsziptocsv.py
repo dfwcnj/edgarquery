@@ -25,7 +25,6 @@ class EDGARCompanyFactsziptoCSV():
         elif os.environ['EQODIR']: self.odir = os.environ['EQODIR']
         else: self.odir = '/tmp'
         self.odir = os.path.abspath(self.odir)
-        self.argp    = None       # argument parser
         self.js      = None       # json object
         self.ziplist = None       # list of files in zip file
 
@@ -64,16 +63,15 @@ class EDGARCompanyFactsziptoCSV():
         """
         return self.zfo.read(file)
 
-    def jstocsv(self, js):
+    def jstocsv(self, js, odir):
         """jstocsv(js)
 
         extract js contents to csv files
         NOTE: not all of the top level data is extracted
         js  - json dictionary to convert
+        odir - directory to output the json csv file
         """
-        if not js:
-            self.argp.print_help()
-            sys.exit(1)
+        if not odir: odir = self.odir
         assert type(js) == type({}), 'jstocsv: js is not a dictionary'
 
         # json filename is $cik.json
@@ -93,7 +91,7 @@ class EDGARCompanyFactsziptoCSV():
                 if '/' in unit:
                     unit = ''.join(unit.split('/') )
                 fnm = '%s.%s.%s.facts.csv' % (cik, fn, unit)
-                jn = os.path.join(self.odir, fnm)
+                jn = os.path.join(odir, fnm)
                 with open(jn, 'w') as fp:
                     ha = []
                     for fact in js['facts'][ft][fn]['units'][unit]:
@@ -134,8 +132,9 @@ if __name__ == '__main__':
         argp = argparse.ArgumentParser(description='Extract one or more json\
         files from an SEC EDGAR companyfacts.zip file and convert to CSV')
 
-        argp.add_argument('--zipfile', help="submissions.zip file to process\
-         - required")
+        argp.add_argument('--zipfile', required=True,
+            help="submissions.zip file to process. Іt can be downloadæd\
+                with edgarquery.query")
         argp.add_argument('--odir', help="where to deposit the output",
                           default='/tmp')
         argp.add_argument('--files', help="comma separated(no spaces) content\
@@ -143,12 +142,6 @@ if __name__ == '__main__':
                                      the files in the zip file")
 
         args = argp.parse_args()
-
-        if not args.zipfile:
-            argp.print_help()
-            sys.exit(1)
-        ES.argp = argp
-        if args.odir: ES.odir = args.odir
 
         try:
             with zipfile.ZipFile(args.zipfile, mode='r') as ES.zfo:

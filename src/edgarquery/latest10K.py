@@ -132,7 +132,7 @@ class EDGARLatest10K():
             res = self.pgrep(pat, fn)
             return res
 
-    def get10kfromhtml(self, url, link):
+    def get10kfromhtml(self, url, link, odir):
         """ get10kfromhtml(url, link)
 
         parse the html table to find relative link to 10-K html file
@@ -141,28 +141,31 @@ class EDGARLatest10K():
         url - url containing the links to 10-K files
         link - if true, just return a url link to the 10-K html page
                if false, store the html page
+        odir - directory to store the output
         """
         resp = self.query(url)
         rstr    = resp.read().decode('utf-8')
         # print(rstr)
         class MyHTMLParser(HTMLParser):
+            def __init__(self):
+                super().__init__()
+                self.tkurl = None
             def handle_starttag(self, tag, attrs):
                 if tag == 'a':
                     if 'ix?doc' in attrs[0][1]:
-                        tkurl =  '%s%s' % ('https://www.sec.gov',
+                        self.tkurl =  '%s%s' % ('https://www.sec.gov',
                              attrs[0][1].split('=')[1])
-                        self.data = tkurl
-                        print(tkurl)
+                        print(self.tkurl)
             def handle_endtag(self, tag):
                 pass
             def handle_data(self, data):
                 pass
         parser = MyHTMLParser()
         parser.feed(rstr)
-        tkurl = parser.data
-        if not link:
+        tkurl = parser.tkurl
+        if tkurl and link:
             tkresp = self.query(tkurl)
-            ofn = os.path.join(self.odir, 'CIK%s.10-K.htm' % (self.cik.zfill(10) ) )
+            ofn = os.path.join(odir, 'CIK%s.10-K.htm' % (self.cik.zfill(10) ) )
             self.storequery(tkresp, ofn)
 
     def gensearchurls(self):
@@ -202,7 +205,7 @@ class EDGARLatest10K():
             surla.append('%s/%d/QTR4/form.idx' % (self.sprefix, yr) )
         return surla
 
-    def search10K(self, cik, link):
+    def search10K(self, cik, link, odir=None):
         """ search10K
 
         search in the form.idx files for a page that contains a link
@@ -211,17 +214,20 @@ class EDGARLatest10K():
         link - if true, just return a url link to the 10-K html page
                if false, store the html page
         """
+        if not odir: odir = self.odir
         surla = self.gensearchurls()
-        ofn   = os.path.join(self.odir, 'form.idx')
+        ofn   = os.path.join(odir, 'form.idx')
         tktbl = None
         for url in surla:
             resp = self.query(url)
             self.storequery(resp, tf=ofn)
+            print('\tSEARCHING: %s' % (url) )
             res = self.dogrep(cik, ofn)
             if res:
                 tktbl = res
         if tktbl:
-            self.get10kfromhtml(tktbl, link)
+            print('\tSEARCHING: %s' % (tktbl) )
+            self.get10kfromhtml(tktbl, link, odir)
 
 if __name__ == '__main__':
     def main():
@@ -231,13 +237,16 @@ if __name__ == '__main__':
                   description='find the most recent 10-K for cik')
         argp.add_argument("--cik", required=True,
             help="10-digit Central Index Key")
-        argp.add_argument("--link",
-              action='store_true', default=False,
+        argp.add_argument("--link", action='store_true', default=False,
               help="return the url for the latest 10-K")
+        argp.add_argument("--directory", help="directory to store the output")
 
         args = argp.parse_args()
 
         LT.cik = args.cik
-        LT.search10K(args.cik, link=args.link)
+        if args.directory:
+            LT.search10K(args.cik, link=args.link, odir=args.directory)
+        else:
+            LT.search10K(args.cik, link=args.link)
 
     main()

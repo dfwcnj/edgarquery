@@ -19,7 +19,7 @@ class EDGARquery():
 
          --cik        - 10-digit Central Index Key
          --cy         - calendar year e.g. CY2023, CY2023Q1, CY2023Q4I
-         --tf         - file to store output
+         --file         - file to store output
         --companyconcept - company concept json file
            --cik
                leading 0s optional
@@ -27,11 +27,11 @@ class EDGARquery():
                e.g us-gaap, ifrs-full, dei, srt
            --fact - fact to collect, default URS-per-shares
                e.g AccountsPayableCurrent, AccountsAndNotesReceivableNet
-           --tf - default /tmp/companyconcept.$frame.$fact.json
+           --file - default /tmp/companyconcept.$frame.$fact.json
         or
         --companyfacts - all the company concepts data for a company
             --cik
-            --tf - default /tmp/$cik.json
+            --file - default /tmp/$cik.json
         or
         --xbrlframes Extensible Business Markup Language
             --frame
@@ -40,9 +40,9 @@ class EDGARquery():
         or
         --companyfactsearchzip - all the data from the XBRL Frame API
             and the XBRL Company Facts in a zip file
-            --tf - default /tmp/companyfact.zip
+            --file - default /tmp/companyfact.zip
         --submissionzip -  public EDGAR filing history for all filers
-            --tf - default /tmp/submissions.zip
+            --file - default /tmp/submissions.zip
         or
         --financialstatementandnotesdataset - data extracted from
           reports filed from 2009 to present. does not include certain
@@ -113,19 +113,19 @@ class EDGARquery():
             file=sys.stderr )
             sys.exit(1)
 
-    def storequery(self, qresp, tf):
-        """storequery(qresp, tf) - store the query response in a file
+    def storequery(self, qresp, file):
+        """storequery(qresp, file) - store the query response in a file
 
         resp - the query response
-        tf   - filename that will hold the query response
+        file   - filename that will hold the query response
         """
         if not qresp: 
             print('storequery: no content', file=sys.stderr)
             sys.exit(1)
-        if not tf:
+        if not file:
             print('storequery: no output filename', file=sys.stderr)
             sys.exit(1)
-        of = os.path.abspath(tf)
+        of = os.path.abspath(file)
         # some downloads can be somewhat large
         with open(of, 'wb') as f:
             parts = iter(partial(qresp.read, self.chunksize), b'')
@@ -136,8 +136,8 @@ class EDGARquery():
             os.fsync(f.fileno() )
             return
 
-    def companyconcept(self, cik=None, frame='us-gaap', fact=None, tf=None):
-        """companyconcept(cik, frame, fact, tf)
+    def companyconcept(self, cik=None, frame='us-gaap', fact=None, file=None):
+        """companyconcept(cik, frame, fact, file)
 
         all xbrl disclosures for one company in JSON
         cik             - 10-digit Central Index Key - required
@@ -150,35 +150,35 @@ class EDGARquery():
             self.argp.print_help()
             sys.exit(1)
 
-        if not tf:
-            tf = os.path.join(self.odir,
+        if not file:
+            file = os.path.join(self.odir,
               'CompanyConcept.CIK%s.%s.%s.json' % (cik.zfill(10), frame, fact) )
         url = '%s/CIK%s/%s/%s.json' % (self.ccurl, cik.zfill(10), frame, fact)
         resp = self.query(url)
-        self.storequery(resp, tf)
+        self.storequery(resp, file)
 
-    def companyfacts(self, cik=None, tf=None):
+    def companyfacts(self, cik=None, file=None):
         """companyfacts 
 
         all the company concepts data for a company
         cik - 10-digit Central Index Key required
-        tf - file to store the json
+        file - file to store the json
         """
         if not cik:
             print('companyfacts(cik)', file=sys.stderr)
             self.argp.print_help()
             sys.exit(1)
 
-        if not tf:
-            tf=os.path.join(self.odir,
+        if not file:
+            file=os.path.join(self.odir,
                 'CompanyFacts.CIK%s.json' % (cik.zfill(10)) )
         url = '%s/CIK%s.json' % (self.cfurl, cik.zfill(10))
         resp = self.query(url)
-        self.storequery(resp, tf)
+        self.storequery(resp, file)
 
     def xbrlframes(self, frame='us-gaap', fact=None,
-                   units='USD', cy=None, tf=None):
-        """xbrlframes(frame, fact, units, cy, tf)
+                   units='USD', cy=None, file=None):
+        """xbrlframes(frame, fact, units, cy, file)
 
         aggregates one fact for each reporting entity that is
          last filed that most closely fits the calendrical period requested.
@@ -187,7 +187,7 @@ class EDGARquery():
          fact - fact to collect e.g AccountsPayableCurrent, USD-per-shares
          cy   - calendar year e.g. CY2023, CY2023Q1, CY2023Q4I
          only the I version seems to be available
-         tf - file to store the output
+         file - file to store the output
         """
         if not frame or not fact or not units or not cy:
             print('xbrlframes(frame, fact, units, cy)', file=sys.stderr)
@@ -199,45 +199,45 @@ class EDGARquery():
         if cyre.match(cy) == None:
             print('xbrlframes: CY forms CY2023, cy2023Q1, or CY2023Q1I',
                   file=sys.stderr)
-        if not tf:
-            tf=os.path.join(self.odir, 'XBRLFrames.%s.%s.%s.%s.json' %
+        if not file:
+            file=os.path.join(self.odir, 'XBRLFrames.%s.%s.%s.%s.json' %
                   (frame, fact, units, cy))
         url = '%s/%s/%s/%s/%s.json' % (self.frurl, frame, fact, units, cy)
         resp = self.query(url)
-        self.storequery(resp, tf)
+        self.storequery(resp, file)
 
-    def companyfactsarchivezip(self, tf=None):
-        """companyfactsearchzip(tf)
+    def companyfactsarchivezip(self, file=None):
+        """companyfactsearchzip(file)
 
         all the data from the XBRL Frame API
           and the XBRL Company Facts in a zip file
-         tf - file to store output
+         file - file to store output
         """
-        if not tf:
-            tf=os.path.join(self.odir, 'companyfacts.zip')
+        if not file:
+            file=os.path.join(self.odir, 'companyfacts.zip')
         resp=self.query(self.cfzip)
-        self.storequery(resp, tf)
+        self.storequery(resp, file)
 
-    def submissionszip(self, tf=None):
-        """submissionzip(tf)
+    def submissionszip(self, file=None):
+        """submissionzip(file)
 
         public EDGAR filing history for all filers
-        tf - file to store output
+        file - file to store output
         """
-        if not tf:
-            tf=os.path.join(self.odir, 'submissions.zip')
+        if not file:
+            file=os.path.join(self.odir, 'submissions.zip')
         resp=self.query(self.subzip)
-        self.storequery(resp, tf)
+        self.storequery(resp, file)
 
-    def financialstatementandnotesdataset(self, cy=None, tf=None):
-        """ financialstatementandnotesdataset(cy, tf)
+    def financialstatementandnotesdataset(self, cy=None, file=None):
+        """ financialstatementandnotesdataset(cy, file)
 
         text summaries in a zip file
         cy - YYYYQ[1-4] from 2009-112020 YYYYMM after 11/2020
-        tf - file to store output
+        file - file to store output
         """
-        if not tf:
-            tf=os.path.join(self.odir, 'fsan.zip')
+        if not file:
+            file=os.path.join(self.odir, 'fsan.zip')
         if 'CY' in cy or 'Q' in cy:
             if 'CY' in cy:
                 cy = cy[2:]
@@ -265,7 +265,7 @@ class EDGARquery():
             m = cya[1]
             url = '%s/%s_%s_notes.zip' % (self.fsanurl, y, m.zfill(2) )
         resp=self.query(url)
-        self.storequery(resp, tf)
+        self.storequery(resp, file)
 
 if __name__ == '__main__':
     def main():
@@ -279,13 +279,15 @@ if __name__ == '__main__':
             help="10-digit Central Index Key")
         EQ.argp.add_argument("--cy", required=False,
             help="calendar year e.g. CY2023, CY2023Q1, CY2023Q4I")
+
         EQ.argp.add_argument("--frame", required=False,
             help="reporting frame e.g us-gaap, ifrs-full, dei, srt")
         EQ.argp.add_argument("--units", required=False,
             default='USD', help="USD or shares")
         EQ.argp.add_argument("--fact", required=False,
             help="fact to collect e.g AccountsPayableCurrent, USD-per-shares")
-        EQ.argp.add_argument("--tf", required=False,
+
+        EQ.argp.add_argument("--file", required=False,
            help="file in which to store the output\n\
                argument allowed for each query type\n\
                defaults provided for each download in /tmp")
@@ -340,23 +342,24 @@ if __name__ == '__main__':
             EQ.argp.print_help()
             sys.exit(1)
         if args.companyconcept and args.cik and args.frame and args.fact:
-            if args.tf:
+            if args.file:
                 EQ.companyconcept(cik=args.cik, frame=args.frame, fact=args.fact,
-                            tf=args.tf)
+                            file=args.file)
                 sys.exit()
             else:
                 EQ.companyconcept(cik=args.cik, frame=args.frame, fact=args.fact)
                 sys.exit()
         elif args.companyconcept and args.cik and args.fact:
-            if args.tf:
-                EQ.companyconcept(cik=args.cik, fact=args.fact, tf=args.tf)
+            if args.file:
+                EQ.companyconcept(cik=args.cik, fact=args.fact,
+                file=args.file)
                 sys.exit()
             else:
                 EQ.companyconcept(cik=args.cik, fact=args.fact)
                 sys.exit()
         elif args.companyconcept:
-            if args.tf:
-                EQ.companyconcept(cik=args.cik, tf=args.tf)
+            if args.file:
+                EQ.companyconcept(cik=args.cik, file=args.file)
                 sys.exit()
             else:
                 EQ.companyconcept(cik=args.cik)
@@ -382,22 +385,22 @@ if __name__ == '__main__':
         if args.companyfacts and not args.cik:
             EQ.argp.print_help()
             sys.exit()
-        if args.companyfacts and args.cik and args.tf:
-            EQ.companyfacts(cik=args.cik, tf=args.tf)
+        if args.companyfacts and args.cik and args.file:
+            EQ.companyfacts(cik=args.cik, file=args.file)
             sys.exit()
         elif args.companyfacts:
             EQ.companyfacts(cik=args.cik)
             sys.exit()
 
-        if args.companyfactsarchivezip and args.tf:
-            EQ.companyfactsarchivezip(tf=args.tf)
+        if args.companyfactsarchivezip and args.file:
+            EQ.companyfactsarchivezip(file=args.file)
             sys.exit()
         elif args.companyfactsarchivezip:
             EQ.companyfactsarchivezip()
             sys.exit()
 
-        if args.submissionszip and args.tf:
-            EQ.submissionszip(tf=args.tf)
+        if args.submissionszip and args.file:
+            EQ.submissionszip(file=args.file)
             sys.exit()
         elif args.submissionszip:
             EQ.submissionszip()
@@ -406,8 +409,9 @@ if __name__ == '__main__':
         if args.financialstatementandnotesdataset and not args.cy:
             EQ.argp.print_help()
             sys.exit()
-        elif args.financialstatementandnotesdataset and args.tf:
-            EQ.financialstatementandnotesdataset(cy=args.cy, tf=args.tf)
+        elif args.financialstatementandnotesdataset and args.file:
+            EQ.financialstatementandnotesdataset(cy=args.cy,
+            file=args.file)
             sys.exit()
         elif args.financialstatementandnotesdataset:
             EQ.financialstatementandnotesdataset(cy=args.cy)

@@ -8,10 +8,10 @@ echo $EQODIR
 PY=~/anaconda3/bin/python
 
 # big files
-# ~/anaconda3/bin/python $EQDIR/query.py --companyfactsarchivezip \
+# ~/anaconda3/bin/python $EQDIR/doquery.py --companyfactsarchivezip \
 #                                             --cik 1018724
-# ~/anaconda3/bin/python $EQDIR/query.py --submissionszip
-# ~/anaconda3/bin/python $EQDIR/query.py --submissionszip
+# ~/anaconda3/bin/python $EQDIR/doquery.py --submissionszip
+# ~/anaconda3/bin/python $EQDIR/doquery.py --submissionszip
 
 $PY $EQDIR/submissionsziptocsv.py --zipfile $EQODIR/submissions.zip \
     --files CIK0000831001.json,CIK0001665650.json,CIK0000019617.json \
@@ -30,20 +30,20 @@ done
 
 
 for cik in 1318605 1018724 1045810; do
-    $PY $EQDIR/query.py --companyfacts --cik $cik
+    $PY $EQDIR/doquery.py --companyfacts --cik $cik
 done
 
 for fct in AccountsPayableCurrent EarningsPerShareBasic; do
-    $PY $EQDIR/query.py --companyconcept --cik 1318605 --fact $fct
-    $PY $EQDIR/query.py --companyconcept --cik 1018724 --fact $fct
-    $PY $EQDIR/query.py --companyconcept --cik 1045810 --fact $fct
+    $PY $EQDIR/doquery.py --companyconcept --cik 1318605 --fact $fct
+    $PY $EQDIR/doquery.py --companyconcept --cik 1018724 --fact $fct
+    $PY $EQDIR/doquery.py --companyconcept --cik 1045810 --fact $fct
 done
 
 for fct in AccountsPayableCurrent AssetsCurrent DebtCurrent \
     LongTermDebt ; do
     for CY in CY2009Q2I CY2023Q1I CY2023Q2I CY2023Q3I; do
         echo CY
-        $PY $EQDIR/query.py --xbrlframes --cy $CY --fact $fct
+        $PY $EQDIR/doquery.py --xbrlframes --cy $CY --fact $fct
     done
 done
 

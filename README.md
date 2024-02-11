@@ -23,10 +23,10 @@ Each script is standalone although some depend upon data downloaded by
 edgarqyery.py or by something like curl. The x.sh(I know) test script
 shows some of the usage
 
-Use query.py as a command to retrieve EDGAR files, then use the
+Use doquery.py as a command to retrieve EDGAR files, then use the
 appropriate *tocsv.py file as a command to generate CSV file(s)
 
-query.py retrieves files described in
+doquery.py retrieves files described in
 https://www.sec.gov/edgar/sec-api-documentation
 
 query SEC EDGAR site NOTE thæt EQEMAIL env variable is required and must
@@ -58,7 +58,7 @@ options:
                         required
   --submissionszip      returns daily index of submissions in a zip file
 
-query.py contains the class EDGARquery
+doquery.py contains the class EDGARquery
 
 EDGARquery.gency generates a CY type I value for the previous quarter
 
@@ -100,7 +100,7 @@ EDGARCompanyFactstoCSV class generates csv files from the json file
 
 edgarcompanyconceptstocsv.py
 EDGARCompanyConcepttoCSV convert the companyconcepts.json file retrieved
-by query.py and convert to csv files
+by doquery.py and convert to csv files
 
 edgarxbrlframestocsv.py
 EDGARXBRLFramestoCSV class generates a csv file for the json file

@@ -49,15 +49,15 @@ path = "src/edgarquery/__about__.py"
 #]
 
 [project.scripts]
-edgarcompanyfactstocsv = "edgarquery.clis/mycompanyfactstocsv:main"
-edgarcompanyfactsziptocsv = "edgarquery.clis/mycompanyfactsziptocsv:main"
-mainedgarquery = "edgarquery.clis/mydoquery:main"
-edgarlatest10K = "edgarquery.clis/mylatest10K:main"
-edgarlatestsubmissions = "edgarquery.clis/mylatestsubmissions:main"
-edgarsubmissions = "edgarquery.clis/mysubmissions:main"
-edgarsubmissionsziptocsv = "edgarquery.clis/mysubmissionsziptocs:main"
-edgartickerstocsv = "edgarquery.clis/mytickerstocs:main"
-edgarxbrlframestocsv = "edgarquery.clis/myxbrlframestocs:main"
+edgarcompanyfactstocsv = "edgarquery.clis/mycompanyfactstocsv.py:main"
+edgarcompanyfactsziptocsv = "edgarquery.clis/mycompanyfactsziptocsv.py:main"
+mainedgarquery = "edgarquery.clis/mydoquery.py:main"
+edgarlatest10K = "edgarquery.clis/mylatest10K.py:main"
+edgarlatestsubmissions = "edgarquery.clis/mylatestsubmissions.py:main"
+edgarsubmissions = "edgarquery.clis/mysubmissions.py:main"
+edgarsubmissionsziptocsv = "edgarquery.clis/mysubmissionsziptocs.py:main"
+edgartickerstocsv = "edgarquery.clis/mytickerstocs.py:main"
+edgarxbrlframestocsv = "edgarquery.clis/myxbrlframestocs.py:main"
 
 #scripts/__pycache__:
 #edgarquery.cpython-311.pyc

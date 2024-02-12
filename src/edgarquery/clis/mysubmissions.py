@@ -5,20 +5,12 @@
 # EDGARSubmissions
 #
 
-import os
-import re
-import html
-from html.parser import HTMLParser
-import sys
 import argparse
 import datetime
-import subprocess
-import urllib.request
-from functools import partial
 
 from edgarquery import submissions
 
-def main(*args, **kwarg):
+def main():
     ES = submissions.EDGARSubmissions()
 
     now = datetime.datetime.now()
@@ -45,4 +37,4 @@ def main(*args, **kwarg):
         ES.reportsubmissions()
 
 if __name__ == '__main__':
-    main(*args, **kwarg)
+    main()

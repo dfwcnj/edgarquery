@@ -5,21 +5,12 @@
 # EDGARLatestsubmissions
 #
 
-import os
-import re
-import html
-from html.parser import HTMLParser
-import sys
 import argparse
-import datetime
-import subprocess
-import urllib.request
-from functools import partial
 
 from edgarquery import latestsubmissions
 
-def main(*args, **kwarg):
-    LT = edgarquery.latestsubmissions.EDGARLatestsubmissions()
+def main():
+    LT = latestsubmissions.EDGARLatestsubmissions()
 
     argp = argparse.ArgumentParser(
               description='find the most recent submissions for cik')
@@ -45,4 +36,4 @@ def main(*args, **kwarg):
                 print('%s\t%s' % (k, latest[k]) )
 
 if __name__ == '__main__':
-    main(*args, **kwarg)
+    main()

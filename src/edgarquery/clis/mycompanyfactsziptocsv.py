@@ -5,16 +5,13 @@
 # EDGARCompanyFactsziptoCSV
 #
 
-import os
-import sys
 import argparse
-import json
 import zipfile
 
 from edgarquery import companyfactsziptocsv
 
 
-def main(*args, **kwarg):
+def main():
     ES = companyfactsziptocsv.EDGARCompanyFactsziptoCSV()
 
     argp = argparse.ArgumentParser(description='Extract one or more json\
@@ -54,4 +51,4 @@ def main(*args, **kwarg):
        sys.exit(1)
 
 if __name__ == '__main__':
-    main(*args, **kwarg)
+    main()

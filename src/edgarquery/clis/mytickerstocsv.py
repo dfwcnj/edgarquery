@@ -1,7 +1,8 @@
 
+import argparse
 from edgarquery import tickerstocsv
 
-def main(*args, **kwarg):
+def main():
 
     argp = argparse.ArgumentParser(description="collect EDGAR\
     companyticker json files and convert them to csv")
@@ -17,4 +18,4 @@ def main(*args, **kwarg):
     tc.urljstocsv(odir=args.odir)
 
 if __name__ == '__main__':
-    main(*args, **kwarg)
+    main()

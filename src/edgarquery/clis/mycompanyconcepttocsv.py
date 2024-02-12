@@ -6,15 +6,12 @@
 #     second part
 #
 
-import os
-import sys
 import argparse
 import json
-import re
 
 from edgarquery import companyconcepttocsv
 
-def main(*args, **kwarg):
+def main():
     EP = companyconcepttocsv.EDGARCompanyConcepttoCSV()
     argp = argparse.ArgumentParser(description="Parse an SEC EDGAR\
         companyconcepts json file after it has been altered to deal\
@@ -43,5 +40,5 @@ def main(*args, **kwarg):
     #EP.recdesc(jd, 1)
 
 if __name__ == '__main__':
-    main(*args, **kwarg)
+    main()
 

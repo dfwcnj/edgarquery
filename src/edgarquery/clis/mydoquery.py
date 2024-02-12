@@ -1,17 +1,12 @@
 
 # EDGAR query
 
-import os
-import datetime
 import sys
 import argparse
-from functools import partial
-import re
-import urllib.request
 
 from edgarquery import doquery
 
-def main(*args, **kwarg):
+def main():
     EQ = doquery.EDGARquery()
 
     EQ.argp = argparse.ArgumentParser(description="query SEC EDGAR site\
@@ -159,5 +154,5 @@ def main(*args, **kwarg):
         sys.exit()
 
 if __name__ == '__main__':
-    main(*args, **kwarg)
+    main()
 

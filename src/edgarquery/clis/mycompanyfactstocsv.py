@@ -5,16 +5,13 @@
 # EDGARCompanyFactstoCSV
 #
 
-import os
-import sys
 import argparse
 import json
-import re
 
 from edgarquery import companyfactstocsv
 
 
-def main(*args, **kwarg):
+def main():
     EP = companyfactstocsv.EDGARCompanyFactstoCSV()
     argp = argparse.ArgumentParser(description="Parse an SEC EDGAR\
         companyfacts json file after it has been altered to deal with its\
@@ -44,4 +41,4 @@ def main(*args, **kwarg):
 
 
 if __name__ == '__main__':
-    main(*args, **kwarg)
+    main()

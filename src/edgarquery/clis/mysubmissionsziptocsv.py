@@ -5,20 +5,13 @@
 # EDGARSubmissionsziptoCSV
 #
 
-import os
-import sys
 import argparse
-import json
 import zipfile
 
 from edgarquery import submissionsziptocsv
 
-def main(*args, **kwarg):
+def main():
     ES = submissionsziptocsv.EDGARSubmissionsziptoCSV()
-
-    argp = argparse.ArgumentParser(description='Extract one or more json\
-        files from an SEC EDGAR submissions.zip file and convert to CSV')
-
     argp.add_argument('--zipfile', required=True,
         help="submissions.zip file to process - required")
     argp.add_argument('--odir', help="where to deposit the output",
@@ -52,4 +45,4 @@ def main(*args, **kwarg):
        sys.exit(1)
 
 if __name__ == '__main__':
-    main(*args, **kwarg)
+    main()

@@ -5,20 +5,11 @@
 # EDGARLatest10K
 #
 
-import os
-import re
-import html
-from html.parser import HTMLParser
-import sys
 import argparse
-import datetime
-import subprocess
-import urllib.request
-from functools import partial
 
 from edgarquery import latest10K
 
-def main(*args, **kwarg):
+def main():
     LT = latest10K.EDGARLatest10K()
 
     argp = argparse.ArgumentParser(
@@ -39,4 +30,4 @@ def main(*args, **kwarg):
         LT.search10K(args.cik, link=args.link)
 
 if __name__ == '__main__':
-    main(*args, **kwarg)
+    main()

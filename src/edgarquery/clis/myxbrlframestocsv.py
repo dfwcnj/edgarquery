@@ -5,14 +5,12 @@
 # EDGARXBRLFramestoCSV
 #
 
-import os
-import sys
 import argparse
 import json
 
 from edgarquery import xbrlframestocsv
 
-def main(*args, **kwarg):
+def main():
     EP = xbrlframestocsv.EDGARXBRLFramestoCSV()
 
     argp = argparse.ArgumentParser(description="Parse an SEC EDGAR\
@@ -41,4 +39,4 @@ def main(*args, **kwarg):
     EP.jsonparts(jd)
 
 if __name__ == '__main__':
-    main(*args, **kwarg)
+    main()

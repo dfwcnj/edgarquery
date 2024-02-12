@@ -235,30 +235,31 @@ class EDGARLatestsubmissions():
         os.unlink(ofn)
         return latest
 
-if __name__ == '__main__':
-    def main():
-        LT = EDGARLatestsubmissions()
+# if __name__ == '__main__':
+def main():
+    LT = EDGARLatestsubmissions()
 
-        argp = argparse.ArgumentParser(
-                  description='find the most recent submissions for cik')
-        argp.add_argument("--cik", required=True,
-            help="10-digit Central Index Key")
+    argp = argparse.ArgumentParser(
+              description='find the most recent submissions for cik')
+    argp.add_argument("--cik", required=True,
+        help="10-digit Central Index Key")
 
-        argp.add_argument('--file', help="json file to process")
+    argp.add_argument('--file', help="json file to process")
 
-        args = argp.parse_args()
+    args = argp.parse_args()
 
-        LT.cik = args.cik
-        latest = LT.searchsubmissions(args.cik)
-        if args.file:
-            with open(file, w) as fp:
-                print("'formtype','formurl'", file=fp)
-                for k in latest.keys():
-                    if len(latest[k]) > 0:
-                        print('%s\t%s' % (k, latest[k]), file=fp )
-        else:
+    LT.cik = args.cik
+    latest = LT.searchsubmissions(args.cik)
+    if args.file:
+        with open(file, w) as fp:
+            print("'formtype','formurl'", file=fp)
             for k in latest.keys():
                 if len(latest[k]) > 0:
-                    print('%s\t%s' % (k, latest[k]) )
+                    print('%s\t%s' % (k, latest[k]), file=fp )
+    else:
+        for k in latest.keys():
+            if len(latest[k]) > 0:
+                print('%s\t%s' % (k, latest[k]) )
 
+if __name__ == '__main__':
     main()

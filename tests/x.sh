@@ -11,11 +11,11 @@ PY=~/anaconda3/bin/python
 # ~/anaconda3/bin/python $EQDIR/doquery.py --companyfactsarchivezip \
 #                                             --cik 1018724
 # ~/anaconda3/bin/python $EQDIR/doquery.py --submissionszip
-# ~/anaconda3/bin/python $EQDIR/doquery.py --submissionszip
+#~/anaconda3/bin/python $EQDIR/doquery.py --submissionszip
+#sleep 5
 
 $PY $EQDIR/submissionsziptocsv.py --zipfile $EQODIR/submissions.zip \
-    --files CIK0000831001.json,CIK0001665650.json,CIK0000019617.json \
-    --combine
+    --files CIK0000831001.json,CIK0001665650.json,CIK0000019617.json
 
 # SEC needs a user-agent
 curl --user-agent $EQEMAIL --output /private/tmp/sitemap.xml \
@@ -86,9 +86,6 @@ done
 #$PY $EQDIR/submissionszipṫocsv.py --zipfile $EQODIR/submissions.zip \
 #    --all
 
-# one huge csv file
-#$PY $EQDIR/submissionszipṫocsv.py --zipfile $EQODIR/submissions.zip \
-#    --all --combine
 
 for cik in 5981 1318605 1018724 1045810; do
     #$PY $EQDIR/latest10K.py --cik $cik

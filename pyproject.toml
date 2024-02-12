@@ -60,15 +60,15 @@ include = [
 "scripts/myxbrlframestocsv.py" = "src/edgarquery/myxbrlframestocsv.py"
 
 [project.scripts]
-edgarcompanyfactstocsv = "edgarquery/mycompanyfactstocsv"
-edgarcompanyfactsziptocsv = "edgarquery/mycompanyfactsziptocsv"
-edgarquery = "edgarquery/mydoquery"
-edgarlatest10K = "edgarquery/mylatest10K"
-edgarlatestsubmissions = "edgarquery/mylatestsubmissions"
-edgarsubmissions = "edgarquery/mysubmissions"
-edgarsubmissionsziptocsv = "edgarquery/mysubmissionsziptocsv"
-edgartickerstocsv = "edgarquery/mytickerstocsv"
-edgarxbrlframestocsv = "edgarquery/myxbrlframestocsv"
+edgarcompanyfactstocsv = "edgarquery/mycompanyfactstocsv.py:main"
+edgarcompanyfactsziptocsv = "edgarquery/mycompanyfactsziptocsv.py:main.py:main"
+mainedgarquery = "edgarquery/mydoquery.py:main"
+edgarlatest10K = "edgarquery/mylatest10K.py:main"
+edgarlatestsubmissions = "edgarquery/mylatestsubmissions.py:main"
+edgarsubmissions = "edgarquery/mysubmissions.py:main"
+edgarsubmissionsziptocsv = "edgarquery/mysubmissionsziptocs.py:main"
+edgartickerstocsv = "edgarquery/mytickerstocs.py:main"
+edgarxbrlframestocsv = "edgarquery/myxbrlframestocs.py:main"
 
 #scripts/__pycache__:
 #edgarquery.cpython-311.pyc

@@ -34,41 +34,30 @@ Source = "https://github.com/dfwcnj/edgarquery"
 [tool.hatch.version]
 path = "src/edgarquery/__about__.py"
 
-[tool.hatch.build.targets.sdist]
-include = [
-"src/edgarquery/companyconcepttocsv.py",
-"src/edgarquery/companyfactstocsv.py",
-"src/edgarquery/companyfactsziptocsv.py",
-"src/edgarquery/latest10K.py",
-"src/edgarquery/latestsubmissions.py",
-"src/edgarquery/doquery.py",
-"src/edgarquery/submissions.py",
-"src/edgarquery/submissionsziptocsv.py",
-"src/edgarquery/tickerstocsv.py",
-"src/edgarquery/xbrlframestocsv.py"
-]
-
-# [tool.hatch.build.target.sdist.force-include]
-# "scripts/mycompanyfactstocsv.py" = "src/edgarquery/mycompanyfactstocsv.py"
-# "scripts/mycompanyfactsziptocsv.py" = "src/edgarquery/mycompanyfactsziptocsv.py"
-# "scripts/mydoquery.py" = "src/edgarquery/mydoquery.py"
-# "scripts/mylatest10K.py" = "src/edgarquery/mylatest10K.py"
-# "scripts/mylatestsubmissions.py" = "src/edgarquery/mylatestsubmissions.py"
-# "scripts/mysubmissions.py" = "src/edgarquery/mysubmissions.py"
-# "scripts/mysubmissionsziptocsv.py" = "src/edgarquery/mysubmissionsziptocsv.py"
-# "scripts/mytickerstocsv.py" = "src/edgarquery/mytickerstocsv.py"
-# "scripts/myxbrlframestocsv.py" = "src/edgarquery/myxbrlframestocsv.py"
+#[tool.hatch.build.targets.sdist]
+#include = [
+#"src/edgarquery/companyconcepttocsv.py",
+#"src/edgarquery/companyfactstocsv.py",
+#"src/edgarquery/companyfactsziptocsv.py",
+#"src/edgarquery/latest10K.py",
+#"src/edgarquery/latestsubmissions.py",
+#"src/edgarquery/doquery.py",
+#"src/edgarquery/submissions.py",
+#"src/edgarquery/submissionsziptocsv.py",
+#"src/edgarquery/tickerstocsv.py",
+#"src/edgarquery/xbrlframestocsv.py"
+#]
 
 [project.scripts]
-edgarcompanyfactstocsv = "edgarquery/mycompanyfactstocsv.py:main"
-edgarcompanyfactsziptocsv = "edgarquery/mycompanyfactsziptocsv.py:main"
-mainedgarquery = "edgarquery/mydoquery.py:main"
-edgarlatest10K = "edgarquery/mylatest10K.py:main"
-edgarlatestsubmissions = "edgarquery/mylatestsubmissions.py:main"
-edgarsubmissions = "edgarquery/mysubmissions.py:main"
-edgarsubmissionsziptocsv = "edgarquery/mysubmissionsziptocs.py:main"
-edgartickerstocsv = "edgarquery/mytickerstocs.py:main"
-edgarxbrlframestocsv = "edgarquery/myxbrlframestocs.py:main"
+edgarcompanyfactstocsv = "edgarquery.clis/mycompanyfactstocsv:main"
+edgarcompanyfactsziptocsv = "edgarquery.clis/mycompanyfactsziptocsv:main"
+mainedgarquery = "edgarquery.clis/mydoquery:main"
+edgarlatest10K = "edgarquery.clis/mylatest10K:main"
+edgarlatestsubmissions = "edgarquery.clis/mylatestsubmissions:main"
+edgarsubmissions = "edgarquery.clis/mysubmissions:main"
+edgarsubmissionsziptocsv = "edgarquery.clis/mysubmissionsziptocs:main"
+edgartickerstocsv = "edgarquery.clis/mytickerstocs:main"
+edgarxbrlframestocsv = "edgarquery.clis/myxbrlframestocs:main"
 
 #scripts/__pycache__:
 #edgarquery.cpython-311.pyc

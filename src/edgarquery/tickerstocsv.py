@@ -93,6 +93,7 @@ class EDGARTickerstoCSV():
         """
         if not odir: odir=self.odir
         for u in self.turla:
+            hdr=None
             if '_exchange' in u:
                 hdr="'cik','title','ticker','exchange'"
                 ofn = os.path.join(odir, 'tickers_exchange.csv')
@@ -100,14 +101,11 @@ class EDGARTickerstoCSV():
                 hdr="'cik','seriesId','classId','symbol'"
                 ofn = os.path.join(odir, 'tickers_mf.csv')
             else:
-                hdr="'cik','ticker','title'"
                 ofn = os.path.join(odir, 'tickers.csv')
             with open(ofn, 'w') as ofp:
-                print(hdr, file=ofp)
-                #print(hdr, file=sys.stdout)
+                if hdr: print(hdr, file=ofp)
                 js = self.getjson(u)
                 self.putcsv(js, ofp)
-                #self.putcsv(js, sys.stdout)
 
 
 # if __name__ == '__main__':

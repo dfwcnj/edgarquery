@@ -71,18 +71,18 @@ class EDGARCompanyFactstoCSV():
             type(self.jsondict) == type([]), 'jsonparts: js not an array'
             pts =  [p for p in self.jsondict]
             for pt in pts:
-                self.jsonpart(pt, directory)
+                self.jsonpart(js=pt, directory=directory)
 
-    def jsonpart(self, pt, directory):
-        """ jsonpart(pt)
+    def jsonpart(self, js, directory):
+        """ jsonpart(js)
 
-        pt - json to parse
+        js - json to parse
         directory - directory for the output
         """
-        assert type(pt) == type({}), 'jsonpart: part not a dictionary'
-        self.cik = pt['cik']
-        self.enm = pt['entityName']
-        self.jsonfacts(pt['facts'], directory)
+        assert type(js) == type({}), 'jsonpart: part not a dictionary'
+        self.cik = js['cik']
+        self.enm = js['entityName']
+        self.jsonfacts(facts=js['facts'], directory=directory)
 
     def jsonfacts(self, facts, directory):
         """ jsonfacts(facts) parse companyfacts json file
@@ -108,7 +108,8 @@ class EDGARCompanyFactstoCSV():
                     self.units = ut
                     assert type(facts[k][t]['units'][ut]) == type([]), \
                         'jasonfacts %s is not an array'
-                    self.jsonfactcsv(facts[k][t]['units'][ut], directory)
+                    self.jsonfactcsv(recs=facts[k][t]['units'][ut],
+                        directory=directory)
 
     def jsonfactcsv(self, recs, directory):
         """ jsonfactcsv(recs) - dump company facts file to csv
@@ -162,7 +163,7 @@ def main():
         print('%s parse failed' % args.file)
         sys.exit(1)
 
-    EP.jsonpart(directory=args.directory)
+    EP.jsonpart(js=jd, directory=args.directory)
     #EP.recdesc(jd, 1)
 
 if __name__ == '__main__':

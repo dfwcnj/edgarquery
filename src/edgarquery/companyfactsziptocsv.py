@@ -86,7 +86,7 @@ class EDGARCompanyFactsziptoCSV():
                     unit = k
                 if '/' in unit:
                     unit = ''.join(unit.split('/') )
-                fnm = '%s.%s.%s.facts.csv' % (cik, fn, unit)
+                fnm = '%s_%s_%s_facts.csv' % (cik, fn, unit)
                 jn = os.path.join(directory, fnm)
                 with open(jn, 'w') as fp:
                     ha = []

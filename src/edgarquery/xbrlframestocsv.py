@@ -87,7 +87,7 @@ class EDGARXBRLFramestoCSV():
         print('%s %s %s' % (self.cy, self.label, js['description']) )
         # have to open the file here because the file contains two
         # json dictionaries
-        ofn = os.path.join(directory, 'XBRLFrame.%s.%s.%s.%s.csv' % (self.cy,
+        ofn = os.path.join(directory, 'XBRLFrame_%s_%s_%s_%s.csv' % (self.cy,
                                      self.tag, self.taxonomy, self.uom) )
         print(ofn)
         try:

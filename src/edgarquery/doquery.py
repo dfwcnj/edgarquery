@@ -149,7 +149,7 @@ class EDGARquery():
 
         if not file:
             file = os.path.join(directory,
-              'CompanyConcept.CIK%s.%s.%s.json' % (cik.zfill(10), frame, fact) )
+              'CompanyConcept.CIK%s_%s_%s.json' % (cik.zfill(10), frame, fact) )
         url = '%s/CIK%s/%s/%s.json' % (self.ccurl, cik.zfill(10), frame, fact)
         resp = self.query(url)
         self.storequery(resp, file)
@@ -198,7 +198,7 @@ class EDGARquery():
                   file=sys.stderr)
         if not file:
             file=os.path.join(directory,
-                'XBRLFrames.%s.%s.%s.%s.json' % (frame, fact, units, cy))
+                'XBRLFrames.%s_%s_%s_%s.json' % (frame, fact, units, cy))
         url = '%s/%s/%s/%s/%s.json' % (self.frurl, frame, fact, units, cy)
         resp = self.query(url)
         self.storequery(resp, file)

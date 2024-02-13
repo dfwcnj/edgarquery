@@ -96,7 +96,7 @@ class EDGARCompanyConcepttoCSV():
         # have to open the file here because the file contains two
         # json dictionaries
         ofn = os.path.join(directory,
-            'CompanyConcept.CIK%s.%s.%s.%s.csv' % (self.cik,
+            'CompanyConcept.CIK%s_%s_%s_%s.csv' % (self.cik,
                                          self.tag, self.cik, unit) )
         print(ofn)
         try:

@@ -121,7 +121,7 @@ class EDGARCompanyFactstoCSV():
             self.units = re.sub('/', '', self.units)
             print('\t%s' % (self.units), file=sys.stderr)
         fn = os.path.join(directory,
-             'CompanyFacts.CIK%s.%s.%s.%s.csv' % ( self.cik, self.facttype,
+             'CompanyFacts.CIK%s_%s_%s_%s.csv' % ( self.cik, self.facttype,
                                                    self.factnm, self.units) )
         # print('factparse: %s' % (fn), file=sys.stderr )
         try:

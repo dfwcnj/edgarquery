@@ -372,10 +372,7 @@ def main():
 
     LS.cik = args.cik
     LS.searchformindices(args.cik, year, directory=args.directory)
-    if args.file:
-        LS.reportsubmissions(file=args.file, directory=args.directory)
-    else:
-        LS.reportsubmissions(directory=args.directory)
+    LS.reportsubmissions(file=args.file, directory=args.directory)
 
 if __name__ == '__main__':
     main()

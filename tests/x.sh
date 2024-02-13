@@ -4,17 +4,14 @@ set -ex
 echo $EQDIR
 echo $EQODIR
 
-
-PY=~/anaconda3/bin/python
-
 # big files
 # edgarquery --companyfactsarchivezip \
 #                                             --cik 1018724
 # edgarquery --submissionszip
-#edgarquery  --submissionszip
-#sleep 5
+edgarquery  --submissionszip
+sleep 5
 
-submissionsziptocsv --zipfile $EQODIR/submissions.zip \
+edgarsubmissionsziptocsv --zipfile $EQODIR/submissions.zip \
     --files CIK0000831001.json,CIK0001665650.json,CIK0000019617.json
 
 # SEC needs a user-agent
@@ -52,9 +49,10 @@ for F in $(ls $EQODIR/CompanyFacts*.json |xargs basename); do
     echo $F | while IFS='.' read -ra FA; do
         OF=${FA[1]}.json
         echo  $OF
-        sed -f $EQDIR/sedfile $EQODIR/$F > $EQODIR/CF.$OF
-        ls -l $EQODIR/CF.$OF
-        edgarcompanyfactstocsv --file $EQODIR/CF.$OF --odir $EQODIR
+        #sed -f $EQDIR/sedfile $EQODIR/$F > $EQODIR/CF.$OF
+        #ls -l $EQODIR/CF.$OF
+        #edgarcompanyfactstocsv --file $EQODIR/CF.$OF --odir $EQODIR
+        edgarcompanyfactstocsv --file $EQODIR/$OF --odir $EQODIR
         break
     done
 done
@@ -64,9 +62,10 @@ for F in $(ls $EQODIR/CompanyConcept*.json |xargs basename); do
     echo $F | while IFS='.' read -ra FA; do
         OF=${FA[1]}.json
         echo  $OF
-        sed -f $EQDIR/sedfile $EQODIR/$F > $EQODIR/CC.$OF
-        ls -l $EQODIR/CC.$OF
-        edgarcompanyconcepttocsv --file $EQODIR/CC.$OF --odir $EQODIR
+        #sed -f $EQDIR/sedfile $EQODIR/$F > $EQODIR/CC.$OF
+        #ls -l $EQODIR/CC.$OF
+        #edgarcompanyconcepttocsv --file $EQODIR/CC.$OF --odir $EQODIR
+        edgarcompanyconcepttocsv --file $EQODIR/$OF --odir $EQODIR
         break
     done
 done
@@ -76,15 +75,15 @@ for F in $(ls $EQODIR/XBRLFrames*.json |xargs basename); do
     echo $F | while IFS='.' read -ra FA; do
         OF=${FA[4]}.json
         echo  $OF
-        sed -f $EQDIR/sedfile $EQODIR/$F > $EQODIR/XF.$OF
-        ls -l $EQODIR/XF.$OF
-        edgarxbrlframestocsv --file $EQODIR/XF.$OF --odir $EQODIR
+        #sed -f $EQDIR/sedfile $EQODIR/$F > $EQODIR/XF.$OF
+        #ls -l $EQODIR/XF.$OF
+        #edgarxbrlframestocsv --file $EQODIR/XF.$OF --odir $EQODIR
+        edgarxbrlframestocsv --file $EQODIR/$OF --odir $EQODIR
         break
     done
 done
 
-#submissionszipṫocsv --zipfile $EQODIR/submissions.zip \
-#    --all
+#edgarsubmissionszipṫocsv --zipfile $EQODIR/submissions.zip --all
 
 
 for cik in 5981 1318605 1018724 1045810; do

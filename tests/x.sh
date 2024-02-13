@@ -8,8 +8,8 @@ echo $EQODIR
 # edgarquery --companyfactsarchivezip \
 #                                             --cik 1018724
 # edgarquery --submissionszip
-edgarquery  --submissionszip
-sleep 5
+#edgarquery  --submissionszip
+#sleep 5
 
 edgarsubmissionsziptocsv --zipfile $EQODIR/submissions.zip \
     --files CIK0000831001.json,CIK0001665650.json,CIK0000019617.json

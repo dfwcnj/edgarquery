@@ -12,6 +12,10 @@ from edgarquery import submissionsziptocsv
 
 def main():
     ES = submissionsziptocsv.EDGARSubmissionsziptoCSV()
+    argp = argparse.ArgumentParser(
+        description="extract the contents of a EDGAR submissions.zip file\
+        to a csvfile")
+    submissions.zip
     argp.add_argument('--zipfile', required=True,
         help="submissions.zip file to process - required")
     argp.add_argument('--odir', help="where to deposit the output",

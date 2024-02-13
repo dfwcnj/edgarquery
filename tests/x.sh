@@ -47,43 +47,16 @@ done
 for F in $(ls $EQODIR/CompanyFacts*.json |xargs basename); do
     echo $F
     edgarcompanyfactstocsv --file $EQODIR/$F --directory $EQODIR
-    #echo $F | while IFS='.' read -ra FA; do
-    #    OF=${FA[1]}.json
-    #    echo  $OF
-    #    #sed -f $EQDIR/sedfile $EQODIR/$F > $EQODIR/CF.$OF
-    #    #ls -l $EQODIR/CF.$OF
-    #    #edgarcompanyfactstocsv --file $EQODIR/CF.$OF --directory $EQODIR
-    #    edgarcompanyfactstocsv --file $EQODIR/$OF --directory $EQODIR
-    #    break
-    #done
 done
 
 for F in $(ls $EQODIR/CompanyConcept*.json |xargs basename); do
     echo $F
     edgarcompanyconcepttocsv --file $EQODIR/$F --directory $EQODIR
-    #echo $F | while IFS='.' read -ra FA; do
-    #    OF=${FA[1]}.json
-    #    echo  $OF
-    #    #sed -f $EQDIR/sedfile $EQODIR/$F > $EQODIR/CC.$OF
-    #    #ls -l $EQODIR/CC.$OF
-    #    #edgarcompanyconcepttocsv --file $EQODIR/CC.$OF --directory $EQODIR
-    #    edgarcompanyconcepttocsv --file $EQODIR/$OF --directory $EQODIR
-    #    break
-    done
 done
 
 for F in $(ls $EQODIR/XBRLFrames*.json |xargs basename); do
     echo $F
     edgarxbrlframestocsv --file $EQODIR/$F --directory $EQODIR
-    #echo $F | while IFS='.' read -ra FA; do
-    #    OF=${FA[4]}.json
-    #    echo  $OF
-    #    #sed -f $EQDIR/sedfile $EQODIR/$F > $EQODIR/XF.$OF
-    #    #ls -l $EQODIR/XF.$OF
-    #    #edgarxbrlframestocsv --file $EQODIR/XF.$OF --directory $EQODIR
-    #    edgarxbrlframestocsv --file $EQODIR/$OF --directory $EQODIR
-    #    break
-    #done
 done
 
 #edgarsubmissionszipṫocsv --zipfile $EQODIR/submissions.zip --all

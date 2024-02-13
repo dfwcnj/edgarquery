@@ -71,35 +71,36 @@ class EDGARXBRLFramestoCSV():
             for pt in pts:
                 self.jsonpart(pt)
 
-    def jsonpart(self, pt, directory):
-        """ jsonpart(pt)
+    def jsonpart(self, js, directory):
+        """ jsonpart(js)
 
         parse the xbrl frames json data
-        pt - the json to parse
+        js - the json to parse
+        directory - directory to store the output
         """
-        assert type(pt) == type({}), 'jsonpart: part not a dictionary'
-        self.cy = pt['ccp']
-        self.taxonomy = pt['taxonomy']
-        self.tag = pt['tag']
-        self.label = pt['label']
-        self.uom = pt['uom']
-        print('%s %s %s' % (self.cy, self.label, pt['description']) )
+        assert type(js) == type({}), 'jsonpart: part not a dictionary'
+        self.cy = js['ccp']
+        self.taxonomy = js['taxonomy']
+        self.tag = js['tag']
+        self.label = js['label']
+        self.uom = js['uom']
+        print('%s %s %s' % (self.cy, self.label, js['description']) )
         # have to open the file here because the file contains two
         # json dictionaries
         ofn = os.path.join(directory, 'XBRLFrame.%s.%s.%s.%s.csv' % (self.cy,
                                      self.tag, self.taxonomy, self.uom) )
         print(ofn)
         try:
-            self.of = open(ofn, 'w')
+            fp = open(ofn, 'w')
             # csv header
 
-            print('accn,cik,entityName,loc,end,val', file=self.of)
-        except Exception as e:
+            print('accn,cik,entityName,loc,end,val', file=fp)
+        except IOError as e:
             print('open(%s) failed: e', (ofn, e) )
             sys.exit(1)
-        self.jsonxbrlframecsv(pt['data'])
+        self.jsonxbrlframecsv(js['data'], fp)
 
-    def jsonxbrlframecsv(self, data):
+    def jsonxbrlframecsv(self, data, fp):
         """ jsonxbrlframecsv(data)
 
         write the xbrl frames data to a csv file
@@ -110,7 +111,7 @@ class EDGARXBRLFramestoCSV():
             assert type(d) == type({}), 'xbrlframes: datum not a dictionay'
             print("'%s','%s','%s','%s','%s','%s'" % (d['accn'], d['cik'],
                                         d['entityName'], d['loc'],
-                                        d['end'], d['val']), file=self.of )
+                                        d['end'], d['val']), file=fp )
 
 
 
@@ -138,7 +139,7 @@ def main():
         print('%s parse failed' % args.file)
         sys.exit(1)
 
-    EP.jsonpart(jd, directory)
+    EP.jsonpart(js=jd, directory=args.directory)
     #EP.recdesc(jd, 1)
 
 if __name__ == '__main__':

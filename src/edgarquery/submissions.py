@@ -326,7 +326,7 @@ class EDGARSubmissions():
         for url in surla:
             resp = self.query(url)
             self.storequery(resp, tf=ofn)
-            print('\tSEARCHING for %s in %s' % (cik, url), file=sys.stderr )
+            #print('\tSEARCHING for %s in %s' % (cik, url), file=sys.stderr )
             self.dogrep(cik, ofn)
         for cik in self.submissionsdict.keys():
             htmldicts[cik]={}
@@ -371,7 +371,7 @@ def main():
     if args.year: year = int(args.year)
 
     LS.cik = args.cik
-    LS.searchformindices(args.cik, year)
+    LS.searchformindices(args.cik, year, directory=args.directory)
     if args.file:
         LS.reportsubmissions(file=args.file, directory=args.directory)
     else:

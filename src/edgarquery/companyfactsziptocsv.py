@@ -12,7 +12,7 @@ import zipfile
 
 class EDGARCompanyFactsziptoCSV():
 
-    def __init__(self, zipfile=None, odir=None):
+    def __init__(self, zipfile=None, directory=None):
         """ EDGARCompanyFactsziptoCSV
 
         convert the contents of a submissions.zip file retrieved from
@@ -21,10 +21,6 @@ class EDGARCompanyFactsziptoCSV():
         """
         self.zipfile = zipfile    # zip filename
         self.zfo     = None       # zip file object
-        if odir: self.odir = odir  # output directory
-        elif os.environ['EQODIR']: self.odir = os.environ['EQODIR']
-        else: self.odir = '/tmp'
-        self.odir = os.path.abspath(self.odir)
         self.js      = None       # json object
         self.ziplist = None       # list of files in zip file
 
@@ -63,15 +59,15 @@ class EDGARCompanyFactsziptoCSV():
         """
         return self.zfo.read(file)
 
-    def jstocsv(self, js, odir):
+    def jstocsv(self, js, directory):
         """jstocsv(js)
 
         extract js contents to csv files
         NOTE: not all of the top level data is extracted
         js  - json dictionary to convert
-        odir - directory to output the json csv file
+        directory - directory to output the json csv file
         """
-        if not odir: odir = self.odir
+        if not directory: directory = self.directory
         assert type(js) == type({}), 'jstocsv: js is not a dictionary'
 
         # json filename is $cik.json
@@ -91,7 +87,7 @@ class EDGARCompanyFactsziptoCSV():
                 if '/' in unit:
                     unit = ''.join(unit.split('/') )
                 fnm = '%s.%s.%s.facts.csv' % (cik, fn, unit)
-                jn = os.path.join(odir, fnm)
+                jn = os.path.join(directory, fnm)
                 with open(jn, 'w') as fp:
                     ha = []
                     for fact in js['facts'][ft][fn]['units'][unit]:
@@ -123,7 +119,7 @@ class EDGARCompanyFactsziptoCSV():
             jsstr=self.zipread(f).decode("utf-8") 
             js = json.loads(jsstr)
             #self.recdesc(js, ix=1)
-            self.jstocsv(js)
+            self.jstocsv(js, directory)
 
 
 # if __name__ == '__main__':
@@ -135,7 +131,7 @@ def main():
     argp.add_argument('--zipfile', required=True,
         help="submissions.zip file to process. Іt can be downloadæd\
             with edgarquery.query")
-    argp.add_argument('--odir', help="where to deposit the output",
+    argp.add_argument('--directory', help="where to deposit the output",
                       default='/tmp')
     argp.add_argument('--files', help="comma separated(no spaces) content\
                                  file(s) to process a subset of\
@@ -154,7 +150,7 @@ def main():
                 ES.listzip()
                 fa = ES.ziplist
 
-            ES.sometocsv(fa)
+            ES.sometocsv(fa, directory=args.directory)
 
     except zipfile.BadZipfile as e:
        print('open %s: %s', (args.zipfile, e) )

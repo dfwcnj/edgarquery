@@ -12,16 +12,12 @@ import urllib.request
 
 class EDGARTickerstoCSV():
 
-    def __init__(self, odir=None):
+    def __init__(self):
         """ EDGARTickerstoCSV
 
         retrieve the three ticker json files,
         parse them, and combine them into a single csv file
         """
-        if odir: self.odir = odir
-        elif os.environ['EQODIR']: self.odir = os.environ['EQODIR']
-        else: self.odir = '/tmp'
-        self.odir = os.path.abspath(self.odir)
         if 'EQEMAIL' in os.environ:
             self.hdr     = {'User-Agent' : os.environ['EQEMAIL'] }
         else:
@@ -85,23 +81,22 @@ class EDGARTickerstoCSV():
                 #print("'%s','%s','%s'" % (js[k]['cik_str'], js[k]['ticker'],
                 #                             js[k]['title']), file=ofp)
 
-    def urljstocsv(self, odir):
+    def urljstocsv(self, directory):
         """ urljstocsv()
 
         retrieve the SEC FRED ticker urls and write their contents
         to csv files
         """
-        if not odir: odir=self.odir
         for u in self.turla:
             hdr=None
             if '_exchange' in u:
                 hdr="'cik','title','ticker','exchange'"
-                ofn = os.path.join(odir, 'tickers_exchange.csv')
+                ofn = os.path.join(directory, 'tickers_exchange.csv')
             elif '_mf' in u:
                 hdr="'cik','seriesId','classId','symbol'"
-                ofn = os.path.join(odir, 'tickers_mf.csv')
+                ofn = os.path.join(directory, 'tickers_mf.csv')
             else:
-                ofn = os.path.join(odir, 'tickers.csv')
+                ofn = os.path.join(directory, 'tickers.csv')
             with open(ofn, 'w') as ofp:
                 if hdr: print(hdr, file=ofp)
                 js = self.getjson(u)
@@ -114,14 +109,14 @@ def main():
     argp = argparse.ArgumentParser(description="collect EDGAR\
     companyticker json files and convert them to csv")
 
-    argp.add_argument('--odir', default='/tmp/',
+    argp.add_argument('--directory', default='/tmp/',
                    help="where to deposit the fileѕ")
 
     args = argp.parse_args()
 
     tc = EDGARTickerstoCSV()
 
-    tc.urljstocsv(odir=args.odir)
+    tc.urljstocsv(directory=args.directory)
 
 if __name__ == '__main__':
     main()

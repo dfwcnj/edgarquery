@@ -5,6 +5,7 @@
 # EDGARXBRLFramestoCSV
 #
 
+import sys
 import argparse
 import json
 
@@ -24,19 +25,16 @@ def main():
 
     args = argp.parse_args()
 
-    EP.argp = argp
-    if args.odir: EP.odir = args.directory
-
     EP.jsonfile = args.file
     try:
         with open(args.file, 'r') as f:
             jd = json.load(f)
             EP.jsondict = jd
-    except Error as e:
+    except OSError as e:
         print('%s parse failed' % args.file)
         sys.exit(1)
 
-    EP.jsonparts(jd)
+    EP.jsonparts(jd, odir=args.directory)
 
 if __name__ == '__main__':
     main()

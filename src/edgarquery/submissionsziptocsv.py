@@ -12,7 +12,7 @@ import zipfile
 
 class EDGARSubmissionsziptoCSV():
 
-    def __init__(self, zipfile=None, odir=None):
+    def __init__(self, zipfile=None):
         """ EDGARSubmissionsziptoCSV
 
         export the contents of the submissions.zip file retrieved from
@@ -20,13 +20,6 @@ class EDGARSubmissionsziptoCSV():
         """
         self.zipfile = zipfile    # zip filename
         self.zfo     = None       # zip file object
-        if odir: self.odir = odir # output directory
-        elif os.environ['EQODIR']: self.odir = os.environ['EQODIR']
-        else: self.odir = '/tmp'
-        self.odir = os.path.abspath(self.odir)
-        self.argp    = None       # argument parser
-        self.js      = None       # json object
-        self.ziplist = None       # list of files in zip file
 
         #self.hdr   = "'cik','company','filingDate','reportDate','acceptanceDateTime','act','form','fileNumber','filmNumber','items','size','isXBRL','isInlineXBRL','primaryDocument','primaryDocDescription'"
 
@@ -55,9 +48,9 @@ class EDGARSubmissionsziptoCSV():
 
     def listzip(self):
         """listzip - collect the list of json files in the zip file"""
-        self.ziplist = self.zfo.namelist()
-        # self.ziplist.sort() # order may be important
-        return
+        ziplist =  self.zfo.namelist()
+        # ziplist.sort() # order may be important
+        return ziplist
 
     def zipread(self, file):
         """zipread - return the contents of file in the zipfile
@@ -67,7 +60,7 @@ class EDGARSubmissionsziptoCSV():
 
         #self.hdr   = "'cik','company','filingDate','reportDate','acceptanceDateTime','act','form','fileNumber','filmNumber','items','size','isXBRL','isInlineXBRL','primaryDocument','primaryDocDescription'"
 
-    def jstocsv(self, js):
+    def jstocsv(self, js, directory):
         """jstocsv(js)
 
         extract js contents to a csv file
@@ -75,7 +68,7 @@ class EDGARSubmissionsziptoCSV():
         js  - json dictionary to convert
         """
         if not js:
-            self.argp.print_help()
+            print('zipread: js argument required', file=sys.stderr)
             sys.exit(1)
         assert type(js) == type({}), 'jstocsv: js is not a dictionary'
 
@@ -83,7 +76,7 @@ class EDGARSubmissionsziptoCSV():
         name  = js['name']
         slen = 0
         fgs   = js['filings']['recent']
-        ofn = os.path.join(self.odir, 'submissions.%s.csv' % (cik) )
+        ofn = os.path.join(directory, 'submissions.%s.csv' % (cik) )
         with open(ofn, 'w') as ofp:
             ha = ["'cik',", "'name'"]
             for k in fgs.keys():
@@ -100,7 +93,7 @@ class EDGARSubmissionsziptoCSV():
                 print(''.join(ra), file=ofp)
 
 
-    def sometocsv(self, fa):
+    def sometocsv(self, fa, directory):
         """sometocsv(fa)
 
         convert list of json files from zip file to csv
@@ -115,14 +108,14 @@ class EDGARSubmissionsziptoCSV():
                 pass
             jsstr=self.zipread(f).decode("utf-8") 
             js = json.loads(jsstr)
-            self.jstocsv(js)
+            self.jstocsv(js, directory)
 
 # if __name__ == '__main__':
 def main():
     """EDGARSubmissionsziptoCSV - convert json files in submissions.zip
      to csv
      --zipfile - path to the submissions.zip file
-     --odir    - directory to store the output, default /tmp
+     --directory    - directory to store the output, default /tmp
      --files   - name(s) of json file to convert
      if --files not supplied, process all files in the zip file
     """
@@ -132,7 +125,7 @@ def main():
 
     argp.add_argument('--zipfile', help="submissions.zip file to process\
      - required")
-    argp.add_argument('--odir', help="where to deposit the output",
+    argp.add_argument('--directory', help="where to deposit the output",
                       default='/tmp')
     argp.add_argument('--files', help="comma separated(no spaces) content\
                                  file(s) to process a subset of the\
@@ -145,8 +138,6 @@ def main():
         sys.exit(1)
 
     ES.argp = argp
-    if args.odir: ES.odir = args.odir
-    elif os.environ['EQODIR']: ES.odir = os.environ['EQODIR']
 
     try:
         with zipfile.ZipFile(args.zipfile, mode='r') as ES.zfo:
@@ -157,10 +148,9 @@ def main():
                 if ',' in args.files:
                     fa = args.files.split(',')
             else:
-                ES.listzip()
-                fa = ES.ziplist
+                fa = ES.listzip()
 
-            ES.sometocsv(fa)
+            ES.sometocsv(fa, directory=args.directory)
 
     except zipfile.BadZipfile as e:
        print('open %s: %s', (args.zipfile, e) )

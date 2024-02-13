@@ -5,6 +5,7 @@
 # EDGARLatestsubmissions
 #
 
+import sys
 import argparse
 
 from edgarquery import latestsubmissions

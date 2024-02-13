@@ -5,6 +5,7 @@
 # EDGARSubmissionsziptoCSV
 #
 
+import sys
 import argparse
 import zipfile
 
@@ -23,14 +24,10 @@ def main():
                              file(s) to process a subset of the\
                              files in the zip file")
 
-    argp.add_argument('--odir', default='/tmp',
+    argp.add_argument('--directory', default='/tmp',
                 help="where to deposit the output")
 
     args = argp.parse_args()
-
-    ES.argp = argp
-    if args.odir: ES.odir = args.odir
-    elif os.environ['EQODIR']: ES.odir = os.environ['EQODIR']
 
     try:
         with zipfile.ZipFile(args.zipfile, mode='r') as ES.zfo:
@@ -44,7 +41,7 @@ def main():
                 ES.listzip()
                 fa = ES.ziplist
 
-            ES.sometocsv(fa)
+            ES.sometocsv(fa, odir=args.directory)
 
     except zipfile.BadZipfile as e:
        print('open %s: %s', (args.zipfile, e) )

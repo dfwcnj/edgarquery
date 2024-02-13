@@ -5,6 +5,7 @@
 # EDGARCompanyFactstoCSV
 #
 
+import sys
 import argparse
 import json
 
@@ -19,7 +20,7 @@ def main():
 
     argp.add_argument('--file', required=True,
                 help="json file to process")
-    argp.add_argument('--odir', help="where to deposit the csv fileѕ",
+    argp.add_argument('--directory', help="where to deposit the csv fileѕ",
                       default='/tmp')
 
     args = argp.parse_args()
@@ -29,14 +30,14 @@ def main():
         with open(args.file, 'r') as f:
             jd = json.load(f)
             EP.jsondict = jd
-    except Error as e:
+    except OSError as e:
         print('%s parse failed' % args.file)
         sys.exit(1)
 
-    if args.odir:
-        EP.jsonparts(args.file, odir=args.odir)
+    if args.directory:
+        EP.jsonparts(odir=args.directory)
     else:
-        EP.jsonparts(args.file)
+        EP.jsonparts()
     #EP.recdesc(jd, 1)
 
 

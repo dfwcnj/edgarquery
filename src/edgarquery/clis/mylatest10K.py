@@ -5,6 +5,7 @@
 # EDGARLatest10K
 #
 
+import sys
 import argparse
 
 from edgarquery import latest10K

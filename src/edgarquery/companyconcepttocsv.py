@@ -13,7 +13,7 @@ import re
 
 class EDGARCompanyConcepttoCSV():
 
-    def __init(self, jsonfile=None, odir=None):
+    def __init(self, jsonfile=None):
         """ EDGARCompanyConcepttoCSV
 
         companyconcepttocsv.py.py.py - parse sec edgar companyconcept json file
@@ -25,10 +25,6 @@ class EDGARCompanyConcepttoCSV():
         """
 
         self.jsonfile = jsonfile
-        if odir: self.odir = odir
-        elif os.environ['EQODIR']: self.odir = os.environ['EQODIR']
-        else: self.odir = '/tmp'
-        self.odir = os.path.abspath(self.odir)
         self.jsondict = None
         self.cik      = None
         self.enm      = None
@@ -63,7 +59,7 @@ class EDGARCompanyConcepttoCSV():
             print('%s value: %s' % (ind, js))             # value
             return
 
-    def jsonparts(self, js, odir):
+    def jsonparts(self, js, directory):
         """ jsonparts(js)
 
          js - json to parse 
@@ -72,20 +68,19 @@ class EDGARCompanyConcepttoCSV():
          that I added to the SEC EDGAR file
         """
         if type(self.jsondict) == type({}):
-            self.jsonpart(self.jsondict, odir)
+            self.jsonpart(self.jsondict, directory)
         else:
             assert type(self.jsondict) == type([]), 'jsonparts: js not an array'
             pts =  [p for p in self.jsondict]
             for pt in pts:
-                self.jsonpart(pt, odir)
+                self.jsonpart(pt, directory)
 
-    def jsonpart(self, pt, odir):
-        """ jsonpart(js, odir)
+    def jsonpart(self, pt, directory):
+        """ jsonpart(js, directory)
 
         js - json to parse
-        odir - output directory
+        directory - output directory
         """
-        if not odir: odir=self.odir
         assert type(pt) == type({}), 'jsonpart: part not a dictionary'
         self.cik = pt['cik']
         self.taxonomy = pt['taxonomy']
@@ -100,7 +95,7 @@ class EDGARCompanyConcepttoCSV():
         unit = re.sub('/', '', unit)
         # have to open the file here because the file contains two
         # json dictionaries
-        ofn = os.path.join(odir,
+        ofn = os.path.join(directory,
             'CompanyConcept.CIK%s.%s.%s.%s.csv' % (self.cik,
                                          self.tag, self.cik, unit) )
         print(ofn)
@@ -140,12 +135,10 @@ def main():
 
     argp.add_argument('--file', required=True,
                help="json file to process")
-    argp.add_argument('--odir', help="where to deposit the fileѕ",
+    argp.add_argument('--directory', help="where to deposit the fileѕ",
                       default='/tmp')
 
     args = argp.parse_args()
-
-    if args.odir: EP.odir = args.odir
 
     EP.jsonfile = args.file
     try:
@@ -156,7 +149,7 @@ def main():
         print('%s parse failed' % args.file)
         sys.exit(1)
 
-    EP.jsonparts(jd, odir=args.odir)
+    EP.jsonpart(jd, directory=args.directory)
     #EP.recdesc(jd, 1)
 
 

@@ -5,6 +5,7 @@
 # EDGARCompanyFactsziptoCSV
 #
 
+import sys
 import argparse
 import zipfile
 
@@ -19,7 +20,7 @@ def main():
 
     argp.add_argument('--zipfile', required = True,
         help="submissions.zip file to process - required")
-    argp.add_argument('--odir', help="where to deposit the output",
+    argp.add_argument('--directory', help="where to deposit the output",
                       default='/tmp')
     argp.add_argument('--files', help="comma separated(no spaces) content\
                                  file(s) to process a subset of\
@@ -31,7 +32,7 @@ def main():
         argp.print_help()
         sys.exit(1)
     ES.argp = argp
-    if args.odir: ES.odir = args.odir
+    if args.directory: ES.odir = args.directory
 
     try:
         with zipfile.ZipFile(args.zipfile, mode='r') as ES.zfo:
@@ -44,7 +45,7 @@ def main():
                 ES.listzip()
                 fa = ES.ziplist
 
-            ES.sometocsv(fa)
+            ES.sometocsv(fa, odir=args.directory)
 
     except zipfile.BadZipfile as e:
        print('open %s: %s', (args.zipfile, e) )

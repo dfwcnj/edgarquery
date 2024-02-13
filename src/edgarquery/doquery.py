@@ -14,7 +14,7 @@ import urllib.request
 
 class EDGARquery():
 
-    def __init__(self, cik=None, cy=None, odir=None):
+    def __init__(self, cik=None, cy=None):
         """EDGARquery - search the SEC EDGAR site
 
          --cik        - 10-digit Central Index Key
@@ -52,10 +52,6 @@ class EDGARquery():
         """
         self.cik        = cik
         self.cy         = cy
-        if odir: self.odir = odir
-        elif os.environ['EQODIR']: self.odir = os.environ['EQODIR']
-        else: self.odir = '/tmp'
-        self.odir = os.path.abspath(self.odir)
         if 'EQEMAIL' in os.environ:
             self.hdr     = {'User-Agent' : os.environ['EQEMAIL'] }
         else:
@@ -136,7 +132,8 @@ class EDGARquery():
             os.fsync(f.fileno() )
             return
 
-    def companyconcept(self, cik=None, frame='us-gaap', fact=None, file=None):
+    def companyconcept(self, cik=None, frame='us-gaap', fact=None,
+        file=None, directory=None):
         """companyconcept(cik, frame, fact, file)
 
         all xbrl disclosures for one company in JSON
@@ -151,13 +148,13 @@ class EDGARquery():
             sys.exit(1)
 
         if not file:
-            file = os.path.join(self.odir,
+            file = os.path.join(directory,
               'CompanyConcept.CIK%s.%s.%s.json' % (cik.zfill(10), frame, fact) )
         url = '%s/CIK%s/%s/%s.json' % (self.ccurl, cik.zfill(10), frame, fact)
         resp = self.query(url)
         self.storequery(resp, file)
 
-    def companyfacts(self, cik=None, file=None):
+    def companyfacts(self, cik=None, file=None, directory=None):
         """companyfacts 
 
         all the company concepts data for a company
@@ -170,14 +167,14 @@ class EDGARquery():
             sys.exit(1)
 
         if not file:
-            file=os.path.join(self.odir,
+            file=os.path.join(directory,
                 'CompanyFacts.CIK%s.json' % (cik.zfill(10)) )
         url = '%s/CIK%s.json' % (self.cfurl, cik.zfill(10))
         resp = self.query(url)
         self.storequery(resp, file)
 
     def xbrlframes(self, frame='us-gaap', fact=None,
-                   units='USD', cy=None, file=None):
+                   units='USD', cy=None, file=None, directory=None):
         """xbrlframes(frame, fact, units, cy, file)
 
         aggregates one fact for each reporting entity that is
@@ -200,13 +197,13 @@ class EDGARquery():
             print('xbrlframes: CY forms CY2023, cy2023Q1, or CY2023Q1I',
                   file=sys.stderr)
         if not file:
-            file=os.path.join(self.odir, 'XBRLFrames.%s.%s.%s.%s.json' %
-                  (frame, fact, units, cy))
+            file=os.path.join(directory,
+                'XBRLFrames.%s.%s.%s.%s.json' % (frame, fact, units, cy))
         url = '%s/%s/%s/%s/%s.json' % (self.frurl, frame, fact, units, cy)
         resp = self.query(url)
         self.storequery(resp, file)
 
-    def companyfactsarchivezip(self, file=None):
+    def companyfactsarchivezip(self, file=None, directory=None):
         """companyfactsearchzip(file)
 
         all the data from the XBRL Frame API
@@ -214,22 +211,23 @@ class EDGARquery():
          file - file to store output
         """
         if not file:
-            file=os.path.join(self.odir, 'companyfacts.zip')
+            file=os.path.join(directory, 'companyfacts.zip')
         resp=self.query(self.cfzip)
         self.storequery(resp, file)
 
-    def submissionszip(self, file=None):
+    def submissionszip(self, file=None, directory=None):
         """submissionzip(file)
 
         public EDGAR filing history for all filers
         file - file to store output
         """
         if not file:
-            file=os.path.join(self.odir, 'submissions.zip')
+            file=os.path.join(directory, 'submissions.zip')
         resp=self.query(self.subzip)
         self.storequery(resp, file)
 
-    def financialstatementandnotesdataset(self, cy=None, file=None):
+    def financialstatementandnotesdataset(self, cy=None,
+        file=None, directory=None):
         """ financialstatementandnotesdataset(cy, file)
 
         text summaries in a zip file
@@ -237,7 +235,7 @@ class EDGARquery():
         file - file to store output
         """
         if not file:
-            file=os.path.join(self.odir, 'fsan.zip')
+            file=os.path.join(directory, 'fsan.zip')
         if 'CY' in cy or 'Q' in cy:
             if 'CY' in cy:
                 cy = cy[2:]
@@ -287,10 +285,12 @@ def main():
     EQ.argp.add_argument("--fact", required=False,
         help="fact to collect e.g AccountsPayableCurrent, USD-per-shares")
 
+    EQ.argp.add_argument("--directory", default='/tmp',
+        help="directory to store the output")
     EQ.argp.add_argument("--file", required=False,
        help="file in which to store the output\n\
            argument allowed for each query type\n\
-           defaults provided for each download in /tmp")
+           if --directory is not provided, it should be the full path")
 
     EQ.argp.add_argument("--companyconcept",
        action='store_true', default=False,
@@ -344,66 +344,85 @@ def main():
     if args.companyconcept and args.cik and args.frame and args.fact:
         if args.file:
             EQ.companyconcept(cik=args.cik, frame=args.frame, fact=args.fact,
-                        file=args.file)
+                        file=args.file, directory=args.directory)
             sys.exit()
         else:
-            EQ.companyconcept(cik=args.cik, frame=args.frame, fact=args.fact)
+            EQ.companyconcept(cik=args.cik, frame=args.frame,
+                fact=args.fact, directory=args.directory)
             sys.exit()
     elif args.companyconcept and args.cik and args.fact:
         if args.file:
             EQ.companyconcept(cik=args.cik, fact=args.fact,
-            file=args.file)
+            file=args.file, directory=args.directory)
             sys.exit()
         else:
-            EQ.companyconcept(cik=args.cik, fact=args.fact)
+            EQ.companyconcept(cik=args.cik, fact=args.fact,
+                directory=args.directory)
             sys.exit()
     elif args.companyconcept:
         if args.file:
-            EQ.companyconcept(cik=args.cik, file=args.file)
+            EQ.companyconcept(cik=args.cik, file=args.file,
+                directory=args.directory)
             sys.exit()
         else:
-            EQ.companyconcept(cik=args.cik)
+            EQ.companyconcept(cik=args.cik, directory=args.directory)
             sys.exit()
 
     if args.xbrlframes and not args.cy:
         EQ.argp.print_help()
         sys.exit()
     if args.xbrlframes and args.frame and args.fact and args.units:
-        EQ.xbrlframes(cy=args.cy, frame=args.frame, fact=args.fact,
-                      units=args.units)
+        if args.file:
+            EQ.xbrlframes(cy=args.cy, frame=args.frame, fact=args.fact,
+               units=args.units, file=args.file, directory=args.directory)
+        else:
+            EQ.xbrlframes(cy=args.cy, frame=args.frame, fact=args.fact,
+                      units=args.units, directory=args.directory)
         sys.exit()
     elif args.xbrlframes and args.fact and args.units:
-        EQ.xbrlframes(cy=args.cy, fact=args.fact, units=args.units)
+        if args.file:
+            EQ.xbrlframes(cy=args.cy, fact=args.fact, units=args.units,
+                file=args.file, directory=args.directory)
+        else:
+            EQ.xbrlframes(cy=args.cy, fact=args.fact, units=args.units,
+                directory=args.directory)
         sys.exit()
     elif args.xbrlframes and args.fact:
-        EQ.xbrlframes(cy=args.cy, fact=args.fact)
+        if args.file:
+            EQ.xbrlframes(cy=args.cy, fact=args.fact,
+            file=args.file, directory=args.directory)
+        else:
+            EQ.xbrlframes(cy=args.cy, fact=args.fact, directory=args.directory)
         sys.exit()
     elif args.xbrlframes:
-        EQ.xbrlframes(cy=args.cy)
+        if args.file:
+            EQ.xbrlframes(cy=args.cy, file=args.file, directory=args.directory)
+        else:
+            EQ.xbrlframes(cy=args.cy, directory=args.directory)
         sys.exit()
 
     if args.companyfacts and not args.cik:
         EQ.argp.print_help()
         sys.exit()
     if args.companyfacts and args.cik and args.file:
-        EQ.companyfacts(cik=args.cik, file=args.file)
+        EQ.companyfacts(cik=args.cik, file=args.file, directory=args.directory)
         sys.exit()
     elif args.companyfacts:
-        EQ.companyfacts(cik=args.cik)
+        EQ.companyfacts(cik=args.cik, directory=args.directory)
         sys.exit()
 
     if args.companyfactsarchivezip and args.file:
-        EQ.companyfactsarchivezip(file=args.file)
+        EQ.companyfactsarchivezip(file=args.file, directory=args.directory)
         sys.exit()
     elif args.companyfactsarchivezip:
-        EQ.companyfactsarchivezip()
+        EQ.companyfactsarchivezip(directory=args.directory)
         sys.exit()
 
     if args.submissionszip and args.file:
-        EQ.submissionszip(file=args.file)
+        EQ.submissionszip(file=args.file, directory=args.directory)
         sys.exit()
     elif args.submissionszip:
-        EQ.submissionszip()
+        EQ.submissionszip(directory=args.directory)
         sys.exit()
 
     if args.financialstatementandnotesdataset and not args.cy:
@@ -411,10 +430,11 @@ def main():
         sys.exit()
     elif args.financialstatementandnotesdataset and args.file:
         EQ.financialstatementandnotesdataset(cy=args.cy,
-        file=args.file)
+        file=args.file, directory=args.directory)
         sys.exit()
     elif args.financialstatementandnotesdataset:
-        EQ.financialstatementandnotesdataset(cy=args.cy)
+        EQ.financialstatementandnotesdataset(cy=args.cy,
+            directory=args.directory)
         sys.exit()
 
 if __name__ == '__main__':

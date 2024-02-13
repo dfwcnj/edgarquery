@@ -17,7 +17,7 @@ from functools import partial
 
 class EDGARSubmissions():
 
-    def __init__(self, odir=None):
+    def __init__(self):
         """ EDGARSubmissions
 
         retrieve submissions for a CIK for some year
@@ -32,10 +32,6 @@ class EDGARSubmissions():
               HTTP User-Agent value such as an email address', file=sys.stderr)
             sys.exit(1)
         self.now     = datetime.datetime.now()
-        if odir: self.odir = odir
-        elif os.environ['EQODIR']: self.odir = os.environ['EQODIR']
-        else: self.odir = '/tmp'
-        self.odir = os.path.abspath(self.odir)
         self.chunksize =4294967296 # 4M
         self.submissionsdict=None
 
@@ -269,12 +265,15 @@ class EDGARSubmissions():
             surla.append('%s/%d/QTR4/form.idx' % (self.sprefix, yr) )
         return surla
 
-    def reportsubmissions(self, file=None):
+    def reportsubmissions(self, file, directory):
         fp = sys.stdout
         if file:
+            ofn=file
+            if directory: 
+               ofn=os.path.join(directory, file)
             try:
-                fp = open(file, 'w')
-            except Exception as e:
+                fp = open(ofn, 'w')
+            except IOError as e:
                 print('%s: %s' % (file, e) )
                 sys.exit(1)
         print("'CIK','type','date','frmurl','rpturl'", file=fp)
@@ -306,7 +305,7 @@ class EDGARSubmissions():
                     print(''.join(ra), file=fp)
 
 
-    def searchformindices(self, cik, year):
+    def searchformindices(self, cik, year, directory):
         """ searchsubmissions(cik, year)
 
         search in the form.idx files for a page that
@@ -320,7 +319,7 @@ class EDGARSubmissions():
         self.submissionsdict={}
         self.submissionsdict[cik] = {}
         surla = self.gensearchurls(year)
-        ofn   = os.path.join(self.odir, 'form.idx')
+        ofn   = os.path.join(directory, 'form.idx')
         tktbl = None
         # download each form.idx file in turn
         # for each form.idx search for the cik
@@ -361,8 +360,11 @@ def main():
             help="10-digit Central Index Key")
     argp.add_argument("--year", required=False,
         help="year to search for submissions if not current year")
+
     argp.add_argument("--file", required=False,
         help="store the output in this file")
+    argp.add_argument("--directory", default='/tmp',
+        help="store the output in this directory")
 
     args = argp.parse_args()
 
@@ -371,9 +373,9 @@ def main():
     LS.cik = args.cik
     LS.searchformindices(args.cik, year)
     if args.file:
-        LS.reportsubmissions(args.file)
+        LS.reportsubmissions(file=args.file, directory=args.directory)
     else:
-        LS.reportsubmissions()
+        LS.reportsubmissions(directory=args.directory)
 
 if __name__ == '__main__':
     main()

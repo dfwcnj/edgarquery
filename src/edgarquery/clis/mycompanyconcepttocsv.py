@@ -6,6 +6,7 @@
 #     second part
 #
 
+import sys
 import argparse
 import json
 
@@ -20,23 +21,23 @@ def main():
 
     argp.add_argument('--file', required=True,
                help="json file to process")
-    argp.add_argument('--odir', help="where to deposit the fileѕ",
+    argp.add_argument('--directory', help="where to deposit the fileѕ",
                       default='/tmp')
 
     args = argp.parse_args()
 
-    if args.odir: EP.odir = args.odir
+    if args.directory: EP.odir = args.directory
 
     EP.jsonfile = args.file
     try:
         with open(args.file, 'r') as f:
             jd = json.load(f)
             EP.jsondict = jd
-    except Error as e:
+    except OSError as e:
         print('%s parse failed' % args.file)
         sys.exit(1)
 
-    EP.jsonparts(jd, odir=args.odir)
+    EP.jsonparts(jd, odir=args.directory)
     #EP.recdesc(jd, 1)
 
 if __name__ == '__main__':

@@ -17,7 +17,7 @@ from functools import partial
 
 class EDGARLatestsubmissions():
 
-    def __init__(self, odir=None):
+    def __init__(self):
         """ EDGARLatestsubmissions
 
         retrieve the latest submissions for a CIK
@@ -32,10 +32,6 @@ class EDGARLatestsubmissions():
                    HTTP User-Agent value such as an email address')
         self.now     = datetime.datetime.now()
         self.cik     = None
-        if odir: self.odir = odir
-        elif os.environ['EQODIR']: self.odir = os.environ['EQODIR']
-        else: self.odir = '/tmp'
-        self.odir = os.path.abspath(self.odir)
         self.chunksize =4294967296 # 4M
 
     def query(self, url=None):
@@ -208,7 +204,7 @@ class EDGARLatestsubmissions():
             surla.append('%s/%d/QTR4/form.idx' % (self.sprefix, yr) )
         return surla
 
-    def searchsubmissions(self, cik):
+    def searchsubmissions(self, cik, directory):
         """ searchsubmissions(cik)
 
         search in the form.idx files for a time interval
@@ -217,7 +213,7 @@ class EDGARLatestsubmissions():
         cik - central index key, required
         """
         surla = self.gensearchurls()
-        ofn   = os.path.join(self.odir, 'form.idx')
+        ofn   = os.path.join(directory, 'form.idx')
         suba = ['10-Q','10-K','8-Q','8-K','20-F','40-F','6-K']
         latest={}
         for k in suba: latest[k]=''
@@ -244,6 +240,8 @@ def main():
     argp.add_argument("--cik", required=True,
         help="10-digit Central Index Key")
 
+    argp.add_argument("--directory", default='/tmp',
+        help="directory to store the output")
     argp.add_argument('--file', help="json file to process")
 
     args = argp.parse_args()
@@ -251,7 +249,8 @@ def main():
     LT.cik = args.cik
     latest = LT.searchsubmissions(args.cik)
     if args.file:
-        with open(file, w) as fp:
+        ofn = os.path.join(args.directory, args.file)
+        with open(ofn, w) as fp:
             print("'formtype','formurl'", file=fp)
             for k in latest.keys():
                 if len(latest[k]) > 0:

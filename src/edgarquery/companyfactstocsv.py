@@ -12,7 +12,7 @@ import re
 
 class EDGARCompanyFactstoCSV():
 
-    def __init(self, jsonfile=None, odir=None):
+    def __init(self, jsonfile=None):
         """ EDGARCompanyFactstoCSV
 
         parse sec edgar company facts json file for a CIK
@@ -23,10 +23,6 @@ class EDGARCompanyFactstoCSV():
         part
         """
         self.jsonfile = jsonfile
-        if odir: self.odir = odir
-        elif os.environ['EQODIR']: self.odir = os.environ['EQODIR']
-        else: self.odir = '/tmp'
-        self.odir = os.path.abspath(self.odir)
         self.jsondict = None
         self.cik      = None
         self.enm      = None
@@ -60,40 +56,39 @@ class EDGARCompanyFactstoCSV():
             print('%s value: %s' % (ind, js))             # value
             return
 
-    def jsonparts(self, odir): # files seem to be in 2 parts
+    def jsonparts(self, directory): # files seem to be in 2 parts
         """ jsonparts
 
         if the json file was just one dictionary
         just traverse the dictionary or else
         traverse the top level json array
         that I added to the SEC EDGAR file
-        odir - directory for the output
+        directory - directory for the output
         """
-        if not odir: odir = self.odir
         if type(self.jsondict) == type({}):
-            self.jsonpart(self.jsondict, odir)
+            self.jsonpart(self.jsondict, directory)
         else:
             type(self.jsondict) == type([]), 'jsonparts: js not an array'
             pts =  [p for p in self.jsondict]
             for pt in pts:
-                self.jsonpart(pt, odir)
+                self.jsonpart(pt, directory)
 
-    def jsonpart(self, pt, odir):
+    def jsonpart(self, pt, directory):
         """ jsonpart(pt)
 
         pt - json to parse
-        odir - directory for the output
+        directory - directory for the output
         """
         assert type(pt) == type({}), 'jsonpart: part not a dictionary'
         self.cik = pt['cik']
         self.enm = pt['entityName']
-        self.jsonfacts(pt['facts'], odir)
+        self.jsonfacts(pt['facts'], directory)
 
-    def jsonfacts(self, facts, odir):
+    def jsonfacts(self, facts, directory):
         """ jsonfacts(facts) parse companyfacts json file
 
         facts - json file containing SEC EDGAR companyfacts
-        odir - directory for the output
+        directory - directory for the output
         """
         assert type(facts) == type({}), 'jsonfacts: facts not a dictionary'
         fka = [k for k in facts]
@@ -113,18 +108,18 @@ class EDGARCompanyFactstoCSV():
                     self.units = ut
                     assert type(facts[k][t]['units'][ut]) == type([]), \
                         'jasonfacts %s is not an array'
-                    self.jsonfactcsv(facts[k][t]['units'][ut], odir)
+                    self.jsonfactcsv(facts[k][t]['units'][ut], directory)
 
-    def jsonfactcsv(self, recs, odir):
+    def jsonfactcsv(self, recs, directory):
         """ jsonfactcsv(recs) - dump company facts file to csv
 
         recs - individual company facts
-        odir - directory for the output
+        directory - directory for the output
         """
         if '/' in self.units:
             self.units = re.sub('/', '', self.units)
             print('\t%s' % (self.units), file=sys.stderr)
-        fn = os.path.join(odir,
+        fn = os.path.join(directory,
              'CompanyFacts.CIK%s.%s.%s.%s.csv' % ( self.cik, self.facttype,
                                                    self.factnm, self.units) )
         # print('factparse: %s' % (fn), file=sys.stderr )
@@ -153,7 +148,7 @@ def main():
 
     argp.add_argument('--file', required=True,
                 help="json file to process")
-    argp.add_argument('--odir', help="where to deposit the csv fileѕ",
+    argp.add_argument('--directory', help="where to deposit the csv fileѕ",
                       default='/tmp')
 
     args = argp.parse_args()
@@ -167,10 +162,7 @@ def main():
         print('%s parse failed' % args.file)
         sys.exit(1)
 
-    if args.odir:
-        EP.jsonparts(odir=args.odir)
-    else:
-        EP.jsonparts()
+    EP.jsonpart(directory=args.directory)
     #EP.recdesc(jd, 1)
 
 if __name__ == '__main__':

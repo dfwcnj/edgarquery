@@ -11,7 +11,7 @@ import json
 
 class EDGARXBRLFramestoCSV():
 
-    def __init(self, jsonfile=None, odir=None):
+    def __init(self, jsonfile=None):
         """ EDGARXBRLFramestoCSV
 
         parse sec edgar xbrl frame file for a CY
@@ -21,10 +21,6 @@ class EDGARXBRLFramestoCSV():
         when it finishes the first part and encounters the second part
         """
         self.jsonfile = jsonfile
-        if odir: self.odir = odir # output directory
-        elif os.environ['EQODIR']: self.odir = os.environ['EQODIR']
-        else: self.odir = '/tmp'
-        self.odir = os.path.abspath(self.odir)
         self.jsondict = None
         self.cy       = None
         self.enm      = None
@@ -60,7 +56,7 @@ class EDGARXBRLFramestoCSV():
             print('%s value: %s' % (ind, js))             # value
             return
 
-    def jsonparts(self, js):
+    def jsonparts(self, js, directory):
         """jsonparts(js)
 
         traverse the top level json array that I added to the SEC EDGAR file
@@ -75,7 +71,7 @@ class EDGARXBRLFramestoCSV():
             for pt in pts:
                 self.jsonpart(pt)
 
-    def jsonpart(self, pt):
+    def jsonpart(self, pt, directory):
         """ jsonpart(pt)
 
         parse the xbrl frames json data
@@ -90,7 +86,7 @@ class EDGARXBRLFramestoCSV():
         print('%s %s %s' % (self.cy, self.label, pt['description']) )
         # have to open the file here because the file contains two
         # json dictionaries
-        ofn = os.path.join(self.odir, 'XBRLFrame.%s.%s.%s.%s.csv' % (self.cy,
+        ofn = os.path.join(directory, 'XBRLFrame.%s.%s.%s.%s.csv' % (self.cy,
                                      self.tag, self.taxonomy, self.uom) )
         print(ofn)
         try:
@@ -127,12 +123,11 @@ def main():
 
     argp.add_argument('--file', required=True,
         help="xbrl frames json file to process")
-    argp.add_argument('--odir', help="where to deposit the output",
+    argp.add_argument('--directory', help="where to deposit the output",
                       default='/tmp')
 
     args = argp.parse_args()
 
-    if args.odir: EP.odir = args.odir
 
     EP.jsonfile = args.file
     try:
@@ -143,7 +138,7 @@ def main():
         print('%s parse failed' % args.file)
         sys.exit(1)
 
-    EP.jsonparts(jd)
+    EP.jsonpart(jd, directory)
     #EP.recdesc(jd, 1)
 
 if __name__ == '__main__':

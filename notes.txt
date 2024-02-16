@@ -127,6 +127,8 @@
   # proxy statements PRE 14A, DEF 14A
   https://www.sec.gov/filings/edgar-guide
   # insider trading forms 3, 4, 5
+  https://www.sec.gov/data
+  https://www.sec.gov/structureddata/announcement/osd-announcement-081222-form-345-data-sets
   https://www.investor.gov/introduction-investing/general-resources/news-alerts/alerts-bulletins/investor-bulletins-69
   # beneficial ownership >5% voting securities SC 13[DG], DEF 14A, 13F-HR
   # business combinations
@@ -134,6 +136,68 @@
   # securities based crowd funding
   # regulation A offering
   # etc
+
+  # news apis
+  https://developer.nytimes.com/apis
+  https://pypi.org/project/GoogleNews/
+      https://github.com/Iceloof/GoogleNews
+
+  https://developers.google.com/apis-explorer
+  https://news.google.com/rss?hl=en-US&gl=US&ceid=US:en
+  https://news.google.com/atom?hl=en-US&gl=US&ceid=US:en
+  https://www.aakashweb.com/articles/google-news-rss-feed-url/
+  https://developers.google.com/gdata/docs/1.0/reference obsolete
+  https://developers.google.com/identity
+
+  stock price data
+  https://www.marketwatch.com/market-data
+  1 month
+  https://www.marketwatch.com/investing/stock/amzn/downloaddatapartial?
+      startdate=11/17/2023%2000:00:00&enddate=02/15/2024%2000:00:00&
+      daterange=d30&frequency=p1d&csvdownload=true&downloadpartial=false&
+      newdates=false
+  https://www.marketwatch.com/investing/stock/lly/downloaddatapartial?
+      startdate=11/17/2023%2000:00:00&enddate=02/15/2024%2000:00:00&
+      daterange=d30&frequency=p1d&csvdownload=true&downloadpartial=false&
+      newdates=false
+  1 year
+  https://www.marketwatch.com/investing/stock/lly/downloaddatapartial?
+      startdate=02/15/2023%2000:00:00&enddate=02/15/2024%2000:00:00&
+      daterange=d30&frequency=p1d&csvdownload=true&downloadpartial=false&
+      newdates=false
+  https://stooq.com
+  https://stooq.com/q/?s=nvda.us
+  https://stooq.com/q/d/?s=amzn.us
+  https://stooq.com/q/d/l/?s=amzn.us&i=d
+  https://stooq.com/q/d/l/?s=nvda.us&i=d
+  max history
+  https://stooq.com/q/d/l/?s=jpm.us&i=d
+  https://stooq.com/q/d/l/?s=nvda.us&i=d
+  https://stooq.com/q/d/l/?s=amzn.us&i=d
+  https://stooq.com/q/d/l/?s=meta.us&i=d
+  1 year?
+  https://stooq.com/q/l/?s=goog.us&f=sd2t2ohlcv&h&e=csv
+  https://stooq.com/q/l/?s=meta.us&f=sd2t2ohlcv&h&e=csv
+  https://stooq.com/q/l/?s=amzn.us&f=sd2t2ohlcv&h&e=csv
+  https://www.investopedia.com/ask/answers/find-historical-stock-index-quotes/
+  https://www.macrotrends.net/stocks/research
+  https://www.macrotrends.net/stocks/charts/NVDA/nvidia/stock-price-history
+  https://www.nasdaq.com/market-activity/quotes/historical
+  https://www.nasdaq.com/market-activity/stocks/nvda/historical
+  https://researchguides.library.vanderbilt.edu/c.php?g=68515&p=445977
+  1 year
+  https://stooq.com/q/?s=amzn.us&c=1y&t=l&a=lg&b=0
+  https://stooq.com/q/l/?s=amzn.us&f=sd2t2ohlcv&h&e=csv
+  https://fred.stlouisfed.org/categories/33194
+  https://finance.yahoo.com/lookup?s=T
+  https://finance.yahoo.com/quote/NVDA/history/
+  #https://www.investing.com/equities/nvidia-corp-historical-data
+  https://datahub.io/collections/stock-market-data
+  https://datahub.io/core/s-and-p-500-companies#data-cli
+  https://data-explorer.oecd.org/?lc=en
+  https://pages.stern.nyu.edu/~adamodar/New_Home_Page/datafile/histretSP.html
+
+
 
   # investment advisors
   https://adviserinfo.sec.gov/

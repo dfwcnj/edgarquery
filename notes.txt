@@ -161,6 +161,10 @@
       daterange=d30&frequency=p1d&csvdownload=true&downloadpartial=false&
       newdates=false
   1 year
+  https://www.marketwatch.com/investing/stock/amzn/downloaddatapartial?
+      startdate=02/15/2023%2000:00:00&enddate=02/15/2024%2000:00:00&
+      daterange=d30&frequency=p1d&csvdownload=true&downloadpartial=false&
+      newdates=false
   https://www.marketwatch.com/investing/stock/lly/downloaddatapartial?
       startdate=02/15/2023%2000:00:00&enddate=02/15/2024%2000:00:00&
       daterange=d30&frequency=p1d&csvdownload=true&downloadpartial=false&

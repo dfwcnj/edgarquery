@@ -33,6 +33,10 @@ class EDGARInsiderTrading():
 
         self.stooqurl = 'https://stooq.com/q/d/l/?s=%s.us&i=d'
 
+        #https://www.marketwatch.com/investing/stock/jpm/downloaddatapartial?startdate=02/15/2023%2000:00:00&enddate=02/15/2024%2000:00:00&daterange=d30&frequency=p1d&csvdownload=true&downloadpartial=false&newdates=false
+        # symbol MM/DD/YYYY MM/DD/YYYY
+        self.mktwatchurl = 'https://www.marketwatch.com/investing/stock/%s/downloaddatapartial?startdate=%s%2000:00:00&enddate=%s%2000:00:00&daterange=d30&frequency=p1d&csvdownload=true&downloadpartial=false&newdates=false'
+
         self.iturl = 'https://www.sec.gov/files/structureddata/data/insider-transactions-data-sets'
         self.toptickersubmissions={}
         self.transtoptwenty=[]
@@ -146,10 +150,36 @@ class EDGARInsiderTrading():
             if type(chld.attrib) == type({}):
                 self.etchldrecdesc(chld, ix+1)
             if type(chld.attrib) == type(() ):
-                print("    tuple: '%s','%s'" %
-                    (chld.attrib[0], chld.attrib[1]) )
+                print("    tuple: '%s','%s'" % (chld.attrib[0], chld.attrib[1]) )
+
+    def gettop10marketwatch(self, directory):
+        """ gettop10marketwatch(directory)
+
+        get stock history for some top stocks from marketwatch.com
+        ðirectory - where to store the output
+        """
+        now = datetime.datetime.now()
+        day = ('%d' % (now.day) ).zfill(2)
+        mon = ('%d' % (now.month) ).zfill(2)
+        yr  = now.year
+        odt = '%s/%s/%d' % (mon, day, yr-1)
+        ndt = '%s/%s/%d' % (moņ, day, yr)
+        csymbs = self.cpat.lower().split('|')
+        for s in csymbs:
+            url = self.mktwatchurl % (s)
+            print(url)
+            resp = self.query(url)
+            ofn = os.path.join(directory, '%s-mw.csv' % (s) )
+            self.storequery(resp, ofn)
+            time.sleep(5)
+
 
     def gettop10stooq(self, directory):
+        """ gettop10stooq(directory
+
+        get stock history for some top stocks from stooq.com
+        ðirectory - where to store the output
+        """
         csymbs = self.cpat.lower().split('|')
         for s in csymbs:
             url = self.stooqurl % (s)
@@ -160,17 +190,29 @@ class EDGARInsiderTrading():
             time.sleep(5)
 
     def form345zipfileiter(self, zfile, file):
-         try:
-             lna = []
-             with zipfile.ZipFile(zfile, mode='r') as zfp:
-                 fstr = zfp.read(file).decode("utf-8")
-                 lge = (line for line in fstr.splitlines() )
-                 return lge
-         except zipfile.BadZipfile as e:
-             print('open %s: %s', (zfile, e) )
-             sys.exit(1)
+        """ form345zipfileiter(zfile, iter)
+
+        return an iterator for lines from file in zfile
+        zfile - form345 zip file from fred.stlouisfed.org
+        file  - file in the zip file to read
+        """
+        try:
+            lna = []
+            with zipfile.ZipFile(zfile, mode='r') as zfp:
+                fstr = zfp.read(file).decode("utf-8")
+                lge = (line for line in fstr.splitlines() )
+                return lge
+        except zipfile.BadZipfile as e:
+            print('open %s: %s', (zfile, e) )
+            sys.exit(1)
 
     def form345largesttrades(self, zfile, file):
+        """ form345largesttrades(zfile, file)
+
+        collect form345 data from file in zfile
+        zfile - form345 zip file from fred.stlouisfed.org
+        file  - file in the zip file to read
+        """
         lge = self.form345zipfileiter(zfile, file)
         prtransdict = {}
         hdr=[]

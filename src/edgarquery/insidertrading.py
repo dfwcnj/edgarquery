@@ -25,6 +25,10 @@ class EDGARInsiderTrading():
         else:
             print('EQEMAIL environmental variable must be set to a valid \
                    HTTP User-Agent value such as an email address')
+
+
+        self.pause = 2
+
         self.cpat = 'AAPL|AMZN|BRK-B|GOOG|LLY|META|NVDA|JPM|TSLA'
         self.siturl = ''
 
@@ -33,11 +37,12 @@ class EDGARInsiderTrading():
 
         self.stooqurl = 'https://stooq.com/q/d/l/?s=%s.us&i=d'
 
-        #https://www.marketwatch.com/investing/stock/jpm/downloaddatapartial?startdate=02/15/2023%2000:00:00&enddate=02/15/2024%2000:00:00&daterange=d30&frequency=p1d&csvdownload=true&downloadpartial=false&newdates=false
         # symbol MM/DD/YYYY MM/DD/YYYY
-        self.mktwatchurl = 'https://www.marketwatch.com/investing/stock/%s/downloaddatapartial?startdate=%s%2000:00:00&enddate=%s%2000:00:00&daterange=d30&frequency=p1d&csvdownload=true&downloadpartial=false&newdates=false'
+        #self.mktwatchurl = 'https://www.marketwatch.com/investing/stock/%s/downloaddatapartial?startdate=%s%2000:00:00&enddate=%s%2000:00:00&daterange=d30&frequency=p1d&csvdownload=true&downloadpartial=false&newdates=false'
+        self.mktwatchurl = 'https://www.marketwatch.com/investing/stock/{ticker}/downloaddatapartial?startdate={fdate}%2000:00:00&enddate={tdate}%2000:00:00&daterange=d30&frequency=p1d&csvdownload=true&downloadpartial=false&newdates=false'
 
-        self.iturl = 'https://www.sec.gov/files/structureddata/data/insider-transactions-data-sets'
+        self.iturl = 'https://www.sec.gov/files/structureddata/data/'
+        'insider-transactions-data-sets'
         self.toptickersubmissions={}
         self.transtoptwenty=[]
 
@@ -48,14 +53,21 @@ class EDGARInsiderTrading():
 
          url - url of file to retrieve
         """
-        try:
-            req = urllib.request.Request(url, headers=self.hdr)
-            resp = urllib.request.urlopen(req)
-            return resp
-        except urllib.error.URLError as e:
-            print("Error %s(%s): %s" % ('query', url, e.reason),
-            file=sys.stderr )
-            sys.exit(1)
+        count = 0
+        max   = 5
+        while True:
+            try:
+                req = urllib.request.Request(url, headers=self.hdr)
+                resp = urllib.request.urlopen(req)
+                return resp
+            except urllib.error.URLError as e:
+                print("Error %s(%s): %s" % ('query', url, e.reason),
+                     file=sys.stderr )
+                count = count + 1
+                if count < max:
+                    time.sleep(self.pause)
+                    continue
+                sys.exit(1)
 
     def storequery(self, qresp, file):
         """storequery(qresp, file)
@@ -163,10 +175,12 @@ class EDGARInsiderTrading():
         mon = ('%d' % (now.month) ).zfill(2)
         yr  = now.year
         odt = '%s/%s/%d' % (mon, day, yr-1)
-        ndt = '%s/%s/%d' % (moņ, day, yr)
+        ndt = '%s/%s/%d' % (mon, day, yr)
         csymbs = self.cpat.lower().split('|')
         for s in csymbs:
-            url = self.mktwatchurl % (s)
+            #url = self.mktwatchurl % (s, odt, ndt)
+            url = self.mktwatchurl.format( ticker=s, fdate=odt, tdate=ndt)
+
             print(url)
             resp = self.query(url)
             ofn = os.path.join(directory, '%s-mw.csv' % (s) )
@@ -354,10 +368,11 @@ def main():
 
     args = argp.parse_args()
 
-    fznm = EIT.genform345name()
+    # fznm = EIT.genform345name()
     #EIT.getform345(file=fznm, directory=args.directory)
 
-    EIT.gettop10stooq(directory=args.directory)
+    #EIT.gettop10stooq(directory=args.directory)
+    EIT.gettop10marketwatch(directory=args.directory)
 
     fzpath = os.path.join(args.directory, fznm)
     EIT.form345largesttrades(fzpath, 'NONDERIV_TRANS.tsv')

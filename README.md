@@ -15,6 +15,7 @@ pip install edgarquery
 
 EQODIR  - the location to store the output<br/>
 EQEMAIL - required by the SEC to download some of the files with curl.<br/>
+          used as the user-agent in the url request by the scripts.<br/>
 
 ## edgarquery<br/>
 
@@ -181,4 +182,17 @@ options:<br/>
   --directory DIRECTORY<br/>
                         where to deposit the fileѕ<br/>
 <br/>
+
+## cikperson
+
+usage: cikperson [-h] [--cikpersondb CIKPERSONDB] [--file FILE]
+
+extract CIK and person names from form345 zip files
+
+options:
+  -h, --help            show this help message and exit
+  --cikpersondb CIKPERSONDB
+                        full path to the sqlite3 database - default in memory
+  --file FILE           where to store the output - default stdout
+
 <br/>

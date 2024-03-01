@@ -243,7 +243,13 @@
   https://www.sec.gov/Archives/edgar/daily-index/bulkdata/submissions.zip
 
   https://www.sec.gov/edgar/search-and-access
+
+  # edgar full text search
+  https://www.sec.gov/edgar/searchedgar/edgarfulltextfaq.htm
   https://www.sec.gov/edgar/search/
+  ecample:
+  https://www.sec.gov/edgar/search/#/ciks=0000315090&
+                entityName=BUFFETT%2520WARREN%2520E%2520(CIK%25200000315090)
 
   tax 
   https://americansfortaxfairness.org/ultra-wealthys-8-5-trillion-untaxed-income/

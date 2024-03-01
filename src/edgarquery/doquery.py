@@ -12,6 +12,8 @@ from functools import partial
 import re
 import urllib.request
 
+from edgarquery import common
+
 class EDGARquery():
 
     def __init__(self, cik=None, cy=None):
@@ -73,6 +75,7 @@ class EDGARquery():
         self.subzip     = '%s/bulkdata/submissions.zip' % self.edi
         self.fsanurl    = 'https://www.sec.gov/files/dera/data/financial-statement-and-notes-data-sets'
 
+        self.uq = common._URLQuery()
         self.chunksize = 4194304
         self.argp      = None
         self.content   = None
@@ -95,43 +98,6 @@ class EDGARquery():
         cy = 'CY%sQ%sI' % (y, q)
         return cy
 
-    def query(self, url=None):
-        """query(url) - query a url
-
-         url - url of file to retrieve
-        """
-        try:
-            req = urllib.request.Request(url, headers=self.hdr)
-            resp = urllib.request.urlopen(req)
-            return resp
-        except urllib.error.URLError as e:
-            print("Error %s(%s): %s" % ('query', url, e.reason),
-            file=sys.stderr )
-            sys.exit(1)
-
-    def storequery(self, qresp, file):
-        """storequery(qresp, file) - store the query response in a file
-
-        resp - the query response
-        file   - filename that will hold the query response
-        """
-        if not qresp: 
-            print('storequery: no content', file=sys.stderr)
-            sys.exit(1)
-        if not file:
-            print('storequery: no output filename', file=sys.stderr)
-            sys.exit(1)
-        of = os.path.abspath(file)
-        # some downloads can be somewhat large
-        with open(of, 'wb') as f:
-            parts = iter(partial(qresp.read, self.chunksize), b'')
-            for c in parts:
-                f.write(c)
-            #if c: f.write(c)
-            f.flush()
-            os.fsync(f.fileno() )
-            return
-
     def companyconcept(self, cik=None, frame='us-gaap', fact=None,
         file=None, directory=None):
         """companyconcept(cik, frame, fact, file)
@@ -151,8 +117,10 @@ class EDGARquery():
             file = os.path.join(directory,
               'CompanyConcept.CIK%s_%s_%s.json' % (cik.zfill(10), frame, fact) )
         url = '%s/CIK%s/%s/%s.json' % (self.ccurl, cik.zfill(10), frame, fact)
-        resp = self.query(url)
-        self.storequery(resp, file)
+        resp = self.uq.query(url, self.hdr)
+        self.uq.storequery(resp, file)
+        # resp = self.query(url)
+        # self.storequery(resp, file)
 
     def companyfacts(self, cik=None, file=None, directory=None):
         """companyfacts 
@@ -170,8 +138,10 @@ class EDGARquery():
             file=os.path.join(directory,
                 'CompanyFacts.CIK%s.json' % (cik.zfill(10)) )
         url = '%s/CIK%s.json' % (self.cfurl, cik.zfill(10))
-        resp = self.query(url)
-        self.storequery(resp, file)
+        resp = self.uq.query(url, self.hdr)
+        self.uq.storequery(resp, file)
+        # resp = self.query(url)
+        # self.storequery(resp, file)
 
     def xbrlframes(self, frame='us-gaap', fact=None,
                    units='USD', cy=None, file=None, directory=None):
@@ -200,8 +170,10 @@ class EDGARquery():
             file=os.path.join(directory,
                 'XBRLFrames.%s_%s_%s_%s.json' % (frame, fact, units, cy))
         url = '%s/%s/%s/%s/%s.json' % (self.frurl, frame, fact, units, cy)
-        resp = self.query(url)
-        self.storequery(resp, file)
+        resp = self.uq.query(url, self.hdr)
+        self.uq.storequery(resp, file)
+        # resp = self.query(url)
+        # self.storequery(resp, file)
 
     def companyfactsarchivezip(self, file=None, directory=None):
         """companyfactsearchzip(file)
@@ -212,8 +184,10 @@ class EDGARquery():
         """
         if not file:
             file=os.path.join(directory, 'companyfacts.zip')
-        resp=self.query(self.cfzip)
-        self.storequery(resp, file)
+        resp = self.uq.query(self.cfzip, self.hdr)
+        self.uq.storequery(resp, file)
+        # resp=self.query(self.cfzip)
+        # self.storequery(resp, file)
 
     def submissionszip(self, file=None, directory=None):
         """submissionzip(file)
@@ -223,8 +197,10 @@ class EDGARquery():
         """
         if not file:
             file=os.path.join(directory, 'submissions.zip')
-        resp=self.query(self.subzip)
-        self.storequery(resp, file)
+        resp = self.uq.query(self.subzip, self.hdr)
+        self.uq.storequery(resp, file)
+        # resp=self.query(self.subzip)
+        # self.storequery(resp, file)
 
     def financialstatementandnotesdataset(self, cy=None,
         file=None, directory=None):
@@ -262,8 +238,10 @@ class EDGARquery():
             y = cya[0]
             m = cya[1]
             url = '%s/%s_%s_notes.zip' % (self.fsanurl, y, m.zfill(2) )
-        resp=self.query(url)
-        self.storequery(resp, file)
+        resp = self.uq.query(url, self.hdr)
+        self.uq.storequery(resp, file)
+        # resp=self.query(url)
+        # self.storequery(resp, file)
 
 # if __name__ == '__main__':
 def main():

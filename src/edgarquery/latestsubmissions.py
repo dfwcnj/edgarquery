@@ -15,6 +15,8 @@ import subprocess
 import urllib.request
 from functools import partial
 
+from edgarquery import common
+
 class EDGARLatestsubmissions():
 
     def __init__(self):
@@ -32,45 +34,8 @@ class EDGARLatestsubmissions():
                    HTTP User-Agent value such as an email address')
         self.now     = datetime.datetime.now()
         self.cik     = None
+        self.uq = common._URLQuery()
         self.chunksize =4294967296 # 4M
-
-    def query(self, url=None):
-        """query(url)
-
-        url - url to retrieve
-        """
-        try:
-            req = urllib.request.Request(url, headers=self.hdr)
-            resp = urllib.request.urlopen(req)
-            return resp
-        except urllib.error.URLError as e:
-            print("Error %s(%s): %s" % ('query', url, e.reason),
-            file=sys.stderr )
-            sys.exit(1)
-
-    def storequery(self, qresp, tf):
-        """storequery(qresp, tf)
-
-        store the query response in a file
-        resp - response object of the url retrieved
-        tf   - filename that will hold the query response
-        """
-        if not qresp:
-            print('storequery: no content', file=sys.stderr)
-            sys.exit(1)
-        if not tf:
-            print('storequery: no output filename', file=sys.stderr)
-            sys.exit(1)
-        of = os.path.abspath(tf)
-        # some downloads can be somewhat large
-        with open(of, 'wb') as f:
-            parts = iter(partial(qresp.read, self.chunksize), b'')
-            for c in parts:
-                f.write(c)
-            #if c: f.write(c)
-            f.flush()
-            os.fsync(f.fileno() )
-            return
 
     def pgrep(self, pat=None, fn=None):
         """ pgrep(pat, fn)
@@ -139,7 +104,8 @@ class EDGARLatestsubmissions():
         url - url to the submission
         sub - part os a pattern to search
         """
-        resp = self.query(url)
+        resp = self.uq.query(url, self.hdr)
+        #resp = self.query(url)
         rstr    = resp.read().decode('utf-8')
         # print(rstr)
         class MyHTMLParser(HTMLParser):
@@ -220,8 +186,10 @@ class EDGARLatestsubmissions():
         tktbl = None
         # search for submission types for each form.idx file
         for url in surla:
-            resp = self.query(url)
-            self.storequery(resp, tf=ofn)
+            resp = self.uq.query(url, self.hdr)
+            self.uq.storequery(resp, ofn)
+            # resp = self.query(url)
+            # self.storequery(resp, tf=ofn)
             for sub in suba:
                 tktbl = self.dogrep(cik, sub, ofn)
                 if tktbl:
@@ -247,7 +215,7 @@ def main():
     args = argp.parse_args()
 
     LT.cik = args.cik
-    latest = LT.searchsubmissions(args.cik)
+    latest = LT.searchsubmissions(args.cik, args.directory)
     if args.file:
         ofn = os.path.join(args.directory, args.file)
         with open(ofn, w) as fp:

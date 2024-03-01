@@ -15,6 +15,8 @@ import subprocess
 import urllib.request
 from functools import partial
 
+from edgarquery import common
+
 class EDGARLatest10K():
 
     def __init__(self):
@@ -32,44 +34,7 @@ class EDGARLatest10K():
         self.now     = datetime.datetime.now()
         self.link    = True
         self.chunksize =4294967296
-
-    def query(self, url=None):
-        """query(url)
-
-        url  - retrieve a url
-        """
-        try:
-            req = urllib.request.Request(url, headers=self.hdr)
-            resp = urllib.request.urlopen(req)
-            return resp
-        except urllib.error.URLError as e:
-            print("Error %s(%s): %s" % ('query', url, e.reason),
-            file=sys.stderr )
-            sys.exit(1)
-
-    def storequery(self, qresp, tf):
-        """storequery(qresp, tf)
-
-        store the query response in a file
-        resp - the query response
-        tf   - filename that will hold the query response
-        """
-        if not qresp:
-            print('storequery: no content', file=sys.stderr)
-            sys.exit(1)
-        if not tf:
-            print('storequery: no output filename', file=sys.stderr)
-            sys.exit(1)
-        of = os.path.abspath(tf)
-        # some downloads can be somewhat large
-        with open(of, 'wb') as f:
-            parts = iter(partial(qresp.read, self.chunksize), b'')
-            for c in parts:
-                f.write(c)
-            #if c: f.write(c)
-            f.flush()
-            os.fsync(f.fileno() )
-            return
+        self.uq = common._URLQuery()
 
     def pgrep(self, pat=None, fn=None):
         """ pgrep
@@ -138,8 +103,10 @@ class EDGARLatest10K():
                if false, store the html page
         directory - directory to store the output
         """
-        resp = self.query(url)
-        rstr    = resp.read().decode('utf-8')
+        resp = self.uq.query(url, self.hdr)
+        rstr    = self.uq.read().decode('utf-8')
+        # resp = self.query(url)
+        # rstr    = resp.read().decode('utf-8')
         # print(rstr)
         class MyHTMLParser(HTMLParser):
             def __init__(self):
@@ -159,9 +126,11 @@ class EDGARLatest10K():
         parser.feed(rstr)
         tkurl = parser.tkurl
         if tkurl and link:
-            tkresp = self.query(tkurl)
+            tkresp = self.uq.query(tkurl, self.hdr)
+            # tkresp = self.query(tkurl)
             ofn = os.path.join(directory, 'CIK%s.10-K.htm' % (cik.zfill(10) ) )
-            self.storequery(tkresp, ofn)
+            self.uq.storequery(tkresp, ofn)
+            # self.storequery(tkresp, ofn)
 
     def gensearchurls(self):
         """ gensearchurls()
@@ -213,8 +182,10 @@ class EDGARLatest10K():
         ofn   = os.path.join(directory, 'form.idx')
         tktbl = None
         for url in surla:
-            resp = self.query(url)
-            self.storequery(resp, tf=ofn)
+            resp = self.uq.query(url, self.hdr)
+            self.uq.storequery(resp, ofn)
+            # resp = self.query(url)
+            # self.storequery(resp, tf=ofn)
             print('\tSEARCHING: %s' % (url) )
             res = self.dogrep(cik, ofn)
             if res:

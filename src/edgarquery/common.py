@@ -1,29 +1,43 @@
 
 import os
 import sys
+import time
 import urllib.request
+from functools import partial
 
-class URLQuery():
+class _URLQuery():
 
-    def __init__():
-        pass
+    def __init__(self):
+        self.chunksize =4294967296 # 4M
 
     def query(self, url, hdr):
         """query(url) - query a url
 
          url - url of file to retrieve
+         hdr - SEC requires a user agent header
         """
+        ntries = 5
+        tries = 0
+        pause = 2
         if not url:
             print('query: nothing to do', file=sys.stderr)
             sys.exit(0)
-        try:
-            req = urllib.request.Request(url, headers=hdr)
-            resp = urllib.request.urlopen(req)
-            return resp
-        except urllib.error.URLError as e:
-            print("Error %s(%s): %s" % ('query', url, e.reason),
-            file=sys.stderr )
-            sys.exit(1)
+
+        while True:
+            try:
+                req = urllib.request.Request(url, headers=hdr)
+                resp = urllib.request.urlopen(req)
+                return resp
+            except urllib.error.URLError as e:
+                print("Error %s(%s): %s" % ('query', url, e.reason),
+                file=sys.stderr )
+                if tries < ntries:
+                    print('retrying in %d seconds' % pause)
+                    time.sleep(pause)
+                    tries = tries + 1
+                    pause = pause * 2
+                    continue
+                sys.exit(1)
 
     def storequery(self, qresp, file):
         """storequery(qresp, file) - store the query response in a file

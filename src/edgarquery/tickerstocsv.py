@@ -10,6 +10,8 @@ import json
 import argparse
 import urllib.request
 
+from edgarquery import common
+
 class EDGARTickerstoCSV():
 
     def __init__(self):
@@ -28,8 +30,9 @@ class EDGARTickerstoCSV():
             'https://www.sec.gov/files/company_tickers_exchange.json',
             'https://www.sec.gov/files/company_tickers_mf.json'
         ]
+        self.uq = common._URLQuery()
 
-    def query(self, url=None):
+    def internalquery(self, url=None):
         """query - retrieve a url
 
         url  - url to retrieve
@@ -49,7 +52,8 @@ class EDGARTickerstoCSV():
         retrieve a csv file and load it into a python json object
         url - url to a json object
         """
-        resp = self.query(url)
+        resp = self.uq.query(url, self.hdr)
+        #resp = self.query(url)
         js   = json.loads(resp.read())
         return js
 

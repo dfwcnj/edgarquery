@@ -10,6 +10,8 @@ import sqlite3
 import urllib.request
 from functools import partial
 
+from edgarquery import common
+
 class CIKPerson():
 
     def __init__(self):
@@ -24,6 +26,7 @@ class CIKPerson():
         self.y0     = 2006
         self.y1     = None
         self.iturl = 'https://www.sec.gov/files/structureddata/data/insider-transactions-data-sets'
+        self.uq = common._URLQuery()
         self.chunksize =4294967296 # 4M
 
         if 'EQEMAIL' in os.environ:
@@ -35,60 +38,6 @@ class CIKPerson():
         self.cpdb = "CREATE TABLE IF NOT EXISTS cikperson ('CIK', 'Name', 'Relationship')"
         self.cpidx = "CREATE UNIQUE INDEX IF NOT EXISTS cikidx ON cikperson ('CIK', 'Relationship')"
         self.cpins = "INSERT OR IGNORE INTO cikperson VALUES (%s)"
-
-    def query(self, url=None):
-        """query(url) - query a url
-
-        url - url of file to retrieve
-        """
-        try:
-            req = urllib.request.Request(url, headers=self.hdr)
-            resp = urllib.request.urlopen(req)
-            return resp
-        except urllib.error.URLError as e:
-            print("Error %s(%s): %s" % ('query', url, e.reason),
-            file=sys.stderr )
-            sys.exit(1)
-
-    def storequery(self, qresp, file):
-        """storequery(qresp, file) - store the query response in a file
-
-        resp - the query response
-        file   - filename that will hold the query response
-        """
-        if not qresp:
-            print('storequery: no content', file=sys.stderr)
-            sys.exit(1)
-        if not file:
-            print('storequery: no output filename', file=sys.stderr)
-            sys.exit(1)
-        of = os.path.abspath(file)
-        # some downloads can be somewhat large
-        with open(of, 'wb') as f:
-            parts = iter(partial(qresp.read, self.chunksize), b'')
-            for c in parts:
-                f.write(c)
-            #if c: f.write(c)
-            f.flush()
-            os.fsync(f.fileno() )
-            return
-
-    def form345zipfileiter(self, fzpath, file):
-        """ form345zipfileiter(fzpath, iter)
-
-        return an iterator for lines from file in fzpath
-        fzpath - form345 zip file from fred.stlouisfed.org
-        file  - file in the zip file to read
-        """
-        try:
-            lna = []
-            with zipfile.ZipFile(fzpath, mode='r') as zfp:
-                fstr = zfp.read(file).decode("utf-8")
-                lge = (line for line in fstr.splitlines() )
-                return lge
-        except zipfile.BadZipfile as e:
-            print('open %s: %s', (fzpath, e) )
-            sys.exit(1)
 
     def cikpersontbl(self):
         """ cikpersontbl()
@@ -124,6 +73,23 @@ class CIKPerson():
         sql = self.cpins % (values)
         self.dbcur.execute(sql)
 
+    def form345zipfileiter(self, fzpath, file):
+        """ form345zipfileiter(fzpath, iter)
+
+        return an iterator for lines from file in fzpath
+        fzpath - form345 zip file from fred.stlouisfed.org
+        file  - file in the zip file to read
+        """
+        try:
+            lna = []
+            with zipfile.ZipFile(fzpath, mode='r') as zfp:
+                fstr = zfp.read(file).decode("utf-8")
+                lge = (line for line in fstr.splitlines() )
+                return lge
+        except zipfile.BadZipfile as e:
+            print('open %s: %s', (fzpath, e) )
+            sys.exit(1)
+
     def collectform345owners(self, fznm, fzpath):
         """ collectform345owners(fznm, fzpath)
 
@@ -131,9 +97,12 @@ class CIKPerson():
         fznm - name of the form345.zip file
         fzpath - full path of where the file will be stored
         """
+
         url = '%s/%s' % (self.iturl, fznm)
-        resp = self.query(url)
-        self.storequery(resp, fzpath)
+        resp = self.uq.query(url, self.hdr)
+        self.uq.storequery(resp, fzpath)
+        # resp = self.query(url)
+        # self.storequery(resp, fzpath)
         lge = self.form345zipfileiter(fzpath, 'REPORTINGOWNER.tsv')
         hdr = []
         for ln in lge:
@@ -151,10 +120,10 @@ class CIKPerson():
         sql = 'SELECT * from cikperson'
         self.dbcur.execute(sql)
         hdr = [column[0] for column in self.dbcur.description]
-        print("'%s'" % ("','".join(hdr) ), file=fp )
+        print('"%s"' % ('","'.join(hdr) ), file=fp )
         rows = self.dbcur.fetchall()
         for row in rows:
-            print("'%s'" % ("','".join(row) ), file=fp )
+            print('"%s"' % ('","'.join(row) ), file=fp )
 
     def processform345files(self, cikpersondb, fp):
         """ processform345files(cikpersondb)

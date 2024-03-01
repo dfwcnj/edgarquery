@@ -47,17 +47,6 @@ edgarsubmissionsziptocsv = "edgarquery.submissionsziptocsv:main"
 edgartickerstocsv = "edgarquery.tickerstocsv:main"
 edgarxbrlframestocsv = "edgarquery.xbrlframestocsv:main"
 
-#edgarcompanyconcepttocsv = "edgarquery.clis.companyconcepttocsv:main"
-#edgarcompanyfactstocsv = "edgarquery.clis.mycompanyfactstocsv:main"
-#edgarcompanyfactsziptocsv = "edgarquery.clis.mycompanyfactsziptocsv:main"
-#edgarquery = "edgarquery.clis.mydoquery:main"
-#edgarlatest10K = "edgarquery.clis.mylatest10K:main"
-#edgarlatestsubmissions = "edgarquery.clis.mylatestsubmissions:main"
-#edgarsubmissions = "edgarquery.clis.mysubmissions:main"
-#edgarsubmissionsziptocsv = "edgarquery.clis.mysubmissionsziptocsv:main"
-#edgartickerstocsv = "edgarquery.clis.mytickerstocsv:main"
-#edgarxbrlframestocsv = "edgarquery.clis.myxbrlframestocsv:main"
-
 #scripts/__pycache__:
 #edgarquery.cpython-311.pyc
 

@@ -15,6 +15,8 @@ import subprocess
 import urllib.request
 from functools import partial
 
+from edgarquery import common
+
 class EDGARSubmissions():
 
     def __init__(self):
@@ -32,10 +34,11 @@ class EDGARSubmissions():
               HTTP User-Agent value such as an email address', file=sys.stderr)
             sys.exit(1)
         self.now     = datetime.datetime.now()
+        self.uq = common._URLQuery()
         self.chunksize =4294967296 # 4M
         self.submissionsdict=None
 
-    def query(self, url=None):
+    def internalquery(self, url=None):
         """query - retrieve a url
          url - url to retrieve
         """
@@ -48,7 +51,7 @@ class EDGARSubmissions():
             file=sys.stderr )
             sys.exit(1)
 
-    def storequery(self, qresp, tf):
+    def internalstorequery(self, qresp, tf):
         """storequery - store the query response in a file
         resp - the query response
         tf   - filename that will hold the query response
@@ -184,7 +187,9 @@ class EDGARSubmissions():
         subtype - pattern to find
         url - url whose contents to search
         """
-        resp = self.query(url)
+        uq = common._URLQuery()
+        resp = self.uq.query(url, self.hdr)
+        # resp = self.query(url)
         rstr    = resp.read().decode('utf-8')
         # print('queryhtml: %s' % (url) )
         class MyHTMLParser(HTMLParser):
@@ -324,8 +329,10 @@ class EDGARSubmissions():
         # download each form.idx file in turn
         # for each form.idx search for the cik
         for url in surla:
-            resp = self.query(url)
-            self.storequery(resp, tf=ofn)
+            resp = self.uq.query(url, self.hdr)
+            self.uq.storequery(resp, ofn)
+            # resp = self.query(url)
+            # self.storequery(resp, tf=ofn)
             #print('\tSEARCHING for %s in %s' % (cik, url), file=sys.stderr )
             self.dogrep(cik, ofn)
         for cik in self.submissionsdict.keys():

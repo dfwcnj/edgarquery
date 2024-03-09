@@ -37,6 +37,7 @@ path = "src/edgarquery/__about__.py"
 [project.scripts]
 edgarcompanyconcepttocsv = "edgarquery.companyconcepttocsv:main"
 edgarcompanyfactstocsv = "edgarquery.companyfactstocsv:main"
+edgarcompanyfactsshow = "edgarquery.companyfactsshow:main"
 edgarcompanyfactsziptocsv = "edgarquery.companyfactsziptocsv:main"
 edgarcikperson = "edgarquery.cikperson:main"
 edgarquery = "edgarquery.doquery:main"

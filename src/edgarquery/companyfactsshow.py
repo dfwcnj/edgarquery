@@ -3,6 +3,7 @@
 import os
 import sys
 import argparse
+import csv
 import json
 import re
 import urllib.request
@@ -18,21 +19,33 @@ class CompanyFactsShow():
         collect SEC EDGAR company facts for a CIK and display them in
         your browser
         """
-        self.cik = None
-        self.rstr = None
-        self.json = None
-        self.htmla = []
+        self.cik      = None
+        self.rstr     = None
+        self.json     = None
+        self.htmla    = []
         self.htmlfile = None
-        self.uq = common._URLQuery()
+        self.tickd    = {}
 
-        self.xbrl       = 'https://data.sec.gov/api/xbrl'
-        self.cfurl      = '%s/companyfacts'   % self.xbrl
+        self.xbrl     = 'https://data.sec.gov/api/xbrl'
+        self.cfurl    = '%s/companyfacts'   % self.xbrl
+        self.turl     = 'https://www.sec.gov/files/company_tickers.json'
 
         if 'EQEMAIL' in os.environ:
             self.hdr     = {'User-Agent' : os.environ['EQEMAIL'] }
         else:
             print('EQEMAIL environmental variable must be set to a valid \
                    HTTP User-Agent value such as an email address')
+
+        self.uq = common._URLQuery()
+
+    def tickers(self):
+        resp = self.uq.query(self.turl, self.hdr)
+        rstr = resp.read().decode('utf-8')
+        jd = json.loads(rstr)
+        for k in jd.keys():
+            ck = jd[k]['cik_str']
+            self.tickd[ck] = jd[k]
+
 
     def processjson(self, rstr):
         """ processjson(js)
@@ -57,8 +70,9 @@ class CompanyFactsShow():
         self.htmla.append('<html>')
 
         cik = '%d' % (self.cik)
-        ttl = 'Company Facts CIK%s' % (cik.zfill(10) )
-        self.htmla.append('<head><title>%s</title></head>' % (ttl) )
+        ch = self.tickd[self.cik]
+        ttl = 'Company Facts: %s CIK%s' % (ch['title'], cik.zfill(10) )
+        self.htmla.append('<head><h1>%s</h1></head>' % (ttl) )
 
         fka = [k for k in facts.keys()]
         for k in fka:
@@ -66,17 +80,19 @@ class CompanyFactsShow():
             assert type(facts[k]) == type({}), \
                 'jsonfacts: %s not a dictionary' % self.k
 
-            self.htmla.append('<p>%s</p><br/>' % (self.facttype) )
+            self.htmla.append('<p>fact type: %s</p><br/>' % (self.facttype) )
 
             fka = [ft for ft in facts[k].keys()]
             for t in fka:
                 #self.htmla.append('<h3> Fact Name: %s</h3>' % (t) )
 
-                self.label = facts[k][t]['label']
-                #self.htmla.append('<h4>Fact Label: %s</h4>' % (self.label) )
+                label = facts[k][t]['label']
+                #self.htmla.append('<h4>Fact Label: %s</h4>' % (label) )
 
-                self.descr = facts[k][t]['description']
-                self.htmla.append('<h5>Description: %s</h5>' % (self.descr) )
+                descr = facts[k][t]['description']
+                if not descr:
+                    descr = 'No description'
+                self.htmla.append('<h3>Description: %s</h3>' % (descr) )
 
                 units = facts[k][t]['units']
                 assert type(units) == type({}), \
@@ -86,7 +102,7 @@ class CompanyFactsShow():
                     self.units = uk
                     assert type(units[uk]) == type([]), \
                         'jasonfacts %s is not an array'
-                    self.jsonfacttable(units[uk], self.label)
+                    self.jsonfacttable(units[uk], label)
         self.htmla.append('</html>')
 
 
@@ -106,9 +122,11 @@ class CompanyFactsShow():
         for r in recs:
             ra = [r[k] for k in r.keys()]
             for i in range(len(ra) ):
-                if type(ra[i]) == type(1):
+                if not ra[i]:
+                    ra[i] = 'null'
+                elif type(ra[i]) == type(1):
                     ra[i] = '%d' % (ra[i])
-                if type(ra[i]) == type(1.0):
+                elif type(ra[i]) == type(1.0):
                     ra[i] = '%f' % (ra[i])
             rw = '</td><td scope="row">'.join(ra)
             self.htmla.append('<tr><td scope="row">%s</td></tr>' % (rw) )
@@ -143,10 +161,12 @@ class CompanyFactsShow():
         directory - where to store the generated html file
         """
         self.cik = cik
+        self.tickers()
         url = '%s/CIK%s.json' % (self.cfurl, cik.zfill(10))
         resp = self.uq.query(url, self.hdr)
         rstr = resp.read().decode('utf-8')
         self.processjson(rstr)
+
         self.savefacthtml(directory)
 
 

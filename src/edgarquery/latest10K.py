@@ -15,7 +15,10 @@ import subprocess
 import urllib.request
 from functools import partial
 
-from edgarquery import common
+try:
+    from edgarquery import common
+except ImportError as e:
+    import common
 
 class EDGARLatest10K():
 
@@ -104,7 +107,7 @@ class EDGARLatest10K():
         directory - directory to store the output
         """
         resp = self.uq.query(url, self.hdr)
-        rstr    = self.uq.read().decode('utf-8')
+        rstr    = resp.read().decode('utf-8')
         # resp = self.query(url)
         # rstr    = resp.read().decode('utf-8')
         # print(rstr)

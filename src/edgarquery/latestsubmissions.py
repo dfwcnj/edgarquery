@@ -15,7 +15,10 @@ import subprocess
 import urllib.request
 from functools import partial
 
-from edgarquery import common
+try:
+    from edgarquery import common
+except ImportError as e:
+    import common
 
 class EDGARLatestsubmissions():
 

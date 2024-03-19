@@ -10,7 +10,10 @@ import json
 import argparse
 import urllib.request
 
-from edgarquery import common
+try:
+    from edgarquery import common
+except ImportError as e:
+    import common
 
 class EDGARTickerstoCSV():
 

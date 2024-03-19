@@ -1,4 +1,4 @@
-#! end python
+#! env python
 
 import os
 import sys
@@ -9,7 +9,10 @@ import re
 import urllib.request
 import webbrowser
 
-from edgarquery import common
+try:
+    from edgarquery import common
+except ImportError as e:
+    import common
 
 class CompanyFactsShow():
 
@@ -67,12 +70,13 @@ class CompanyFactsShow():
         facts - json structure containing SEC EDGAR companyfacts
         """
         assert type(facts) == type({}), 'jsonfacts: facts not a dictionary'
-        self.htmla.append('<html>')
+        htmla = []
+        htmla.append('<html>')
 
         cik = '%d' % (self.cik)
         ch = self.tickd[self.cik]
         ttl = 'Company Facts: %s CIK%s' % (ch['title'], cik.zfill(10) )
-        self.htmla.append('<head><h1>%s</h1></head>' % (ttl) )
+        htmla.append('<head><h1>%s</h1></head>' % (ttl) )
 
         fka = [k for k in facts.keys()]
         for k in fka:
@@ -80,19 +84,19 @@ class CompanyFactsShow():
             assert type(facts[k]) == type({}), \
                 'jsonfacts: %s not a dictionary' % self.k
 
-            self.htmla.append('<p>fact type: %s</p><br/>' % (self.facttype) )
+            htmla.append('<p>fact type: %s</p><br/>' % (self.facttype) )
 
             fka = [ft for ft in facts[k].keys()]
             for t in fka:
-                #self.htmla.append('<h3> Fact Name: %s</h3>' % (t) )
+                #htmla.append('<h3> Fact Name: %s</h3>' % (t) )
 
                 label = facts[k][t]['label']
-                #self.htmla.append('<h4>Fact Label: %s</h4>' % (label) )
+                #htmla.append('<h4>Fact Label: %s</h4>' % (label) )
 
                 descr = facts[k][t]['description']
                 if not descr:
                     descr = 'No description'
-                self.htmla.append('<h3>Description: %s</h3>' % (descr) )
+                htmla.append('<h3>Description: %s</h3>' % (descr) )
 
                 units = facts[k][t]['units']
                 assert type(units) == type({}), \
@@ -103,7 +107,8 @@ class CompanyFactsShow():
                     assert type(units[uk]) == type([]), \
                         'jasonfacts %s is not an array'
                     self.jsonfacttable(units[uk], label)
-        self.htmla.append('</html>')
+        #self.htmla.append('</html>')
+        self.htmla.extend(htmla)
 
 
     def jsonfacttable(self, recs, label):
@@ -152,6 +157,19 @@ class CompanyFactsShow():
         """
         webbrowser.open('file://%s' % self.htmlfile)
 
+    def getcompanyfacts(self, cik):
+        """ getcompanyfacts(cik)
+
+        collectall the SEC EDGAR company facts  data for a company
+        return the query response as a python string
+        """
+        self.cik = cik
+        self.tickers()
+        url = '%s/CIK%s.json' % (self.cfurl, cik.zfill(10))
+        resp = self.uq.query(url, self.hdr)
+        rstr = resp.read().decode('utf-8')
+        return rstr
+
     def companyfacts(self, cik, directory):
         """companyfacts 
 
@@ -160,11 +178,7 @@ class CompanyFactsShow():
         cik - Central Index Key
         directory - where to store the generated html file
         """
-        self.cik = cik
-        self.tickers()
-        url = '%s/CIK%s.json' % (self.cfurl, cik.zfill(10))
-        resp = self.uq.query(url, self.hdr)
-        rstr = resp.read().decode('utf-8')
+        rstr = self.getcompanyfacts(cik)
         self.processjson(rstr)
 
         self.savefacthtml(directory)

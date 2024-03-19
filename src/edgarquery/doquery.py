@@ -12,7 +12,10 @@ from functools import partial
 import re
 import urllib.request
 
-from edgarquery import common
+try:
+    from edgarquery import common
+except ImportError as e:
+    import common
 
 class EDGARquery():
 
@@ -243,7 +246,6 @@ class EDGARquery():
         # resp=self.query(url)
         # self.storequery(resp, file)
 
-# if __name__ == '__main__':
 def main():
     EQ = EDGARquery()
 

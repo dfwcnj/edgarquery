@@ -122,7 +122,6 @@ class EDGARCompanyFactsziptoCSV():
             self.jstocsv(js, directory)
 
 
-# if __name__ == '__main__':
 def main():
     ES = EDGARCompanyFactsziptoCSV()
     argp = argparse.ArgumentParser(description='Extract one or more json\

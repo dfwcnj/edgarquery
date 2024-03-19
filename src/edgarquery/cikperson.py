@@ -10,7 +10,10 @@ import sqlite3
 import urllib.request
 from functools import partial
 
-from edgarquery import common
+try:
+    from edgarquery import common
+except ImportError as e:
+    import common
 
 class CIKPerson():
 
@@ -166,7 +169,7 @@ def main():
 
     fp = sys.stdout
     if args.file:
-        with open(args.file) as fp:
+        with open(args.file, 'w') as fp:
             CP.processform345files(args.cikpersondb, fp)
             CP.reportcikpeople(fp)
     else:

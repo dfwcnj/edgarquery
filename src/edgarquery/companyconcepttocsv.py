@@ -125,7 +125,6 @@ class EDGARCompanyConcepttoCSV():
                       u['filed']), file=self.of )
 
 
-# if __name__ == '__main__':
 def main():
     EP = EDGARCompanyConcepttoCSV()
     argp = argparse.ArgumentParser(description="Parse an SEC EDGAR\

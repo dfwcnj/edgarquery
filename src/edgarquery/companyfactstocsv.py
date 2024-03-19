@@ -140,7 +140,6 @@ class EDGARCompanyFactstoCSV():
             print('%s %s: %s' % (self.jsonfile, fn, e), file=sys.stderr )
             sys.exit(1)
 
-# if __name__ == '__main__':
 def main():
     EP = EDGARCompanyFactstoCSV()
     argp = argparse.ArgumentParser(description="Parse an SEC EDGAR\

@@ -37,6 +37,7 @@ class EDGARLatestsubmissions():
                    HTTP User-Agent value such as an email address')
         self.now     = datetime.datetime.now()
         self.cik     = None
+        self.submissions = {}
         self.uq = common._URLQuery()
         self.chunksize =4294967296 # 4M
 
@@ -173,6 +174,16 @@ class EDGARLatestsubmissions():
             surla.append('%s/%d/QTR4/form.idx' % (self.sprefix, yr) )
         return surla
 
+    def reportsubmissions(self, fp):
+        """ reportsubmissions(fp)
+
+        report latest submissions for a cik
+        fp - file pointer to write
+        """
+        for k in self.submissions.keys():
+            if len(self.submissions[k]) > 0:
+                print('%s\t%s' % (k, self.submissions[k]) )
+
     def searchsubmissions(self, cik, directory):
         """ searchsubmissions(cik)
 
@@ -200,6 +211,7 @@ class EDGARLatestsubmissions():
                     if tkurl:
                         latest[sub]=tkurl
         os.unlink(ofn)
+        self.submissions = latest
         return latest
 
 # if __name__ == '__main__':
@@ -213,23 +225,21 @@ def main():
 
     argp.add_argument("--directory", default='/tmp',
         help="directory to store the output")
-    argp.add_argument('--file', help="json file to process")
+    argp.add_argument('--file', help="where to store the output")
 
     args = argp.parse_args()
 
     LT.cik = args.cik
     latest = LT.searchsubmissions(args.cik, args.directory)
+
+    fp = sys.stdout
     if args.file:
-        ofn = os.path.join(args.directory, args.file)
-        with open(ofn, w) as fp:
-            print("'formtype','formurl'", file=fp)
-            for k in latest.keys():
-                if len(latest[k]) > 0:
-                    print('%s\t%s' % (k, latest[k]), file=fp )
-    else:
-        for k in latest.keys():
-            if len(latest[k]) > 0:
-                print('%s\t%s' % (k, latest[k]) )
+        try:
+            fp = open(args.file, 'w')
+        except Exception as e:
+            print('%s: %s' % (args.file, e) )
+
+    LT.reportsubmissions(fp)
 
 if __name__ == '__main__':
     main()

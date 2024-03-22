@@ -120,7 +120,7 @@ class EDGARLatest10K():
                     if 'ix?doc' in attrs[0][1]:
                         self.tkurl =  '%s%s' % ('https://www.sec.gov',
                              attrs[0][1].split('=')[1])
-                        print(self.tkurl)
+                        #print(self.tkurl)
             def handle_endtag(self, tag):
                 pass
             def handle_data(self, data):
@@ -128,12 +128,7 @@ class EDGARLatest10K():
         parser = MyHTMLParser()
         parser.feed(rstr)
         tkurl = parser.tkurl
-        if tkurl and link:
-            tkresp = self.uq.query(tkurl, self.hdr)
-            # tkresp = self.query(tkurl)
-            ofn = os.path.join(directory, 'CIK%s.10-K.htm' % (cik.zfill(10) ) )
-            self.uq.storequery(tkresp, ofn)
-            # self.storequery(tkresp, ofn)
+        return tkurl
 
     def gensearchurls(self):
         """ gensearchurls()
@@ -170,6 +165,7 @@ class EDGARLatest10K():
             surla.append('%s/%d/QTR2/form.idx' % (self.sprefix, yr) )
             surla.append('%s/%d/QTR3/form.idx' % (self.sprefix, yr) )
             surla.append('%s/%d/QTR4/form.idx' % (self.sprefix, yr) )
+        surla.reverse()
         return surla
 
     def search10K(self, cik, link, directory=None):
@@ -190,12 +186,18 @@ class EDGARLatest10K():
             # resp = self.query(url)
             # self.storequery(resp, tf=ofn)
             print('\tSEARCHING: %s' % (url) )
-            res = self.dogrep(cik, ofn)
-            if res:
-                tktbl = res
-        if tktbl:
-            print('\tSEARCHING: %s' % (tktbl) )
-            self.get10kfromhtml(cik, tktbl, link, directory)
+            tktbl = self.dogrep(cik, ofn)
+            if tktbl:
+                tkurl = self.get10kfromhtml(cik, tktbl, link, directory)
+                if link:
+                    print(tkurl)
+                if directory:
+                    tkresp = self.uq.query(tkurl, self.hdr)
+                    ofn = os.path.join(directory, 'CIK%s.10-K.htm' %\
+                        (cik.zfill(10) ) )
+                    self.uq.storequery(tkresp, ofn)
+                return
+
 
 # if __name__ == '__main__':
 def main():

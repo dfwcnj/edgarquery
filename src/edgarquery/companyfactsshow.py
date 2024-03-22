@@ -106,8 +106,8 @@ class CompanyFactsShow():
                     self.units = uk
                     assert type(units[uk]) == type([]), \
                         'jasonfacts %s is not an array'
-                    self.jsonfacttable(units[uk], label)
-        #self.htmla.append('</html>')
+                    tbl = self.jsonfacttable(units[uk], label)
+                    self.htmla.extend(tbl)
         self.htmla.extend(htmla)
 
 
@@ -117,13 +117,14 @@ class CompanyFactsShow():
         construct an html table from the rows of a company fact
         recs - company fact rows
         """
-        self.htmla.append('<table border=1 >')
+        htmla = []
+        htmla.append('<table border=1 >')
 
         ka = [k for k in recs[0].keys() ]
         hd = '</th><th scope="col">'.join(ka)
-        self.htmla.append('<tr><th scope="col">%s</th></tr>' % (hd) )
+        htmla.append('<tr><th scope="col">%s</th></tr>' % (hd) )
         cap = '<caption>%s</caption>' % (label)
-        self.htmla.append(cap)
+        htmla.append(cap)
         for r in recs:
             ra = [r[k] for k in r.keys()]
             for i in range(len(ra) ):
@@ -134,8 +135,9 @@ class CompanyFactsShow():
                 elif type(ra[i]) == type(1.0):
                     ra[i] = '%f' % (ra[i])
             rw = '</td><td scope="row">'.join(ra)
-            self.htmla.append('<tr><td scope="row">%s</td></tr>' % (rw) )
-        self.htmla.append('</table>')
+            htmla.append('<tr><td scope="row">%s</td></tr>' % (rw) )
+        htmla.append('</table>')
+        return htmla
 
     def savefacthtml(self, directory):
         """ savefacthtml(directory)

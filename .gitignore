@@ -1,1 +1,2 @@
-src/edgarquery/__pycache__
+src/edgarquery/__pycache__/*.pyc
+*.pyc

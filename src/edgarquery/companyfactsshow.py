@@ -46,9 +46,22 @@ class CompanyFactsShow():
         rstr = resp.read().decode('utf-8')
         jd = json.loads(rstr)
         for k in jd.keys():
+            # CIK as key
             ck = jd[k]['cik_str']
             self.tickd[ck] = jd[k]
+            # ticker as key
+            tkr = jd[k]['ticker']
+            self.tickd[tkr] = jd[k]
 
+
+    def getcikforticker(self, ticker):
+        if not self.tickd.keys():
+            self.tickers()
+        ticker = ticker.upper()
+        if ticker not in self.tickd.keys():
+            return None
+        cik = self.tickd[ticker]['cik_str']
+        return '%d' % (cik)
 
     def processjson(self, rstr):
         """ processjson(js)
@@ -107,7 +120,7 @@ class CompanyFactsShow():
                     assert type(units[uk]) == type([]), \
                         'jasonfacts %s is not an array'
                     tbl = self.jsonfacttable(units[uk], label)
-                    self.htmla.extend(tbl)
+                    htmla.extend(tbl)
         self.htmla.extend(htmla)
 
 
@@ -166,7 +179,8 @@ class CompanyFactsShow():
         return the query response as a python string
         """
         self.cik = cik
-        self.tickers()
+        if not self.tickd.keys():
+            self.tickers()
         url = '%s/CIK%s.json' % (self.cfurl, cik.zfill(10))
         resp = self.uq.query(url, self.hdr)
         rstr = resp.read().decode('utf-8')
@@ -189,19 +203,29 @@ class CompanyFactsShow():
 def main():
     argp = argparse.ArgumentParser(description='parse EDGAR company\
     facts for a cik and display them in a browser')
-    argp.add_argument('--cik', required=True,
-        help='Centralized Index Key for the company')
+    argp.add_argument('--cik', help='Centralized Index Key for the company')
+    argp.add_argument('--ticker', help='Ticker for the company')
     argp.add_argument('--directory', default='/tmp',
         help='where to store the html file to display')
-    argp.add_argument('--show', action='store_true', default=False,
-        help='display the html in your browser')
 
     args = argp.parse_args()
+    if not args.cik and not args.ticker:
+        argp.print_help()
+        sys.exit()
 
     CFS = CompanyFactsShow()
-    CFS.companyfacts(args.cik, args.directory)
-    if args.show:
-        CFS.show()
+
+    if args.ticker:
+        cik = CFS.getcikforticker(args.ticker)
+        if cik == None:
+            argp.print_help()
+            sys.exit()
+    else:
+        cik = args.cik
+
+
+    CFS.companyfacts(cik, args.directory)
+    CFS.show()
 
 if __name__ == '__main__':
     main()

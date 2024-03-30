@@ -3,15 +3,5 @@
 # SPDX-License-Identifier: MIT
 # https://www.sec.gov/edgar/sec-api-documentation
 
-import edgarquery.common
-# import edgarquery.companyconcepttocsv
-# import edgarquery.companyfactstocsv
-# import edgarquery.companyfactsziptocsv
-# import edgarquery.latest10K
-# import edgarquery.latestsubmissions
-# import edgarquery.doquery
-# import edgarquery.submissions
-# import edgarquery.submissionsziptocsv
-# import edgarquery.tickerstocsv
-# import edgarquery.xbrlframestocsv
-# import edgarquery.cikperson
+import edgarquery.ebquery
+import edgarquery.tickerd

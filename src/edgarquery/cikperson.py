@@ -11,9 +11,9 @@ import urllib.request
 from functools import partial
 
 try:
-    from edgarquery import common
+    from edgarquery import ebquery
 except ImportError as e:
-    import common
+    import ebquery
 
 class CIKPerson():
 
@@ -29,7 +29,7 @@ class CIKPerson():
         self.y0     = 2006
         self.y1     = None
         self.iturl = 'https://www.sec.gov/files/structureddata/data/insider-transactions-data-sets'
-        self.uq = common._URLQuery()
+        self.uq = ebquery._EBURLQuery()
         self.chunksize =4294967296 # 4M
 
         if 'EQEMAIL' in os.environ:

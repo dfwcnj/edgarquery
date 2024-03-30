@@ -110,10 +110,10 @@ a subset of the files in the zip file<br/>
 ##<br/>
 ## edgarquery<br/>
 ##<br/>
-usage: edgarquery [-h] [--cik CIK] [--cy CY] [--frame FRAME] [--units UNITS]<br/>
-[--fact FACT] [--directory DIRECTORY] [--file FILE]<br/>
-[--companyconcept] [--companyfacts] [--xbrlframes]<br/>
-[--companyfactsarchivezip] [--submissionszip]<br/>
+usage: edgarquery [-h] [--cik CIK] [--ticker TICKER] [--cy CY] [--frame FRAME]<br/>
+[--units UNITS] [--fact FACT] [--directory DIRECTORY]<br/>
+[--file FILE] [--companyconcept] [--companyfacts]<br/>
+[--xbrlframes] [--companyfactsarchivezip] [--submissionszip]<br/>
 [--financialstatementandnotesdataset]<br/>
 <br/>
 query SEC EDGAR site NOTE thæt EQEMAIL env variable is required and must<br/>
@@ -122,6 +122,7 @@ contain a valid User-Agent such as your email address<br/>
 options:<br/>
 -h, --help            show this help message and exit<br/>
 --cik CIK             10-digit Central Index Key<br/>
+--ticker TICKER       company stock ticker<br/>
 --cy CY               calendar year e.g. CY2023, CY2023Q1, CY2023Q4I<br/>
 --frame FRAME         reporting frame e.g us-gaap, ifrs-full, dei, srt<br/>
 --units UNITS         USD or shares<br/>
@@ -133,11 +134,11 @@ directory to store the output<br/>
 each query type if --directory is not provided, it<br/>
 should be the full path<br/>
 --companyconcept      returns all the XBRL disclosures from a single company<br/>
---cik required --frame - default us-gaap --fact -<br/>
+--cik or --ticker required --frame - default us-gaap --fact -<br/>
 default USD-per-shares<br/>
 --companyfacts        aggregates one fact for each reporting entity that is<br/>
 last filed that most closely fits the calendrical<br/>
-period requested --cik required<br/>
+period requested --cik <br/>
 --xbrlframes          returns all the company concepts data for a CIK --cy<br/>
 required<br/>
 --companyfactsarchivezip<br/>
@@ -151,13 +152,15 @@ summaries --cy required<br/>
 ##<br/>
 ## edgarlatest10K<br/>
 ##<br/>
-usage: edgarlatest10K [-h] --cik CIK [--link] [--directory DIRECTORY]<br/>
+usage: edgarlatest10K [-h] [--cik CIK] [--ticker TICKER] [--link]<br/>
+[--directory DIRECTORY]<br/>
 <br/>
 find the most recent 10-K for cik<br/>
 <br/>
 options:<br/>
 -h, --help            show this help message and exit<br/>
 --cik CIK             10-digit Central Index Key<br/>
+--ticker TICKER       company ticker symbol<br/>
 --link                return the url for the latest 10-K<br/>
 --directory DIRECTORY<br/>
 directory to store the output<br/>
@@ -166,14 +169,15 @@ directory to store the output<br/>
 ##<br/>
 ## edgarlatestsubmissions<br/>
 ##<br/>
-usage: edgarlatestsubmissions [-h] --cik CIK [--directory DIRECTORY]<br/>
-[--file FILE]<br/>
+usage: edgarlatestsubmissions [-h] [--cik CIK] [--ticker TICKER]<br/>
+[--directory DIRECTORY] [--file FILE]<br/>
 <br/>
 find the most recent submissions for cik<br/>
 <br/>
 options:<br/>
 -h, --help            show this help message and exit<br/>
 --cik CIK             10-digit Central Index Key<br/>
+--ticker TICKER       company ticker symbol<br/>
 --directory DIRECTORY<br/>
 directory to store the output<br/>
 --file FILE           where to store the output<br/>
@@ -182,14 +186,15 @@ directory to store the output<br/>
 ##<br/>
 ## edgarsubmissions<br/>
 ##<br/>
-usage: edgarsubmissions [-h] --cik CIK [--year YEAR] [--file FILE]<br/>
-[--directory DIRECTORY]<br/>
+usage: edgarsubmissions [-h] [--cik CIK] [--ticker TICKER] [--year YEAR]<br/>
+[--file FILE] [--directory DIRECTORY]<br/>
 <br/>
 find the most recent submissions for cik<br/>
 <br/>
 options:<br/>
 -h, --help            show this help message and exit<br/>
 --cik CIK             10-digit Central Index Key<br/>
+--ticker TICKER       company ticker symbol<br/>
 --year YEAR           year to search for submissions if not current year<br/>
 --file FILE           store the output in this file<br/>
 --directory DIRECTORY<br/>

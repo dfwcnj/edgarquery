@@ -16,9 +16,11 @@ import urllib.request
 from functools import partial
 
 try:
-    from edgarquery import common
+    from edgarquery import ebquery
+    from edgarquery import tickerd
 except ImportError as e:
-    import common
+    import ebquery
+    import tickerd
 
 class EDGARSubmissions():
 
@@ -37,44 +39,14 @@ class EDGARSubmissions():
               HTTP User-Agent value such as an email address', file=sys.stderr)
             sys.exit(1)
         self.now     = datetime.datetime.now()
-        self.uq = common._URLQuery()
+        self.uq = ebquery._EBURLQuery()
+        self.td = tickerd.TickerD()
         self.chunksize =4294967296 # 4M
         self.submissionsdict=None
 
-    def internalquery(self, url=None):
-        """query - retrieve a url
-         url - url to retrieve
-        """
-        try:
-            req = urllib.request.Request(url, headers=self.hdr)
-            resp = urllib.request.urlopen(req)
-            return resp
-        except urllib.error.URLError as e:
-            print("Error %s(%s): %s" % ('query', url, e.reason),
-            file=sys.stderr )
-            sys.exit(1)
 
-    def internalstorequery(self, qresp, tf):
-        """storequery - store the query response in a file
-        resp - the query response
-        tf   - filename that will hold the query response
-        """
-        if not qresp:
-            print('storequery: no content', file=sys.stderr)
-            sys.exit(1)
-        if not tf:
-            print('storequery: no output filename', file=sys.stderr)
-            sys.exit(1)
-        of = os.path.abspath(tf)
-        # some downloads can be somewhat large
-        with open(of, 'wb') as f:
-            parts = iter(partial(qresp.read, self.chunksize), b'')
-            for c in parts:
-                f.write(c)
-            #if c: f.write(c)
-            f.flush()
-            os.fsync(f.fileno() )
-            return
+    def getcikforticker(self, ticker):
+        return self.td.getcikforticker(ticker)
 
     def getgrepdata(self, lns):
         """ getgrepdata(lns)
@@ -190,7 +162,6 @@ class EDGARSubmissions():
         subtype - pattern to find
         url - url whose contents to search
         """
-        uq = common._URLQuery()
         resp = self.uq.query(url, self.hdr)
         # resp = self.query(url)
         rstr    = resp.read().decode('utf-8')
@@ -366,8 +337,8 @@ def main():
 
     argp = argparse.ArgumentParser(
               description='find the most recent submissions for cik')
-    argp.add_argument("--cik", required=True,
-            help="10-digit Central Index Key")
+    argp.add_argument("--cik", help="10-digit Central Index Key")
+    argp.add_argument("--ticker", help="company ticker symbol")
     argp.add_argument("--year", required=False,
         help="year to search for submissions if not current year")
 
@@ -380,8 +351,17 @@ def main():
 
     if args.year: year = int(args.year)
 
+    cik = None
+    if args.cik:
+        cik = args.cik
+    if args.ticker:
+        cik = LS.getcikforticker(args.ticker)
+    if cik == None:
+        argp.print_help()
+        sys.exit()
+
     LS.cik = args.cik
-    LS.searchformindices(args.cik, year, directory=args.directory)
+    LS.searchformindices(cik, year, directory=args.directory)
     LS.reportsubmissions(file=args.file, directory=args.directory)
 
 if __name__ == '__main__':

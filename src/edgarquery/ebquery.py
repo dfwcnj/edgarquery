@@ -5,7 +5,7 @@ import time
 import urllib.request
 from functools import partial
 
-class _URLQuery():
+class _EBURLQuery():
 
     def __init__(self):
         self.chunksize =4294967296 # 4M
@@ -13,6 +13,7 @@ class _URLQuery():
     def query(self, url, hdr):
         """query(url) - query a url
 
+         retrieve contents of a URL with exponential backoff
          url - url of file to retrieve
          hdr - SEC requires a user agent header
         """

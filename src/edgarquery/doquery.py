@@ -13,47 +13,17 @@ import re
 import urllib.request
 
 try:
-    from edgarquery import common
+    from edgarquery import ebquery
+    from edgarquery import tickerd
 except ImportError as e:
-    import common
+    import ebquery
+    import tickerd
 
 class EDGARquery():
 
     def __init__(self, cik=None, cy=None):
         """EDGARquery - search the SEC EDGAR site
 
-         --cik        - 10-digit Central Index Key
-         --cy         - calendar year e.g. CY2023, CY2023Q1, CY2023Q4I
-         --file         - file to store output
-        --companyconcept - company concept json file
-           --cik
-               leading 0s optional
-           --frame - reporting frame, default us-gaap
-               e.g us-gaap, ifrs-full, dei, srt
-           --fact - fact to collect, default URS-per-shares
-               e.g AccountsPayableCurrent, AccountsAndNotesReceivableNet
-           --file - default /tmp/companyconcept.$frame.$fact.json
-        or
-        --companyfacts - all the company concepts data for a company
-            --cik
-            --file - default /tmp/$cik.json
-        or
-        --xbrlframes Extensible Business Markup Language
-            --frame
-            --fact
-            --cy
-        or
-        --companyfactsearchzip - all the data from the XBRL Frame API
-            and the XBRL Company Facts in a zip file
-            --file - default /tmp/companyfact.zip
-        --submissionzip -  public EDGAR filing history for all filers
-            --file - default /tmp/submissions.zip
-        or
-        --financialstatementandnotesdataset - data extracted from
-          reports filed from 2009 to present. does not include certain
-          metadata filed. filed quarterly until 11/2020. filed monthly
-          after that
-          --cy calendar year e.g. CY2015Q2, CY2023M12
         """
         self.cik        = cik
         self.cy         = cy
@@ -78,13 +48,17 @@ class EDGARquery():
         self.subzip     = '%s/bulkdata/submissions.zip' % self.edi
         self.fsanurl    = 'https://www.sec.gov/files/dera/data/financial-statement-and-notes-data-sets'
 
-        self.uq = common._URLQuery()
+        self.uq = ebquery._EBURLQuery()
+        self.td = tickerd.TickerD()
         self.chunksize = 4194304
         self.argp      = None
         self.content   = None
 
         # xbrlframes is not yet well defined
         self.xfurl    = "https://data.sec.gov/api/xbrl/frames"
+
+    def getcikforticker(self, ticker):
+        return self.td.getcikforticker(ticker)
 
     def gency(self):
         """gency - generate a CY type I vslue for the previous quarter
@@ -255,6 +229,8 @@ def main():
 
     EQ.argp.add_argument("--cik", required=False,
         help="10-digit Central Index Key")
+    EQ.argp.add_argument("--ticker", required=False,
+        help="company stock ticker")
     EQ.argp.add_argument("--cy", required=False,
         help="calendar year e.g. CY2023, CY2023Q1, CY2023Q4I")
 
@@ -307,6 +283,12 @@ def main():
         EQ.argp.print_help()
         sys.exit(1)
 
+    cik = None
+    if args.cik:
+        cik = args.cik
+    if args.ticker:
+        cik = EQ.getcikforticker(args.ticker)
+
     # check for legal combination of arguments
     if (args.companyfacts and args.companyconcept):
         EQ.argp.print_help()
@@ -314,38 +296,38 @@ def main():
     if (args.companyfactsarchivezip and args.submissionszip):
         EQ.argp.print_help()
         sys.exit(1)
-    if (args.cik and args.cy):
+    if (cik and args.cy):
         EQ.argp.print_help()
         sys.exit(1)
 
-    if args.companyconcept and not args.cik:
+    if args.companyconcept and not cik:
         EQ.argp.print_help()
         sys.exit(1)
-    if args.companyconcept and args.cik and args.frame and args.fact:
+    if args.companyconcept and cik and args.frame and args.fact:
         if args.file:
-            EQ.companyconcept(cik=args.cik, frame=args.frame, fact=args.fact,
+            EQ.companyconcept(cik=cik, frame=args.frame, fact=args.fact,
                         file=args.file, directory=args.directory)
             sys.exit()
         else:
-            EQ.companyconcept(cik=args.cik, frame=args.frame,
+            EQ.companyconcept(cik=cik, frame=args.frame,
                 fact=args.fact, directory=args.directory)
             sys.exit()
-    elif args.companyconcept and args.cik and args.fact:
+    elif args.companyconcept and cik and args.fact:
         if args.file:
-            EQ.companyconcept(cik=args.cik, fact=args.fact,
+            EQ.companyconcept(cik=cik, fact=args.fact,
             file=args.file, directory=args.directory)
             sys.exit()
         else:
-            EQ.companyconcept(cik=args.cik, fact=args.fact,
+            EQ.companyconcept(cik=cik, fact=args.fact,
                 directory=args.directory)
             sys.exit()
     elif args.companyconcept:
         if args.file:
-            EQ.companyconcept(cik=args.cik, file=args.file,
+            EQ.companyconcept(cik=cik, file=args.file,
                 directory=args.directory)
             sys.exit()
         else:
-            EQ.companyconcept(cik=args.cik, directory=args.directory)
+            EQ.companyconcept(cik=cik, directory=args.directory)
             sys.exit()
 
     if args.xbrlframes and not args.cy:
@@ -381,14 +363,14 @@ def main():
             EQ.xbrlframes(cy=args.cy, directory=args.directory)
         sys.exit()
 
-    if args.companyfacts and not args.cik:
+    if args.companyfacts and not cik:
         EQ.argp.print_help()
         sys.exit()
-    if args.companyfacts and args.cik and args.file:
-        EQ.companyfacts(cik=args.cik, file=args.file, directory=args.directory)
+    if args.companyfacts and cik and args.file:
+        EQ.companyfacts(cik=cik, file=args.file, directory=args.directory)
         sys.exit()
     elif args.companyfacts:
-        EQ.companyfacts(cik=args.cik, directory=args.directory)
+        EQ.companyfacts(cik=cik, directory=args.directory)
         sys.exit()
 
     if args.companyfactsarchivezip and args.file:

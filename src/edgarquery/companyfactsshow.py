@@ -10,9 +10,11 @@ import urllib.request
 import webbrowser
 
 try:
-    from edgarquery import common
+    from edgarquery import ebquery
+    from edgarquery import tickerd
 except ImportError as e:
-    import common
+    import ebquery
+    import tickerd
 
 class CompanyFactsShow():
 
@@ -27,7 +29,6 @@ class CompanyFactsShow():
         self.json     = None
         self.htmla    = []
         self.htmlfile = None
-        self.tickd    = {}
 
         self.xbrl     = 'https://data.sec.gov/api/xbrl'
         self.cfurl    = '%s/companyfacts'   % self.xbrl
@@ -39,29 +40,12 @@ class CompanyFactsShow():
             print('EQEMAIL environmental variable must be set to a valid \
                    HTTP User-Agent value such as an email address')
 
-        self.uq = common._URLQuery()
-
-    def tickers(self):
-        resp = self.uq.query(self.turl, self.hdr)
-        rstr = resp.read().decode('utf-8')
-        jd = json.loads(rstr)
-        for k in jd.keys():
-            # CIK as key
-            ck = jd[k]['cik_str']
-            self.tickd[ck] = jd[k]
-            # ticker as key
-            tkr = jd[k]['ticker']
-            self.tickd[tkr] = jd[k]
+        self.uq = ebquery._EBURLQuery()
+        self.td = tickerd.TickerD()
 
 
     def getcikforticker(self, ticker):
-        if not self.tickd.keys():
-            self.tickers()
-        ticker = ticker.upper()
-        if ticker not in self.tickd.keys():
-            return None
-        cik = self.tickd[ticker]['cik_str']
-        return '%d' % (cik)
+        return self.td.getcikforticker(ticker)
 
     def processjson(self, rstr):
         """ processjson(js)
@@ -87,7 +71,7 @@ class CompanyFactsShow():
         htmla.append('<html>')
 
         cik = '%d' % (self.cik)
-        ch = self.tickd[self.cik]
+        ch = self.td.getrecforcik(self.cik)
         ttl = 'Company Facts: %s CIK%s' % (ch['title'], cik.zfill(10) )
         htmla.append('<head><h1>%s</h1></head>' % (ttl) )
 
@@ -179,8 +163,6 @@ class CompanyFactsShow():
         return the query response as a python string
         """
         self.cik = cik
-        if not self.tickd.keys():
-            self.tickers()
         url = '%s/CIK%s.json' % (self.cfurl, cik.zfill(10))
         resp = self.uq.query(url, self.hdr)
         rstr = resp.read().decode('utf-8')
@@ -215,14 +197,14 @@ def main():
 
     CFS = CompanyFactsShow()
 
+    cik = None
+    if args.cik:
+        cik = args.cik
     if args.ticker:
         cik = CFS.getcikforticker(args.ticker)
-        if cik == None:
-            argp.print_help()
-            sys.exit()
-    else:
-        cik = args.cik
-
+    if cik == None:
+        argp.print_help()
+        sys.exit()
 
     CFS.companyfacts(cik, args.directory)
     CFS.show()

@@ -11,9 +11,9 @@ import argparse
 import urllib.request
 
 try:
-    from edgarquery import common
+    from edgarquery import ebquery
 except ImportError as e:
-    import common
+    import ebquery
 
 class EDGARTickerstoCSV():
 
@@ -33,7 +33,7 @@ class EDGARTickerstoCSV():
             'https://www.sec.gov/files/company_tickers_exchange.json',
             'https://www.sec.gov/files/company_tickers_mf.json'
         ]
-        self.uq = common._URLQuery()
+        self.uq = ebquery._EBURLQuery()
 
     def internalquery(self, url=None):
         """query - retrieve a url

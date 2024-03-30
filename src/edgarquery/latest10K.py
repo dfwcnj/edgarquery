@@ -16,9 +16,11 @@ import urllib.request
 from functools import partial
 
 try:
-    from edgarquery import common
+    from edgarquery import ebquery
+    from edgarquery import tickerd
 except ImportError as e:
-    import common
+    import ebquery
+    import tickerd
 
 class EDGARLatest10K():
 
@@ -37,7 +39,11 @@ class EDGARLatest10K():
         self.now     = datetime.datetime.now()
         self.link    = True
         self.chunksize =4294967296
-        self.uq = common._URLQuery()
+        self.uq = ebquery._EBURLQuery()
+        self.td = tickerd.TickerD()
+
+    def getcikforticker(self, ticker):
+        return self.td.getcikforticker(ticker)
 
     def pgrep(self, pat=None, fn=None):
         """ pgrep
@@ -205,8 +211,8 @@ def main():
 
     argp = argparse.ArgumentParser(
               description='find the most recent 10-K for cik')
-    argp.add_argument("--cik", required=True,
-        help="10-digit Central Index Key")
+    argp.add_argument("--cik", help="10-digit Central Index Key")
+    argp.add_argument("--ticker", help="company ticker symbol")
     argp.add_argument("--link", action='store_true', default=False,
           help="return the url for the latest 10-K")
     argp.add_argument("--directory", default='/tmp',
@@ -214,7 +220,20 @@ def main():
 
     args = argp.parse_args()
 
-    LT.search10K(args.cik, link=args.link, directory=args.directory)
+    if not args.cik and not args.ticker:
+        argp.print_help()
+        sys.exit()
+
+    cik = None
+    if args.cik:
+        cik = args.cik
+    if args.ticker:
+        cik = LT.getcikforticker(args.ticker)
+    if cik == None:
+        argp.print_help()
+        sys.exit()
+
+    LT.search10K(cik, link=args.link, directory=args.directory)
 
 if __name__ == '__main__':
     main()

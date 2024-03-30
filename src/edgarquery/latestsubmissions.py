@@ -16,9 +16,11 @@ import urllib.request
 from functools import partial
 
 try:
-    from edgarquery import common
+    from edgarquery import ebquery
+    from edgarquery import tickerd
 except ImportError as e:
-    import common
+    import ebquery
+    import tickerd
 
 class EDGARLatestsubmissions():
 
@@ -38,8 +40,12 @@ class EDGARLatestsubmissions():
         self.now     = datetime.datetime.now()
         self.cik     = None
         self.submissions = {}
-        self.uq = common._URLQuery()
+        self.uq = ebquery._EBURLQuery()
         self.chunksize =4294967296 # 4M
+        self.td = tickerd.TickerD()
+
+    def getcikforticker(self, ticker):
+        return self.td.getcikforticker(ticker)
 
     def pgrep(self, pat=None, fn=None):
         """ pgrep(pat, fn)
@@ -172,6 +178,7 @@ class EDGARLatestsubmissions():
             surla.append('%s/%d/QTR2/form.idx' % (self.sprefix, yr) )
             surla.append('%s/%d/QTR3/form.idx' % (self.sprefix, yr) )
             surla.append('%s/%d/QTR4/form.idx' % (self.sprefix, yr) )
+        #surla.reverse()
         return surla
 
     def reportsubmissions(self, fp):
@@ -220,8 +227,8 @@ def main():
 
     argp = argparse.ArgumentParser(
               description='find the most recent submissions for cik')
-    argp.add_argument("--cik", required=True,
-        help="10-digit Central Index Key")
+    argp.add_argument("--cik", help="10-digit Central Index Key")
+    argp.add_argument("--ticker", help="company ticker symbol")
 
     argp.add_argument("--directory", default='/tmp',
         help="directory to store the output")
@@ -229,8 +236,18 @@ def main():
 
     args = argp.parse_args()
 
-    LT.cik = args.cik
-    latest = LT.searchsubmissions(args.cik, args.directory)
+    cik = None
+    if args.cik:
+        cik = args.cik
+    if args.ticker:
+        cik = LT.getcikforticker(args.ticker)
+    if cik == None:
+        argp.print_help()
+        sys,exit()
+
+    LT.cik = cik
+
+    latest = LT.searchsubmissions(cik, args.directory)
 
     fp = sys.stdout
     if args.file:

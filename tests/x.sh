@@ -6,7 +6,7 @@ echo $EQODIR
 
 # big files
 # edgarquery --companyfactsarchivezip \
-#                                             --cik 1018724
+#                                             --ticker amzn
 # edgarquery --submissionszip
 #edgarquery  --submissionszip
 #sleep 5
@@ -26,14 +26,14 @@ for f in company.idx crawler.idx form.idx master.idx \
 done
 
 
-for cik in 1318605 1018724 1045810; do
-    edgarquery --companyfacts --cik $cik
+for ticker in tsla amzn nvda; do
+    edgarquery --companyfacts --ticker $ticker
 done
 
 for fct in AccountsPayableCurrent EarningsPerShareBasic; do
-    edgarquery --companyconcept --cik 1318605 --fact $fct
-    edgarquery --companyconcept --cik 1018724 --fact $fct
-    edgarquery --companyconcept --cik 1045810 --fact $fct
+    edgarquery --companyconcept --ticker tsla --fact $fct
+    edgarquery --companyconcept --ticker amzn --fact $fct
+    edgarquery --companyconcept --ticker nvda --fact $fct
 done
 
 for fct in AccountsPayableCurrent AssetsCurrent DebtCurrent \
@@ -62,14 +62,16 @@ done
 #edgarsubmissionszipṫocsv --zipfile $EQODIR/submissions.zip --all
 
 
-for cik in 5981 1318605 1018724 1045810; do
-    #latest10K --cik $cik
-    #latestsubmissions --cik $cik
-    edgarsubmissions --cik $cik
-    edgarsubmissions --cik $cik --year 2008
+for ticker in avd tsla amzn nvda; do
+    #latest10K --ticker $ticker
+    #latestsubmissions --ticker $ticker
+    edgarsubmissions --ticker $ticker
+    edgarsubmissions --ticker $ticker --year 2022
 done
 
 edgartickerstocsv
+curl --user-agent $EQEMAIL --output /private/tmp/company_tickers.json \
+     https://www.sec.gov/files/company_tickers.json
 
 ##############################################################################
 exit

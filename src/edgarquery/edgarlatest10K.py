@@ -13,6 +13,7 @@ import argparse
 import datetime
 import subprocess
 import urllib.request
+import webbrowser
 from functools import partial
 
 try:
@@ -174,7 +175,7 @@ class EDGARLatest10K():
         surla.reverse()
         return surla
 
-    def search10K(self, cik, link, directory=None):
+    def search10K(self, cik, link, directory, show):
         """ search10K
 
         search in the form.idx files for a page that contains a link
@@ -202,6 +203,8 @@ class EDGARLatest10K():
                     ofn = os.path.join(directory, 'CIK%s.10-K.htm' %\
                         (cik.zfill(10) ) )
                     self.uq.storequery(tkresp, ofn)
+                    if show:
+                        webbrowser.open('file://%s' % (ofn) )
                 return
 
 
@@ -217,6 +220,8 @@ def main():
           help="return the url for the latest 10-K")
     argp.add_argument("--directory", default='/tmp',
          help="directory to store the output")
+    argp.add_argument("--show", action='store_true', default=False,
+         help="show the 10-K stored in directory to your browser")
 
     args = argp.parse_args()
 
@@ -233,7 +238,7 @@ def main():
         argp.print_help()
         sys.exit()
 
-    LT.search10K(cik, link=args.link, directory=args.directory)
+    LT.search10K(cik, link=args.link, directory=args.directory, show=args.show)
 
 if __name__ == '__main__':
     main()

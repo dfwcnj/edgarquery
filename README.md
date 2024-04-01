@@ -19,10 +19,11 @@ EQEMAIL - required by the SEC to download some of the files with curl.<br/>
           used as the user-agent in the url request by the scripts.<br/>
 
 These commands retrieve various data from SEC EDGAR. They use a<br/>
-CIK or Central Index Key to identify entities such as companies or<br/>
-insiders - company officers or large stock holders.<br/>
+CIK or Central Index Key or ticker symbol to identify entities<br/>
+such as companies or insiders - company officers or large stock holders.<br/>
+<br/>
 Use edgartickerstocsv and edgarcikperson to find CIKs by name<br/>
-or ticker and then use that CIK to gather the data of interest.<br/>
+or ticker and then use that CIK or ticker  to gather the data of interest.<br/>
 To display facts for a company aggregated by the SEC, invoke<br/>
 
 ## Usage

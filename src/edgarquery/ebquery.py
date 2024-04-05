@@ -31,14 +31,17 @@ class _EBURLQuery():
                 return resp
             except urllib.error.URLError as e:
                 print("Error %s(%s): %s" % ('query', url, e.reason),
-                file=sys.stderr )
+                              file=sys.stderr )
+                if e.reason == 'Not Found':
+                    return None
                 if tries < ntries:
-                    print('retrying in %d seconds' % pause)
+                    print('retrying in %d seconds' % (pause),
+                        file=sys.stderr)
                     time.sleep(pause)
                     tries = tries + 1
                     pause = pause * 2
                     continue
-                sys.exit(1)
+                #sys.exit(1)
 
     def storequery(self, qresp, file):
         """storequery(qresp, file) - store the query response in a file

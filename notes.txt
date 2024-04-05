@@ -20,7 +20,7 @@
   # SEC webmaster FAQ
   https://www.sec.gov/os/webmaster-faq
 
-  # contaiشs some generalaccess instructions
+  # contains some generalaccess instructions
   #     User-Agent rule
   #     contains urls for daily index and for full index
   #     shows some directory structure

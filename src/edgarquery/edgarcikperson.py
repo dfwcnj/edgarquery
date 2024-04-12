@@ -103,6 +103,8 @@ class CIKPerson():
 
         url = '%s/%s' % (self.iturl, fznm)
         resp = self.uq.query(url, self.hdr)
+        if not resp:
+            return
         self.uq.storequery(resp, fzpath)
         # resp = self.query(url)
         # self.storequery(resp, fzpath)
@@ -150,7 +152,7 @@ class CIKPerson():
                 if y == now.year:
                     if now.month <=3: return
                     elif q == 1 and now.month <=3: return
-                    elif q == 2 and mpw.month <=6: return
+                    elif q == 2 and now.month <=6: return
                     elif q == 3 and now.month <=9: return
                     elif q == 4: return
                 self.collectform345owners(fznm, fznm)

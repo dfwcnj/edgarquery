@@ -198,13 +198,13 @@ class EDGARLatest10K():
                 tkurl = self.get10kfromhtml(cik, tktbl, link, directory)
                 if link:
                     print(tkurl)
+                if show:
+                    webbrowser.open(tkurl)
                 if directory:
                     tkresp = self.uq.query(tkurl, self.hdr)
                     ofn = os.path.join(directory, 'CIK%s.10-K.htm' %\
                         (cik.zfill(10) ) )
                     self.uq.storequery(tkresp, ofn)
-                    if show:
-                        webbrowser.open('file://%s' % (ofn) )
                 return
 
 

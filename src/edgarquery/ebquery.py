@@ -34,6 +34,8 @@ class _EBURLQuery():
                               file=sys.stderr )
                 if e.reason == 'Not Found':
                     return None
+                if e.reason == 'Forbidden':
+                    return None
                 if tries < ntries:
                     print('retrying in %d seconds' % (pause),
                         file=sys.stderr)

@@ -64,7 +64,7 @@ where to deposit the fileѕ<br/>
 usage: edgarcompanyfactsshow [-h] [--cik CIK] [--ticker TICKER]<br/>
 [--directory DIRECTORY]<br/>
 <br/>
-parse EDGAR company facts for a cik and display them in a browser<br/>
+parse EDGAR company facts for a ticker or cik and display them in a browser<br/>
 <br/>
 options:<br/>
 -h, --help            show this help message and exit<br/>
@@ -80,7 +80,8 @@ where to store the html file to display<br/>
 usage: edgarcompanyfactstocsv [-h] --file FILE [--directory DIRECTORY]<br/>
 <br/>
 Parse an SEC EDGAR companyfacts json file after it has been altered to deal<br/>
-with its multipart character and generate CSV files from its content<br/>
+with its multipart character and generate CSV files from its content. I think<br/>
+that the SEC fixed the multi-json bug<br/>
 <br/>
 options:<br/>
 -h, --help            show this help message and exit<br/>
@@ -114,7 +115,7 @@ a subset of the files in the zip file<br/>
 usage: edgarlatest10K [-h] [--cik CIK] [--ticker TICKER] [--link]<br/>
 [--directory DIRECTORY] [--show]<br/>
 <br/>
-find the most recent 10-K for cik<br/>
+find the most recent 10-K for ticker or cik<br/>
 <br/>
 options:<br/>
 -h, --help            show this help message and exit<br/>
@@ -133,7 +134,8 @@ usage: edgarlatestsubmission [-h] [--cik CIK] [--ticker TICKER]<br/>
 [--submission {SC 13D,13F-HR,DEF 14A,8-K,10-K,10-Q}]<br/>
 [--link] [--directory DIRECTORY] [--show]<br/>
 <br/>
-find the most recent X-K for cik<br/>
+find the most recent submission for a ticker or cik for some common<br/>
+submissƣons.<br/>
 <br/>
 options:<br/>
 -h, --help            show this help message and exit<br/>
@@ -153,7 +155,7 @@ directory to store the output<br/>
 usage: edgarlatestsubmissions [-h] [--cik CIK] [--ticker TICKER]<br/>
 [--directory DIRECTORY] [--file FILE]<br/>
 <br/>
-find the most recent submissions for cik<br/>
+find the most recent submissions for a ticker or cik<br/>
 <br/>
 options:<br/>
 -h, --help            show this help message and exit<br/>
@@ -174,8 +176,8 @@ usage: edgarquery [-h] [--cik CIK] [--ticker TICKER] [--cy CY]<br/>
 [--companyfactsarchivezip] [--submissionszip]<br/>
 [--financialstatementandnotesdataset]<br/>
 <br/>
-query SEC EDGAR site NOTE thæt EQEMAIL env variable is required and must<br/>
-contain a valid User-Agent such as your email address<br/>
+query SEC EDGAR site for a ticker or cik NOTE thæt EQEMAIL env variable is<br/>
+required and must contain a valid User-Agent such as your email address<br/>
 <br/>
 options:<br/>
 -h, --help            show this help message and exit<br/>
@@ -213,7 +215,7 @@ summaries --cy required<br/>
 usage: edgarsubmissions [-h] [--cik CIK] [--ticker TICKER] [--year YEAR]<br/>
 [--file FILE] [--directory DIRECTORY]<br/>
 <br/>
-find the most recent submissions for cik<br/>
+find the most recent submissions for ticker or cik<br/>
 <br/>
 options:<br/>
 -h, --help            show this help message and exit<br/>

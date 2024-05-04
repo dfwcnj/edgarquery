@@ -192,8 +192,7 @@ def main():
     LT = EDGARLatestSubmission()
 
     argp = argparse.ArgumentParser(
-              description='find the most recent submission for a ticker
-              or cik for some common submissƣons.') 
+              description='find the most recent submission for a ticker or cik for some common submissƣons.') 
     argp.add_argument("--cik", help="10-digit Central Index Key")
     argp.add_argument("--ticker", help="company ticker symbol")
     argp.add_argument("--submission", default='10-K',

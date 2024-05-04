@@ -213,7 +213,7 @@ def main():
     LT = EDGARLatest10K()
 
     argp = argparse.ArgumentParser(
-              description='find the most recent 10-K for cik')
+              description='find the most recent 10-K for ticker or cik')
     argp.add_argument("--cik", help="10-digit Central Index Key")
     argp.add_argument("--ticker", help="company ticker symbol")
     argp.add_argument("--link", action='store_true', default=False,

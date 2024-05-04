@@ -226,7 +226,7 @@ def main():
     LT = EDGARLatestsubmissions()
 
     argp = argparse.ArgumentParser(
-              description='find the most recent submissions for cik')
+             description='find the most recent submissions for a ticker or cik')
     argp.add_argument("--cik", help="10-digit Central Index Key")
     argp.add_argument("--ticker", help="company ticker symbol")
 

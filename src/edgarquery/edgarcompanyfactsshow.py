@@ -184,7 +184,7 @@ class CompanyFactsShow():
 
 def main():
     argp = argparse.ArgumentParser(description='parse EDGAR company\
-    facts for a cik and display them in a browser')
+    facts for a ticker or cik and display them in a browser')
     argp.add_argument('--cik', help='Centralized Index Key for the company')
     argp.add_argument('--ticker', help='Ticker for the company')
     argp.add_argument('--directory', default='/tmp',

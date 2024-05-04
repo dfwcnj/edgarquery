@@ -143,8 +143,7 @@ class EDGARCompanyFactstoCSV():
 def main():
     EP = EDGARCompanyFactstoCSV()
     argp = argparse.ArgumentParser(description="Parse an SEC EDGAR\
-        companyfacts json file after it has been altered to deal with its\
-    multipart character and generate CSV files from its content")
+        companyfacts json file after it has been altered to deal with its\ multipart character and generate CSV files from its content. I think that the SEC fixed the multi-json bug")
 
     argp.add_argument('--file', required=True,
                 help="json file to process")

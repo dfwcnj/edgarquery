@@ -224,6 +224,7 @@ def main():
     EQ = EDGARquery()
 
     EQ.argp = argparse.ArgumentParser(description="query SEC EDGAR site\
+        for a ticker or cik\
         NOTE thæt EQEMAIL env variable is required and\
         must contain a valid User-Agent such as your email address")
 

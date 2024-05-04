@@ -32,7 +32,7 @@ To display facts for a company aggregated by the SEC, invoke<br/>
 ##<br/>
 ## edgarcikperson<br/>
 ##<br/>
-usage: edgarcikperson [-h] [--cikpersondb CIKPERSONDB] [--file FILE]<br/>
+usage: cikperson [-h] [--cikpersondb CIKPERSONDB] [--file FILE]<br/>
 <br/>
 extract CIK and person names from form345 zip files<br/>
 <br/>
@@ -92,8 +92,8 @@ where to deposit the csv fileѕ<br/>
 ##<br/>
 ## edgarcompanyfactsziptocsv<br/>
 ##<br/>
-usage: edgarcompanyfactsziptocsv [-h] --zipfile ZIPFILE [--directory DIRECTORY]<br/>
-[--files FILES]<br/>
+usage: edgarcompanyfactsziptocsv [-h] --zipfile ZIPFILE<br/>
+[--directory DIRECTORY] [--files FILES]<br/>
 <br/>
 Extract one or more json files from an SEC EDGAR companyfacts.zip file and<br/>
 convert to CSV<br/>
@@ -109,12 +109,69 @@ a subset of the files in the zip file<br/>
 <br/>
 <br/>
 ##<br/>
+## edgarlatest10K<br/>
+##<br/>
+usage: edgarlatest10K [-h] [--cik CIK] [--ticker TICKER] [--link]<br/>
+[--directory DIRECTORY] [--show]<br/>
+<br/>
+find the most recent 10-K for cik<br/>
+<br/>
+options:<br/>
+-h, --help            show this help message and exit<br/>
+--cik CIK             10-digit Central Index Key<br/>
+--ticker TICKER       company ticker symbol<br/>
+--link                return the url for the latest 10-K<br/>
+--directory DIRECTORY<br/>
+directory to store the output<br/>
+--show                show the 10-K stored in directory to your browser<br/>
+<br/>
+<br/>
+##<br/>
+## edgarlatestsubmission<br/>
+##<br/>
+usage: edgarlatestsubmission [-h] [--cik CIK] [--ticker TICKER]<br/>
+[--submission {SC 13D,13F-HR,DEF 14A,8-K,10-K,10-Q}]<br/>
+[--link] [--directory DIRECTORY] [--show]<br/>
+<br/>
+find the most recent X-K for cik<br/>
+<br/>
+options:<br/>
+-h, --help            show this help message and exit<br/>
+--cik CIK             10-digit Central Index Key<br/>
+--ticker TICKER       company ticker symbol<br/>
+--submission {SC 13D,13F-HR,DEF 14A,8-K,10-K,10-Q}<br/>
+X-K submission type<br/>
+--link                return the url for the latest X-K<br/>
+--directory DIRECTORY<br/>
+directory to store the output<br/>
+--show                show the X-K stored in directory to your browser<br/>
+<br/>
+<br/>
+##<br/>
+## edgarlatestsubmissions<br/>
+##<br/>
+usage: edgarlatestsubmissions [-h] [--cik CIK] [--ticker TICKER]<br/>
+[--directory DIRECTORY] [--file FILE]<br/>
+<br/>
+find the most recent submissions for cik<br/>
+<br/>
+options:<br/>
+-h, --help            show this help message and exit<br/>
+--cik CIK             10-digit Central Index Key<br/>
+--ticker TICKER       company ticker symbol<br/>
+--directory DIRECTORY<br/>
+directory to store the output<br/>
+--file FILE           where to store the output<br/>
+<br/>
+<br/>
+##<br/>
 ## edgarquery<br/>
 ##<br/>
-usage: edgarquery [-h] [--cik CIK] [--ticker TICKER] [--cy CY] [--frame FRAME]<br/>
-[--units UNITS] [--fact FACT] [--directory DIRECTORY]<br/>
-[--file FILE] [--companyconcept] [--companyfacts]<br/>
-[--xbrlframes] [--companyfactsarchivezip] [--submissionszip]<br/>
+usage: edgarquery [-h] [--cik CIK] [--ticker TICKER] [--cy CY]<br/>
+[--frame FRAME] [--units UNITS] [--fact FACT]<br/>
+[--directory DIRECTORY] [--file FILE] [--companyconcept]<br/>
+[--companyfacts] [--xbrlframes]<br/>
+[--companyfactsarchivezip] [--submissionszip]<br/>
 [--financialstatementandnotesdataset]<br/>
 <br/>
 query SEC EDGAR site NOTE thæt EQEMAIL env variable is required and must<br/>
@@ -135,11 +192,11 @@ directory to store the output<br/>
 each query type if --directory is not provided, it<br/>
 should be the full path<br/>
 --companyconcept      returns all the XBRL disclosures from a single company<br/>
---cik or --ticker required --frame - default us-gaap --fact -<br/>
+--cik required --frame - default us-gaap --fact -<br/>
 default USD-per-shares<br/>
 --companyfacts        aggregates one fact for each reporting entity that is<br/>
 last filed that most closely fits the calendrical<br/>
-period requested --cik <br/>
+period requested --cik required<br/>
 --xbrlframes          returns all the company concepts data for a CIK --cy<br/>
 required<br/>
 --companyfactsarchivezip<br/>
@@ -148,40 +205,6 @@ returns daily companyfacts index in a zip file<br/>
 --financialstatementandnotesdataset<br/>
 returns zip file with financial statement and notes<br/>
 summaries --cy required<br/>
-<br/>
-<br/>
-##<br/>
-## edgarlatest10K<br/>
-##<br/>
-usage: edgarlatest10K [-h] [--cik CIK] [--ticker TICKER] [--link]<br/>
-[--directory DIRECTORY]<br/>
-<br/>
-find the most recent 10-K for cik<br/>
-<br/>
-options:<br/>
--h, --help            show this help message and exit<br/>
---cik CIK             10-digit Central Index Key<br/>
---ticker TICKER       company ticker symbol<br/>
---link                return the url for the latest 10-K<br/>
---directory DIRECTORY<br/>
-directory to store the output<br/>
-<br/>
-<br/>
-##<br/>
-## edgarlatestsubmissions<br/>
-##<br/>
-usage: edgarlatestsubmissions [-h] [--cik CIK] [--ticker TICKER]<br/>
-[--directory DIRECTORY] [--file FILE]<br/>
-<br/>
-find the most recent submissions for cik<br/>
-<br/>
-options:<br/>
--h, --help            show this help message and exit<br/>
---cik CIK             10-digit Central Index Key<br/>
---ticker TICKER       company ticker symbol<br/>
---directory DIRECTORY<br/>
-directory to store the output<br/>
---file FILE           where to store the output<br/>
 <br/>
 <br/>
 ##<br/>
@@ -205,8 +228,8 @@ store the output in this directory<br/>
 ##<br/>
 ## edgarsubmissionsziptocsv<br/>
 ##<br/>
-usage: edgarsubmissionsziptocsv [-h] [--zipfile ZIPFILE] [--directory DIRECTORY]<br/>
-[--files FILES]<br/>
+usage: edgarsubmissionsziptocsv [-h] [--zipfile ZIPFILE]<br/>
+[--directory DIRECTORY] [--files FILES]<br/>
 <br/>
 Extract one or more json files from an SEC EDGAR submissions.zip file and<br/>
 convert to CSV<br/>

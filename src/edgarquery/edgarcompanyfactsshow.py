@@ -9,6 +9,10 @@ import re
 import urllib.request
 import webbrowser
 
+import plotly
+from plotly.subplots import make_subplots
+import plotly.graph_objects as go
+
 try:
     from edgarquery import ebquery
     from edgarquery import tickerd
@@ -103,10 +107,33 @@ class CompanyFactsShow():
                     self.units = uk
                     assert type(units[uk]) == type([]), \
                         'jasonfacts %s is not an array'
+                    fig = self.jsonfactplot(units[uk], label)
+                    fightml = fig.to_html()
+                    htmla.append(fightml)
                     tbl = self.jsonfacttable(units[uk], label)
                     htmla.extend(tbl)
         self.htmla.extend(htmla)
 
+
+    def jsonfactplot(self, recs, label):
+        """ jsonfactplot(self, recs, label)
+
+        plot the first two columns of the fact array
+        recs - company fact rows
+        label - label
+        """
+
+        dates = [recs[i]['end'] for i in range(len(recs))]
+        vals = [recs[i]['val'] for i in range(len(recs))]
+        for i in range(len(recs)):
+            if type(vals[i]) != type(0):
+                vals[i] = 0
+
+        fig = go.Figure(go.Scatter(
+            x = dates,
+            y = vals
+        ))
+        return fig
 
     def jsonfacttable(self, recs, label):
         """ jsonfacttable(recs)

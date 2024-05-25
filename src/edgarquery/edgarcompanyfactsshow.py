@@ -77,41 +77,65 @@ class CompanyFactsShow():
         cik = '%d' % (self.cik)
         ch = self.td.getrecforcik(self.cik)
         ttl = 'Company Facts: %s CIK%s' % (ch['title'], cik.zfill(10) )
-        htmla.append('<head><h1>%s</h1></head>' % (ttl) )
+
+        htmla.append('<head>')
+        htmla.append('<h1>%s</h1>' % (ttl) )
+        htmla.append('<script src="https://cdn.plot.ly/plotly-2.32.0.min.js" charset="utf-8"></script>')
+        htmla.append('</head>')
 
         fka = [k for k in facts.keys()]
-        for k in fka:
+        for fi in range(len(fka) ):
+            k = fka[fi]
             self.facttype = k           # dei or us-gaap
             assert type(facts[k]) == type({}), \
                 'jsonfacts: %s not a dictionary' % self.k
 
+            #htmla.append('<div id="%s">' % (k) )
             htmla.append('<p>fact type: %s</p><br/>' % (self.facttype) )
 
-            fka = [ft for ft in facts[k].keys()]
-            for t in fka:
-                #htmla.append('<h3> Fact Name: %s</h3>' % (t) )
+            fta = [ft for ft in facts[k].keys()]
+            #for t in fta:
+            for ti in range(len(fta) ):
+                t = fta[ti]
 
                 label = facts[k][t]['label']
-                #htmla.append('<h4>Fact Label: %s</h4>' % (label) )
 
                 descr = facts[k][t]['description']
                 if not descr:
                     descr = 'No description'
+                #htmla.append('<div id="%s%s">' % (k,t) )
                 htmla.append('<h3>Description: %s</h3>' % (descr) )
 
                 units = facts[k][t]['units']
                 assert type(units) == type({}), \
                     'jsonfacts: units not a dictionary'
-                uka = (u for u in units.keys() )
-                for uk in uka:
+                uka = [u for u in units.keys() ]
+                #for uk in uka:
+                for ui in range(len(uka) ):
+                    uk = uka[ui]
                     self.units = uk
+                    #htmla.append('<div id="%s%s%s">' % (k, t, uk) )
                     assert type(units[uk]) == type([]), \
                         'jasonfacts %s is not an array'
                     fig = self.jsonfactplot(units[uk], label)
-                    fightml = fig.to_html()
-                    htmla.append(fightml)
+
+                    figjs = fig.to_json()
+
+                    htmla.append('<div id="fig%s%s%s">' % (fi, ti, ui) )
+                    htmla.append('<script>')
+                    htmla.append('var figobj = %s;\n' % figjs)
+                    htmla.append('Plotly.newPlot("fig%s%s%s", figobj.data, figobj.layout, {});' % (fi,ti,ui) )
+                    htmla.append('</script>')
+                    htmla.append('</div>')
+
+                    #fightml = fig.to_html()
+                    #htmla.append(fightml)
+
                     tbl = self.jsonfacttable(units[uk], label)
                     htmla.extend(tbl)
+                    #htmla.append('</div>')
+                #htmla.append('</div>')
+            #htmla.append('</div>')
         self.htmla.extend(htmla)
 
 

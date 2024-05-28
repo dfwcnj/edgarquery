@@ -14,9 +14,24 @@ pip install edgarquery
 
 ## edgarquery
 
+EDGAR query is a set of commands for finding, collecting, and
+visualizing SEC EDGAR data based on CIK or ticker symbol. The possibly
+most useful command is edgarcompanyfactsshow that collects the company
+facts for a company, parses, tabulates, and plots each fact, displaying
+the data in your browser. Others are the edgarlatest10K and
+edgarlatestsubmission commands that also display in your browsar.
+edgarlatestsubmissions(note the s on the end) retrieves a list of the
+latest submissions for a ticker while edgarsubmissions retrieves a list
+of submissions for some year.
+
 ## required environmental variable<br/>
+
+While EDGAR doesn't require an API key, it does require a proper<br/>
+HTTP user agent. https://www.sec.gov/os/accessing-edgar-data<br/>
+The commands that access SEC data require this env variable to be set.<br/>
+<br/>
 EQEMAIL - required by the SEC to download some of the files with curl.<br/>
-          used as the user-agent in the url request by the scripts.<br/>
+          and used as the user-agent in the url request by the scripts.<br/>
 
 These commands retrieve various data from SEC EDGAR. They use a<br/>
 CIK or Central Index Key or ticker symbol to identify entities<br/>

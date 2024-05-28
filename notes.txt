@@ -255,4 +255,13 @@
   https://americansfortaxfairness.org/ultra-wealthys-8-5-trillion-untaxed-income/
   https://www.federalreserve.gov/econres/aboutscf.htm
 
+# plotly
+
+https://github.com/plotly/plotly.js
+fig.to_json()
+
+https://plotly.com/python/creating-and-updating-figures/
+https://stackoverflow.com/questions/39867224/plotly-js-only-one-plot-working-when-using-multiple-plots-on-same-page
+https://plnkr.co/edit/XluyqzOLOYAtdzp9EevX?p=preview&preview
+https://plotly.com/python/figure-structure/
 

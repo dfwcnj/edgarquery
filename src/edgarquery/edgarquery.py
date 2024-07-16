@@ -235,11 +235,11 @@ def main():
     EQ.argp.add_argument("--cy", required=False,
         help="calendar year e.g. CY2023, CY2023Q1, CY2023Q4I")
 
-    EQ.argp.add_argument("--frame", required=False,
+    EQ.argp.add_argument("--frame", required=False, default="us-gaap",
         help="reporting frame e.g us-gaap, ifrs-full, dei, srt")
     EQ.argp.add_argument("--units", required=False,
         default='USD', help="USD or shares")
-    EQ.argp.add_argument("--fact", required=False,
+    EQ.argp.add_argument("--fact", required=False, default="GrossProfit",
         help="fact to collect e.g AccountsPayableCurrent, USD-per-shares")
 
     EQ.argp.add_argument("--directory", default='/tmp',
@@ -284,11 +284,8 @@ def main():
         EQ.argp.print_help()
         sys.exit(1)
 
-    cik = None
-    if args.cik:
-        cik = args.cik
     if args.ticker:
-        cik = EQ.getcikforticker(args.ticker)
+        args.cik = EQ.getcikforticker(args.ticker)
 
     # check for legal combination of arguments
     if (args.companyfacts and args.companyconcept):
@@ -297,38 +294,38 @@ def main():
     if (args.companyfactsarchivezip and args.submissionszip):
         EQ.argp.print_help()
         sys.exit(1)
-    if (cik and args.cy):
+    if (args.cik and args.cy):
         EQ.argp.print_help()
         sys.exit(1)
 
-    if args.companyconcept and not cik:
+    if args.companyconcept and not args.cik:
         EQ.argp.print_help()
         sys.exit(1)
-    if args.companyconcept and cik and args.frame and args.fact:
+    if args.companyconcept and args.cik and args.frame and args.fact:
         if args.file:
-            EQ.companyconcept(cik=cik, frame=args.frame, fact=args.fact,
+            EQ.companyconcept(cik=args.cik, frame=args.frame, fact=args.fact,
                         file=args.file, directory=args.directory)
             sys.exit()
         else:
-            EQ.companyconcept(cik=cik, frame=args.frame,
+            EQ.companyconcept(cik=args.cik, frame=args.frame,
                 fact=args.fact, directory=args.directory)
             sys.exit()
-    elif args.companyconcept and cik and args.fact:
+    elif args.companyconcept and args.cik and args.fact:
         if args.file:
-            EQ.companyconcept(cik=cik, fact=args.fact,
+            EQ.companyconcept(cik=args.cik, fact=args.fact,
             file=args.file, directory=args.directory)
             sys.exit()
         else:
-            EQ.companyconcept(cik=cik, fact=args.fact,
+            EQ.companyconcept(cik=args.cik, fact=args.fact,
                 directory=args.directory)
             sys.exit()
     elif args.companyconcept:
         if args.file:
-            EQ.companyconcept(cik=cik, file=args.file,
+            EQ.companyconcept(cik=args.cik, file=args.file,
                 directory=args.directory)
             sys.exit()
         else:
-            EQ.companyconcept(cik=cik, directory=args.directory)
+            EQ.companyconcept(cik=args.cik, directory=args.directory)
             sys.exit()
 
     if args.xbrlframes and not args.cy:
@@ -364,14 +361,14 @@ def main():
             EQ.xbrlframes(cy=args.cy, directory=args.directory)
         sys.exit()
 
-    if args.companyfacts and not cik:
+    if args.companyfacts and not args.cik:
         EQ.argp.print_help()
         sys.exit()
-    if args.companyfacts and cik and args.file:
-        EQ.companyfacts(cik=cik, file=args.file, directory=args.directory)
+    if args.companyfacts and args.cik and args.file:
+        EQ.companyfacts(cik=args.cik, file=args.file, directory=args.directory)
         sys.exit()
     elif args.companyfacts:
-        EQ.companyfacts(cik=cik, directory=args.directory)
+        EQ.companyfacts(cik=args.cik, directory=args.directory)
         sys.exit()
 
     if args.companyfactsarchivezip and args.file:

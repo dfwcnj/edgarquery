@@ -223,15 +223,23 @@
 
   XBRL Extensible Business Markup Language(XML)
 
+  obsolete
   company facts json file has concepts for company concepts
   facts, concepts and xbrl  json files contain two json dictionaries each
   this sedfile converts them to a two item array of dictionaries
   sedfile s/^\([{].*[}]\)\([{].*[}]\)$/[\1,\2]/
 
+  # company concepts
+  Revenues GrossProfit EarningsPerShareBasic Dividends EquityPublicFloat CostofGoodsandServicesSold OperatingIncomeLoss
+
   https://www.sec.gov/Archives/edgar/xbrlrss.all.xml
+
+  # company concept
+  https://xbrl.us/forums/topic/how-to-find-a-complete-list-of-similar-concept/
 
   https://data.sec.gov/api/xbrl/companyconcept/CIK##########/us-gaap/AccountsPayableCurrent.json
   https://data.sec.gov/api/xbrl/companyconcept/CIK##########/us-gaap/AccountsAndNotesReceivableNet.json
+  https://data.sec.gov/api/xbrl/companyconcept/CIK##########/us-gaap/GrossProfit.json
   https://data.sec.gov/api/xbrl/companyfacts/CIK##########.json
   https://data.sec.gov/api/xbrl/frames/us-gaap/AccountsPayableCurrent/USD/CY2019Q1I.json
   https://data.sec.gov/api/xbrl/frames/us-gaap/AccountsAndNotesReceivableNet/USD/CY2019Q1I.json
@@ -265,3 +273,4 @@ https://stackoverflow.com/questions/39867224/plotly-js-only-one-plot-working-whe
 https://plnkr.co/edit/XluyqzOLOYAtdzp9EevX?p=preview&preview
 https://plotly.com/python/figure-structure/
 
+#

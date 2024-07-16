@@ -90,27 +90,27 @@ class CompanyFactsShow():
             assert type(facts[k]) == type({}), \
                 'jsonfacts: %s not a dictionary' % self.k
 
-            #htmla.append('<div id="%s">' % (k) )
-            htmla.append('<p>fact type: %s</p><br/>' % (self.facttype) )
+            htmla.append('<p>fact type: %s</p>' % (self.facttype) )
 
             fta = [ft for ft in facts[k].keys()]
-            #for t in fta:
             for ti in range(len(fta) ):
                 t = fta[ti]
 
                 label = facts[k][t]['label']
+                if label and 'Deprecated' in label:
+                    continue
+                htmla.append('<p>tag: %s</p>' % (t) )
+                htmla.append('<p>label: %s</p>' % (label) )
 
                 descr = facts[k][t]['description']
                 if not descr:
                     descr = 'No description'
-                #htmla.append('<div id="%s%s">' % (k,t) )
                 htmla.append('<h3>Description: %s</h3>' % (descr) )
 
                 units = facts[k][t]['units']
                 assert type(units) == type({}), \
                     'jsonfacts: units not a dictionary'
                 uka = [u for u in units.keys() ]
-                #for uk in uka:
                 for ui in range(len(uka) ):
                     uk = uka[ui]
                     self.units = uk
@@ -128,14 +128,8 @@ class CompanyFactsShow():
                     htmla.append('</script>')
                     htmla.append('</div>')
 
-                    #fightml = fig.to_html()
-                    #htmla.append(fightml)
-
                     tbl = self.jsonfacttable(units[uk], label)
                     htmla.extend(tbl)
-                    #htmla.append('</div>')
-                #htmla.append('</div>')
-            #htmla.append('</div>')
         self.htmla.extend(htmla)
 
 

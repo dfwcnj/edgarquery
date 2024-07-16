@@ -23,18 +23,22 @@ class _EBURLQuery():
         if not url:
             print('query: nothing to do', file=sys.stderr)
             sys.exit(0)
+        if type(hdr) != type({}):
+            print('query: hdr not a dictionary', file=sys.stderr)
+            sys.exit(0)
 
         while True:
             try:
                 req = urllib.request.Request(url, headers=hdr)
+            except Exception as e:
+                print('query request %s failed %s' % (url, e), file=sys.stderr)
+            try:
                 resp = urllib.request.urlopen(req)
-                return resp
-            except urllib.error.URLError as e:
-                print("Error %s(%s): %s" % ('query', url, e.reason),
-                              file=sys.stderr )
-                if e.reason == 'Not Found':
+            except Exception as e:
+                print('query urlopen $s failed %s' % (url, e), file=sys.stderr)
+                if e == 'Not Found':
                     return None
-                if e.reason == 'Forbidden':
+                if e == 'Forbidden':
                     return None
                 if tries < ntries:
                     print('retrying in %d seconds' % (pause),
@@ -44,6 +48,7 @@ class _EBURLQuery():
                     pause = pause * 2
                     continue
                 #sys.exit(1)
+            return resp
 
     def storequery(self, qresp, file):
         """storequery(qresp, file) - store the query response in a file

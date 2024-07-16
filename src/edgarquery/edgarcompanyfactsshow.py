@@ -14,11 +14,11 @@ from plotly.subplots import make_subplots
 import plotly.graph_objects as go
 
 try:
-    from edgarquery import ebquery
-    from edgarquery import tickerd
-except ImportError as e:
     import ebquery
     import tickerd
+except ImportError as e:
+    from edgarquery import ebquery
+    from edgarquery import tickerd
 
 class CompanyFactsShow():
 

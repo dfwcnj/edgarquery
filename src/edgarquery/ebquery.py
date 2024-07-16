@@ -32,6 +32,10 @@ class _EBURLQuery():
                 req = urllib.request.Request(url, headers=hdr)
             except Exception as e:
                 print('query request %s failed %s' % (url, e), file=sys.stderr)
+                if e == 'Not Found':
+                    return None
+                if e == 'Forbidden':
+                    return None
             try:
                 resp = urllib.request.urlopen(req)
             except Exception as e:

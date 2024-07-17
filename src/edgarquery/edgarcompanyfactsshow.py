@@ -141,9 +141,13 @@ class CompanyFactsShow():
         label - label
         """
 
-        dates = [recs[i]['end'] for i in range(len(recs))]
-        vals = [recs[i]['val'] for i in range(len(recs))]
-        for i in range(len(recs)):
+        # dates = [recs[i]['end'] for i in range(len(recs))]
+        # vals = [recs[i]['val'] for i in range(len(recs))]
+        # for i in range(len(recs)):
+        ia = [i for i in range(len(recs)) if recs[i]['fp']=='FY']
+        dates = [recs[i]['end'] for i in ia]
+        vals = [recs[i]['val'] for i in ia]
+        for i in range(len(vals)):
             if type(vals[i]) != type(0):
                 vals[i] = 0
 

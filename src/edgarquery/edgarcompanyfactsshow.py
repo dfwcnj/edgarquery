@@ -144,7 +144,7 @@ class CompanyFactsShow():
         # dates = [recs[i]['end'] for i in range(len(recs))]
         # vals = [recs[i]['val'] for i in range(len(recs))]
         # for i in range(len(recs)):
-        ia = [i for i in range(len(recs)) if recs[i]['fp']=='FY']
+        ia = [i for i in range(len(recs)) if recs[i]['form']=='10-K']
         dates = [recs[i]['end'] for i in ia]
         vals = [recs[i]['val'] for i in ia]
         for i in range(len(vals)):

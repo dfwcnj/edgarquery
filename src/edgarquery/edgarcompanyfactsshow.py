@@ -141,9 +141,10 @@ class CompanyFactsShow():
         label - label
         """
 
-        # dates = [recs[i]['end'] for i in range(len(recs))]
-        # vals = [recs[i]['val'] for i in range(len(recs))]
-        # for i in range(len(recs)):
+        for i in range(len(recs)):
+            if 'frame' in recs[i].keys():
+                if recs[i]['form'] == '10-K' and 'Q' in recs[i]['frame']:
+                    recs[i]['form'] = '%s ' % recs[i]['form']
         ia = [i for i in range(len(recs)) if recs[i]['form']=='10-K']
         dates = [recs[i]['end'] for i in ia]
         vals = [recs[i]['val'] for i in ia]
@@ -166,7 +167,7 @@ class CompanyFactsShow():
         htmla = []
         htmla.append('<table border=1 >')
 
-        ka = [k for k in recs[0].keys() ]
+        ka = ['end', 'val', 'accn', 'fy', 'fp', 'form', 'filed', 'frame']
         hd = '</th><th scope="col">'.join(ka)
         htmla.append('<tr><th scope="col">%s</th></tr>' % (hd) )
         cap = '<caption>%s</caption>' % (label)

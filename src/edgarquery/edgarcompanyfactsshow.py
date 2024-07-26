@@ -1,5 +1,6 @@
 #! env python
 
+import datetime
 import os
 import sys
 import argparse
@@ -141,10 +142,14 @@ class CompanyFactsShow():
         label - label
         """
 
+        ld=None
         for i in range(len(recs)):
-            if 'frame' in recs[i].keys():
-                if recs[i]['form'] == '10-K' and 'Q' in recs[i]['frame']:
+            if recs[i]['form'] == '10-K':
+                cd = datetime.datetime.strptime(recs[i]['end'], '%Y-%m-%d')
+                if ld != None and cd <= ld:
                     recs[i]['form'] = '%s ' % recs[i]['form']
+            ld = datetime.datetime.strptime(recs[i]['end'], '%Y-%m-%d')
+
         ia = [i for i in range(len(recs)) if recs[i]['form']=='10-K']
         dates = [recs[i]['end'] for i in ia]
         vals = [recs[i]['val'] for i in ia]

@@ -196,7 +196,7 @@ def main():
     argp.add_argument("--cik", help="10-digit Central Index Key")
     argp.add_argument("--ticker", help="company ticker symbol")
     argp.add_argument("--submission", default='10-K',
-        choices=['SC 13D', '13F-HR', 'DEF 14A', '8-K', '10-K', '10-Q'],
+        choices=['SC 13D', '13F', '13F-HR', '13F-HR/A', 'DEF 14A', '8-K', '10-K', '10-Q'],
         help="X-K submission type")
 
     argp.add_argument("--link", action='store_true', default=False,

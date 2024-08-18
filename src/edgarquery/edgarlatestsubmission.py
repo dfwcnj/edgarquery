@@ -32,6 +32,7 @@ class EDGARLatestSubmission():
         """
         self.sprefix = 'https://www.sec.gov/Archives/edgar/full-index'
         self.rprefix = 'https://www.sec.gov/Archives'
+        self.fprefix = '%s/edgar/data/' % self.rprefix
         if 'EQEMAIL' in os.environ:
             self.hdr     = {'User-Agent' : os.environ['EQEMAIL'] }
         else:
@@ -148,18 +149,47 @@ class EDGARLatestSubmission():
         tkurl = parser.tkurl
         return tkurl
 
-    def searchSubmission(self, cik, sub, link, directory, show):
-        """ searchSubmission
+    def searchlinks(self, url):
+        resp = self.uq.query(url, self.hdr)
+        if resp == None:
+            return None
+        ua = url.split('/')
+        cik = ua[-1]
+        rstr    = resp.read().decode('utf-8')
+        class MyHTMLParser(HTMLParser):
+            def __init__(self):
+                super().__init__()
+                self.urla = []
+            def handle_starttag(self, tag, attrs):
+                if tag == 'a':
+                    self.urla.append('%s%s' % ('https://www.sec.gov',
+                                                attrs[0][1]))
+            def handle_endtag(self, tag):
+                pass
+            def handle_data(self, data):
+                pass
+        parser = MyHTMLParser()
+        parser.feed(rstr)
+        urla = parser.urla
+        return urla
 
-        search in the form.idx files for a page that contains a link
-        to the X-k for a cik
-        cik - central index key, required
-        sub - submission form type
-        link - if true, just return a url link to the submission html page
-               if false, store the html page
-        directory - directory to store the data
-        show - display the output in your browser
-        """
+    def search13F(self, cik):
+        url = '%s/%s' % (self.fprefix, cik)
+        urla0 = self.searchlinks(url)
+        if urla0 == None:
+            return None
+        urla0 = [u for u in urla0 if cik in u]
+        urla1 = self.searchlinks(urla0[0])
+        if urla1 == None:
+            return None
+        url1 = [u for u in urla1 if '-index.html' in u]
+        urla2 = self.searchlinks(url1[0])
+        if urla2 == None:
+            return None
+        furla = [u for u in urla2 if 'xslForm13F_X02' in u] 
+        return furla[-1]
+
+    def searchformidx(self, cik, sub, link, directory, show):
         ya = [y for y in range(self.now.year, 1993, -1)]
         for y in ya:
             qa = [q for q in range(4, 0, -1)]
@@ -176,16 +206,35 @@ class EDGARLatestSubmission():
                 tktbl = self.dogrep(cik, sub, ofn)
                 if tktbl:
                     tkurl = self.getxkfromhtml(cik, sub, tktbl, link, directory)
-                    if link:
-                        print(tkurl)
-                    if show:
-                        webbrowser.open(tkurl)
-                    if directory:
-                        tkresp = self.uq.query(tkurl, self.hdr)
-                        ofn = os.path.join(directory, 'CIK%s%s.htm' %\
-                            (cik.zfill(10), sub ) )
-                        self.uq.storequery(tkresp, ofn)
-                    return
+                    return tkurl
+
+    def searchSubmission(self, cik, sub, link, directory, show):
+        """ searchSubmission
+
+        search in the form.idx files for a page that contains a link
+        to the X-k for a cik
+        cik - central index key, required
+        sub - submission form type
+        link - if true, just return a url link to the submission html page
+               if false, store the html page
+        directory - directory to store the data
+        show - display the output in your browser
+        """
+        url = None
+        if '13F' in sub:
+            url = self.search13F(cik)
+        else:
+            url = self.searchformidx(cik, sub, link, directory, show)
+        if link:
+            print(url)
+        if show:
+            webbrowser.open(url)
+        if directory:
+            tkresp = self.uq.query(url, self.hdr)
+            ofn = os.path.join(directory, 'CIK%s%s.htm' %\
+                (cik.zfill(10), sub ) )
+            self.uq.storequery(tkresp, ofn)
+        return
 
 # if __name__ == '__main__':
 def main():
@@ -196,7 +245,7 @@ def main():
     argp.add_argument("--cik", help="10-digit Central Index Key")
     argp.add_argument("--ticker", help="company ticker symbol")
     argp.add_argument("--submission", default='10-K',
-        choices=['SC 13D', '13F', '13F-HR', '13F-HR/A', 'DEF 14A', '8-K', '10-K', '10-Q'],
+        choices=['SC 13D', '13F-HR', 'DEF 14A', '8-K', '10-K', '10-Q'],
         help="X-K submission type")
 
     argp.add_argument("--link", action='store_true', default=False,

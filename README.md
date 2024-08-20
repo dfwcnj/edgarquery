@@ -146,7 +146,7 @@ directory to store the output<br/>
 ## edgarlatestsubmission<br/>
 ##<br/>
 usage: edgarlatestsubmission [-h] [--cik CIK] [--ticker TICKER]<br/>
-[--submission {SC 13D,13F-HR,DEF 14A,8-K,10-K,10-Q}]<br/>
+[--submission {4,144,10-Q,8-K,13F-HR,3,SD,PX14A6G,DEFA14A,ARS,DEF 14A,SC 13G/A,10-K,S-3ASR,424B5,FWP,PRE 14A,UPLOAD,CORRESP,SC 13G,424B2,IRANNOTICE,S-8,3/A,5,EFFECT,POS AM,424B3,S-4,S-8 POS}]<br/>
 [--link] [--directory DIRECTORY] [--show]<br/>
 <br/>
 find the most recent submission for a ticker or cik for some common<br/>
@@ -156,7 +156,7 @@ options:<br/>
 -h, --help            show this help message and exit<br/>
 --cik CIK             10-digit Central Index Key<br/>
 --ticker TICKER       company ticker symbol<br/>
---submission {SC 13D,13F-HR,DEF 14A,8-K,10-K,10-Q}<br/>
+--submission {4,144,10-Q,8-K,13F-HR,3,SD,PX14A6G,DEFA14A,ARS,DEF 14A,SC 13G/A,10-K,S-3ASR,424B5,FWP,PRE 14A,UPLOAD,CORRESP,SC 13G,424B2,IRANNOTICE,S-8,3/A,5,EFFECT,POS AM,424B3,S-4,S-8 POS}<br/>
 X-K submission type<br/>
 --link                return the url for the latest X-K<br/>
 --directory DIRECTORY<br/>

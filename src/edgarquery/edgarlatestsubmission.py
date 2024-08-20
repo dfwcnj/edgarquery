@@ -5,16 +5,17 @@
 #
 
 import os
-import re
-import html
-from html.parser import HTMLParser
 import sys
 import argparse
 import datetime
+from functools import partial
+import html
+from html.parser import HTMLParser
+import json
+import re
 import subprocess
 import urllib.request
 import webbrowser
-from functools import partial
 
 try:
     from edgarquery import ebquery
@@ -33,6 +34,7 @@ class EDGARLatestSubmission():
         self.sprefix = 'https://www.sec.gov/Archives/edgar/full-index'
         self.rprefix = 'https://www.sec.gov/Archives'
         self.fprefix = '%s/edgar/data/' % self.rprefix
+        self.jsurl   = 'https://data.sec.gov/submissions/CIK%s.json'
         if 'EQEMAIL' in os.environ:
             self.hdr     = {'User-Agent' : os.environ['EQEMAIL'] }
         else:
@@ -47,107 +49,6 @@ class EDGARLatestSubmission():
     def getcikforticker(self, ticker):
         return self.td.getcikforticker(ticker)
 
-    def pgrep(self, pat=None, fn=None):
-        """ pgrep
-
-        simulate grap when command does not exist
-        pat - regular expression pattern to match
-        fn  - name of file to search
-        """
-        if not fn and not pat:
-            print('pgrep pat and fn required')
-            sys.exit(1)
-        rc = re.compile(pat)
-        with open(fn, 'r') as f:
-            for line in f:
-                if rc.search(line):
-                    return line
-
-    def dogrep(self, cik, sub, fn):
-        """ dpgrep(cik, fn)
-
-        desparately try to grep for something
-        cik - SEC central index key
-        sub - submission form type
-        fn - name of file to search
-        """
-        if not fn and not cik:
-            print('dogrep: fn and cik required')
-            sys.exit(1)
-        cmd=None
-        pat = '%s.* %s ' % (sub, cik)
-        if os.path.exists(os.path.join('/', 'bin', 'grep') ):
-            cmd = os.path.join('bin', 'grep')
-        elif os.path.exists(os.path.join('/', 'usr', 'bin', 'grep') ):
-            cmd = os.path.join('/', 'usr', 'bin', 'grep')
-
-        if cmd:
-            try:
-                sp = subprocess.Popen([cmd, pat, fn],
-                       bufsize=-1, stdout=subprocess.PIPE)
-                so, se = sp.communicate()
-                if so:
-                    out = so.decode('utf-8')
-                    htm = '%s/%s-index.htm' % (self.rprefix,
-                           out.split()[-1].split('.')[0] )
-                    # print(htm)
-                    return htm
-                if se:
-                    err = se.decode('utf-8')
-                    print(err)
-                    sys.exit(1)
-                os.unlink(fn)
-            except Exception as e:
-                print('grep url: %s' % (e), file=sys.stderr)
-                sys.exit(1)
-        else:
-            res = self.pgrep(pat, fn)
-            return res
-
-    def getxkfromhtml(self, cik, sub, url, link, directory):
-        """ getxkfromhtml(url, link)
-
-        this is a little brittle about depending too much on the web
-        page link order
-        parse the html table to find relative link to submission html file
-        complete the url and either return it or
-        store the submission html file
-        cik = central index key
-        sub submission type
-        url - url containing the links to submission files
-        link - if true, just return a url link to the submission html page
-               if false, store the html page
-        directory - directory to store the output
-        """
-        resp = self.uq.query(url, self.hdr)
-        rstr    = resp.read().decode('utf-8')
-        # resp = self.query(url)
-        # rstr    = resp.read().decode('utf-8')
-        # print(rstr)
-        class MyHTMLParser(HTMLParser):
-            def __init__(self):
-                super().__init__()
-                self.tkurl = None
-            def handle_starttag(self, tag, attrs):
-                if tag == 'a':
-                    if 'ix?doc' in attrs[0][1]:
-                        self.tkurl =  '%s%s' % ('https://www.sec.gov',
-                             attrs[0][1].split('=')[1])
-                        #print(self.tkurl)
-                    elif 'Archives' in attrs[0][1] and \
-                    (attrs[0][1].endswith('.htm') or \
-                    attrs[0][1].endswith('.html') or \
-                    attrs[0][1].endswith('.xml')) and not self.tkurl:
-                        self.tkurl =  '%s%s' % ('https://www.sec.gov',
-                                                attrs[0][1])
-            def handle_endtag(self, tag):
-                pass
-            def handle_data(self, data):
-                pass
-        parser = MyHTMLParser()
-        parser.feed(rstr)
-        tkurl = parser.tkurl
-        return tkurl
 
     def searchlinks(self, url):
         resp = self.uq.query(url, self.hdr)
@@ -173,6 +74,33 @@ class EDGARLatestSubmission():
         urla = parser.urla
         return urla
 
+    def getandparsejson(self, url):
+        resp = self.uq.query(url, self.hdr)
+        if resp == None:
+            return None
+        rstr    = resp.read().decode('utf-8')
+        js = json.loads(rstr)
+        hdr = [k for k in js['filings']['recent'].keys()]
+        lr = len(js['filings']['recent'][hdr[0]])
+        rows=[]
+        for i in range(lr):
+            row = []
+            for k in hdr:
+                row.append(js['filings']['recent'][k][i])
+            rows.append(row)
+        return hdr, rows
+
+    def searchjsonsubmissions(self, cik, sub):
+        url = self.jsurl  % (cik.zfill(10) )
+        keys, rows = self.getandparsejson(url)
+        assert keys[5] == 'form', 'what??'
+        for r in rows:
+            if sub in r[5]:
+                acc = r[0].replace('-', '')
+                surl = 'https://www.sec.gov/Archives/edgar/data/%s/%s/%s' % (cik, acc, r[12])
+                return surl
+        return None
+
     def search13F(self, cik):
         url = '%s/%s' % (self.fprefix, cik)
         urla0 = self.searchlinks(url)
@@ -188,25 +116,6 @@ class EDGARLatestSubmission():
             return None
         furla = [u for u in urla2 if 'xslForm13F_X02' in u] 
         return furla[-1]
-
-    def searchformidx(self, cik, sub, link, directory, show):
-        ya = [y for y in range(self.now.year, 1993, -1)]
-        for y in ya:
-            qa = [q for q in range(4, 0, -1)]
-            for q in qa:
-                url = '%s/%d/QTR%d/form.idx' % (self.sprefix, y, q)
-
-                ofn   = os.path.join(directory, 'form.idx')
-                tktbl = None
-                resp = self.uq.query(url, self.hdr)
-                if resp == None:
-                    continue
-                self.uq.storequery(resp, ofn)
-                print('\tSEARCHING: %s' % (url) )
-                tktbl = self.dogrep(cik, sub, ofn)
-                if tktbl:
-                    tkurl = self.getxkfromhtml(cik, sub, tktbl, link, directory)
-                    return tkurl
 
     def searchSubmission(self, cik, sub, link, directory, show):
         """ searchSubmission
@@ -224,7 +133,10 @@ class EDGARLatestSubmission():
         if '13F' in sub:
             url = self.search13F(cik)
         else:
-            url = self.searchformidx(cik, sub, link, directory, show)
+            url = self.searchjsonsubmissions(cik, sub)
+        if url == None:
+            print('no submission for %s %s' % (cik, sub), file=sys.stderr)
+            return
         if link:
             print(url)
         if show:
@@ -244,8 +156,9 @@ def main():
               description='find the most recent submission for a ticker or cik for some common submissƣons.') 
     argp.add_argument("--cik", help="10-digit Central Index Key")
     argp.add_argument("--ticker", help="company ticker symbol")
+        # choices=['SC 13D', '13F-HR', 'DEF 14A', '8-K', '10-K', '10-Q'],
     argp.add_argument("--submission", default='10-K',
-        choices=['SC 13D', '13F-HR', 'DEF 14A', '8-K', '10-K', '10-Q'],
+        choices=['4', '144', '10-Q', '8-K', '13F-HR', '3', 'SD', 'PX14A6G', 'DEFA14A', 'ARS', 'DEF 14A', 'SC 13G/A', '10-K', 'S-3ASR', '424B5', 'FWP', 'PRE 14A', 'UPLOAD', 'CORRESP', 'SC 13G', '424B2', 'IRANNOTICE', 'S-8', '3/A', '5', 'EFFECT', 'POS AM', '424B3', 'S-4', 'S-8 POS'],
         help="X-K submission type")
 
     argp.add_argument("--link", action='store_true', default=False,

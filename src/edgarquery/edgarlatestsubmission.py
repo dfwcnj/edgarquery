@@ -19,9 +19,11 @@ import webbrowser
 
 try:
     from edgarquery import ebquery
+    from edgarquery import edgarsubmissionspivot
     from edgarquery import tickerd
 except ImportError as e:
     import ebquery
+    import edgarsubmissionspivot
     import tickerd
 
 class EDGARLatestSubmission():
@@ -34,7 +36,9 @@ class EDGARLatestSubmission():
         self.sprefix = 'https://www.sec.gov/Archives/edgar/full-index'
         self.rprefix = 'https://www.sec.gov/Archives'
         self.fprefix = '%s/edgar/data/' % self.rprefix
+
         self.jsurl   = 'https://data.sec.gov/submissions/CIK%s.json'
+        self.bprefix = 'https://www.sec.gov/edgar/browse/?CIK=$s'
         if 'EQEMAIL' in os.environ:
             self.hdr     = {'User-Agent' : os.environ['EQEMAIL'] }
         else:
@@ -45,6 +49,7 @@ class EDGARLatestSubmission():
         self.chunksize =4294967296
         self.uq = ebquery._EBURLQuery()
         self.td = tickerd.TickerD()
+        self.sp = edgarsubmissionspivot.EDGARSubmissionsPivot()
 
     def getcikforticker(self, ticker):
         return self.td.getcikforticker(ticker)
@@ -91,8 +96,9 @@ class EDGARLatestSubmission():
         return hdr, rows
 
     def searchjsonsubmissions(self, cik, sub):
-        url = self.jsurl  % (cik.zfill(10) )
-        keys, rows = self.getandparsejson(url)
+        # url = self.jsurl  % (cik.zfill(10) )
+        # keys, rows = self.getandparsejson(url)
+        keys, rows = self.sp.pivotsubmissions(cik)
         assert keys[5] == 'form', 'what??'
         for r in rows:
             if sub in r[5]:
@@ -105,17 +111,30 @@ class EDGARLatestSubmission():
         url = '%s/%s' % (self.fprefix, cik)
         urla0 = self.searchlinks(url)
         if urla0 == None:
+            print('search13F searchlinks failed for %s' % url, file=sys.stderr)
             return None
         urla0 = [u for u in urla0 if cik in u]
-        urla1 = self.searchlinks(urla0[0])
-        if urla1 == None:
+        if len(urla0) == 0:
+            print('search13F CIK %s not in  %s' % (cik, url), file=sys.stderr)
             return None
-        url1 = [u for u in urla1 if '-index.html' in u]
-        urla2 = self.searchlinks(url1[0])
-        if urla2 == None:
-            return None
-        furla = [u for u in urla2 if 'xslForm13F_X02' in u] 
-        return furla[-1]
+        for i in range(len(urla0)):
+            urla1 = self.searchlinks(urla0[i])
+            if urla1 == None:
+                print('search13F searchlinks failed for %s' % urla0[0], file=sys.stderr)
+                return None
+            urla1 = [u for u in urla1 if '-index.html' in u]
+            if len(urla1) == 0:
+                print('search13F -index.html not in  %s' % (url0[0]), file=sys.stderr)
+                return None
+            urla2 = self.searchlinks(urla1[0])
+            if urla2 == None:
+                print('search13F searchlinks failed for %s' % urla1[0], file=sys.stderr)
+                return None
+            furla = [u for u in urla2 if 'xslForm13F_X02' in u] 
+            if len(furla) == 0:
+                # print('search13F xslForm13F_X02 not  in  %s' % (urla1[0]), file=sys.stderr)
+                continue
+            return furla[-1]
 
     def searchSubmission(self, cik, sub, link, directory, show):
         """ searchSubmission

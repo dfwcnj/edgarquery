@@ -18,12 +18,14 @@ from functools import partial
 
 try:
     from edgarquery import edgarlatestsubmission
+    from edgarquery import tickerd
 except ImportError as e:
     import edgarlatestsubmission
+    import tickerd
 
 
 def main():
-    LT = edgarlatestsubmission.EDGARLatestSubmission()
+    LS = edgarlatestsubmission.EDGARLatestSubmission()
 
     argp = argparse.ArgumentParser(
               description='find the most recent 10-K for ticker or cik')
@@ -46,12 +48,12 @@ def main():
     if args.cik:
         cik = args.cik
     if args.ticker:
-        cik = LT.getcikforticker(args.ticker)
+        cik = LS.getcikforticker(args.ticker)
     if cik == None:
         argp.print_help()
         sys.exit()
 
-    LT.searchSubmission(cik, '10-K', args.link, args.directory, args.show)
+    LS.searchSubmission(cik, '10-K', args.link, args.directory, args.show)
 
 if __name__ == '__main__':
     main()

@@ -16,10 +16,12 @@ import urllib.request
 from functools import partial
 
 try:
+    from edgarquery import aa2html
     from edgarquery import ebquery
     from edgarquery import edgarsubmissionspivot
     from edgarquery import tickerd
 except ImportError as e:
+    import aa2html
     import ebquery
     import edgarsubmissionspivot
     import tickerd
@@ -41,10 +43,21 @@ class EDGARSubmissions():
         self.uq = ebquery._EBURLQuery()
         self.td = tickerd.TickerD()
         self.sp = edgarsubmissionspivot.EDGARSubmissionsPivot()
+        self.sh = aa2html._AA2HTML()
 
 
     def getcikforticker(self, ticker):
         return self.td.getcikforticker(ticker)
+
+    def reportsubmissions(self, sa, fp):
+        """ reportsubmissions(fp)
+
+        report latest submissions for a cik
+        fp - file pointer to write
+        """
+        for row in sa:
+            r = ','.join(row)
+            print('%s\n' % r, file=fp)
 
     def getjsonsubmissions(self, cik, year):
             keys, rows = self.sp.pivotsubmissions(cik)
@@ -73,7 +86,15 @@ class EDGARSubmissions():
                 sa.append(row)
             return sa
 
-# if __name__ == '__main__':
+    def show(self, sa, ticker, cik):
+        sa[0].append('url')
+        for i in range(1, len(sa)):
+             acc = sa[i][0].replace('-', '')
+             surl = 'https://www.sec.gov/Archives/edgar/data/%s/%s/%s' % (cik, acc, sa[i][12])
+             sa[i].append('<a href="%s">url</a>' % surl)
+
+        self.sh.aashow(sa, ticker)
+
 def main():
 
     now = datetime.datetime.now()
@@ -91,6 +112,8 @@ def main():
     argp.add_argument("--file", help="store the output in this file")
     argp.add_argument("--directory", default='/tmp',
         help="store the output in this directory")
+    argp.add_argument("--show", action='store_true', default=False,
+         help="show the 10-K stored in directory to your browser")
 
     args = argp.parse_args()
 
@@ -108,17 +131,21 @@ def main():
         argp.print_help()
         sys.exit()
 
-    if args.file == None:
-        args.file = 'CIK%s_%s_submissions.csv' % (cik, year)
-    LS.cik = args.cik
-
-    # LS.searchformindices(cik, year, directory=args.directory)
-    # LS.reportsubmissions(file=args.file, directory=args.directory)
     sa = LS.getjsonsubmissions(cik, year)
-    fn = os.path.join(args.directory, args.file)
-    with open(fn, 'w') as fp:
-        for row in sa:
-            print('%s\n' % ','.join(row), file=fp)
+
+    fp = sys.stdout
+    if args.file:
+        try:
+            fn = os.path.join(args.directory, args.file)
+            fp = open(fn, 'w')
+        except Exception as e:
+            print('%s: %s' % (args.file, e) )
+
+    if args.show:
+        LS.show(sa, args.ticker, cik)
+
+    if not args.file and not args.show:
+        LS.reportsubmissions(sa, fp)
 
 if __name__ == '__main__':
     main()

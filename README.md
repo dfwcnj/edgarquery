@@ -169,6 +169,7 @@ directory to store the output<br/>
 ##<br/>
 usage: edgarlatestsubmissions [-h] [--cik CIK] [--ticker TICKER]<br/>
 [--directory DIRECTORY] [--file FILE]<br/>
+[--show]<br/>
 <br/>
 find the most recent submissions for a ticker or cik<br/>
 <br/>
@@ -179,6 +180,7 @@ options:<br/>
 --directory DIRECTORY<br/>
 directory to store the output<br/>
 --file FILE           where to store the output<br/>
+--show                show the 10-K stored in directory to your browser<br/>
 <br/>
 <br/>
 ##<br/>
@@ -227,8 +229,9 @@ summaries --cy required<br/>
 ##<br/>
 ## edgarsubmissions<br/>
 ##<br/>
-usage: edgarsubmissions [-h] [--cik CIK] [--ticker TICKER] [--year YEAR]<br/>
-[--file FILE] [--directory DIRECTORY]<br/>
+usage: edgarsubmissions [-h] [--cik CIK] [--ticker TICKER]<br/>
+[--year {2014,2015,2016,2017,2018,2019,2020,2021,2022,2023,2024}]<br/>
+[--file FILE] [--directory DIRECTORY] [--show]<br/>
 <br/>
 find the most recent submissions for ticker or cik<br/>
 <br/>
@@ -236,10 +239,12 @@ options:<br/>
 -h, --help            show this help message and exit<br/>
 --cik CIK             10-digit Central Index Key<br/>
 --ticker TICKER       company ticker symbol<br/>
---year YEAR           year to search for submissions if not current year<br/>
+--year {2014,2015,2016,2017,2018,2019,2020,2021,2022,2023,2024}<br/>
+year to search for submissions if not current year<br/>
 --file FILE           store the output in this file<br/>
 --directory DIRECTORY<br/>
 store the output in this directory<br/>
+--show                show the 10-K stored in directory to your browser<br/>
 <br/>
 <br/>
 ##<br/>

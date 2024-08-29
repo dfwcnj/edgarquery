@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 
 #
-# EDGARLatestSubmission
+# EDGARSubmissionsPivot
 #
 
 import os
@@ -16,7 +16,7 @@ except ImportError as e:
 class EDGARSubmissionsPivot():
 
     def __init__(self):
-        """ EDGARLatestSubmission
+        """ EDGARSubmissionsPivot
 
         retrieve the SEC submissions json file and pivot the
         columns to rows
@@ -39,8 +39,10 @@ class EDGARSubmissionsPivot():
         url = self.jsurl  % (cik.zfill(10) )
         resp = self.uq.query(url, self.hdr)
         if resp == None:
-            return None
+            return None, None
         rstr    = resp.read().decode('utf-8')
+        if rstr == None:
+            return None, None
         js = json.loads(rstr)
         hdr = [k for k in js['filings']['recent'].keys()]
         lr = len(js['filings']['recent'][hdr[0]])

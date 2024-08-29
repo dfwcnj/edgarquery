@@ -76,8 +76,10 @@ class CompanyFactsShow():
         htmla.append('<html>')
 
         cik = '%d' % (self.cik)
-        ch = self.td.getrecforcik(self.cik)
-        ttl = 'Company Facts: %s CIK%s' % (ch['title'], cik.zfill(10) )
+        ch = self.td.getrecforcik(cik)
+        ttl = 'Company Facts: CIK%s' % (cik.zfill(10) )
+        if 'title' in ch.keys():
+            ttl = 'Company Facts: %s CIK%s' % (ch['title'], cik.zfill(10) )
 
         htmla.append('<head>')
         htmla.append('<h1>%s</h1>' % (ttl) )

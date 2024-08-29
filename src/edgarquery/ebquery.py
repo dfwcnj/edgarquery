@@ -32,17 +32,17 @@ class _EBURLQuery():
                 req = urllib.request.Request(url, headers=hdr)
             except Exception as e:
                 print('query request %s failed %s' % (url, e), file=sys.stderr)
-                if e.reason == 'Not Found':
+                if 'Not Found' in e.reason:
                     return None
-                if e.reason == 'Forbidden':
+                if 'Forbidden' in e.reason:
                     return None
             try:
                 resp = urllib.request.urlopen(req)
             except Exception as e:
                 print('query urlopen %s failed %s' % (url, e), file=sys.stderr)
-                if e.reason == 'Not Found':
+                if 'Not Found' in e.reason:
                     return None
-                if e.reason == 'Forbidden':
+                if 'Forbidden' in e.reason:
                     return None
                 if tries < ntries:
                     print('retrying in %d seconds' % (pause),

@@ -116,7 +116,9 @@ class CompanyFactsShow():
                 uka = [u for u in units.keys() ]
                 for ui in range(len(uka) ):
                     uk = uka[ui]
-                    self.units = uk
+                    htmla.append('<p>units: %s</p>' % (uk) )
+
+                    #self.units = uk
                     #htmla.append('<div id="%s%s%s">' % (k, t, uk) )
                     assert type(units[uk]) == type([]), \
                         'jasonfacts %s is not an array'

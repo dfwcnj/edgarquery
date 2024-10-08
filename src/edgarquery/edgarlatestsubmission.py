@@ -105,7 +105,7 @@ class EDGARLatestSubmission():
         for r in rows:
             if sub in r[5]:
                 acc = r[0].replace('-', '')
-                surl = 'https://www.sec.gov/Archives/edgar/data/%s/%s/%s' % (cik, acc, r[12])
+                surl = 'https://www.sec.gov/Archives/edgar/data/%s/%s/%s' % (cik, acc, r[-2])
                 return surl
         return None
 

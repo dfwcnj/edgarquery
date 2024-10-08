@@ -1,2 +1,7 @@
-src/edgarquery/__pycache__/*.pyc
 *.pyc
+genusage.sh
+scripts/
+tests/*.sh
+tests/
+src/edgarquery/*.sh
+src/edgarquery/__pycache__/*.pyc

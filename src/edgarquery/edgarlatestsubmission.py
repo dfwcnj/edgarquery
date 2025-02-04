@@ -177,7 +177,12 @@ def main():
               description='find the most recent submission for a ticker or cik for some common submissƣons.') 
     argp.add_argument("--cik", help="10-digit Central Index Key")
     argp.add_argument("--ticker", help="company ticker symbol")
-    argp.add_argument("--submission", default='10-K', choices=['4', '144', '10-Q', '8-K', '13F-HR', '3', 'SD', 'PX14A6G', 'DEFA14A', 'ARS', 'DEF 14A', 'SC 13G/A', '10-K', 'S-3ASR', '424B5', 'FWP', 'PRE 14A', 'UPLOAD', 'CORRESP', 'SC 13G', '424B2', 'IRANNOTICE', 'S-8', '3/A', '5', 'EFFECT', 'POS AM', '424B3', 'S-4', 'S-8 POS','N-CSR','N-CSRS'],
+    argp.add_argument("--submission", default='10-K', choices=['4', '144',
+        '10-Q', '8-K', '13F-HR', '3', 'SD', 'PX14A6G', 'DEFA14A', 'ARS',
+        'DEF 14A', 'SC 13G/A', '10-K', 'S-3ASR', '424B5', 'FWP', 'PRE 14A',
+        'UPLOAD', 'CORRESP', 'SC 13G', '424B2', 'IRANNOTICE',
+        'S-8', '3/A', '5', 'EFFECT', 'POS AM', '424B3', 'S-4', 'S-8 POS',
+        'N-CSR','N-CSRS', '20-F'],
         help="submission name (N-CSR for mutual fund)")
 
     argp.add_argument("--link", action='store_true', default=False,

@@ -186,6 +186,10 @@ class EDGARInsiderTrading():
         url = self.mktwatchurl.format( tckr=ticker, fdate=odt, tdate=ndt)
         print(url)
         resp = self.query(url)
+        if resp == None:
+            print('getmarketwatchtickerhistory: no content',
+                file=sys.stderr)
+            return
         ofn = os.path.join(directory, '%s-mw.csv' % (s) )
         self.storequery(resp, ofn)
 
@@ -200,6 +204,10 @@ class EDGARInsiderTrading():
         url = self.stooqurl % (ticker)
         print(url)
         resp = self.query(url)
+        if resp == None:
+            print('getstooqtickerhistory: no content',
+                file=sys.stderr)
+            return
         ofn = os.path.join(directory, '%s-us.csv' % (s) )
         self.storequery(resp, ofn)
 
@@ -325,6 +333,10 @@ class EDGARInsiderTrading():
         """
         url = '%s/%s' % (self.iturl, file)
         resp = self.query(url)
+        if resp == None:
+            print('getform345: no content',
+                file=sys.stderr)
+            return
         ofn = os.path.join(directory, file)
         self.storequery(resp, ofn)
 

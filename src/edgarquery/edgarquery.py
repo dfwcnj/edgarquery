@@ -95,6 +95,9 @@ class EDGARquery():
               'CompanyConcept.CIK%s_%s_%s.json' % (cik.zfill(10), frame, fact) )
         url = '%s/CIK%s/%s/%s.json' % (self.ccurl, cik.zfill(10), frame, fact)
         resp = self.uq.query(url, self.hdr)
+        if resp == None:
+            print('companyconcept: no data', file=sys.stderr)
+            return
         self.uq.storequery(resp, file)
         # resp = self.query(url)
         # self.storequery(resp, file)
@@ -116,6 +119,9 @@ class EDGARquery():
                 'CompanyFacts.CIK%s.json' % (cik.zfill(10)) )
         url = '%s/CIK%s.json' % (self.cfurl, cik.zfill(10))
         resp = self.uq.query(url, self.hdr)
+        if resp == None:
+            print('companyfacts: no data', file=sys.stderr)
+            return
         self.uq.storequery(resp, file)
         # resp = self.query(url)
         # self.storequery(resp, file)
@@ -148,6 +154,9 @@ class EDGARquery():
                 'XBRLFrames.%s_%s_%s_%s.json' % (frame, fact, units, cy))
         url = '%s/%s/%s/%s/%s.json' % (self.frurl, frame, fact, units, cy)
         resp = self.uq.query(url, self.hdr)
+        if resp == None:
+            print('xbrlframes: no data', file=sys.stderr)
+            return
         self.uq.storequery(resp, file)
         # resp = self.query(url)
         # self.storequery(resp, file)
@@ -162,6 +171,9 @@ class EDGARquery():
         if not file:
             file=os.path.join(directory, 'companyfacts.zip')
         resp = self.uq.query(self.cfzip, self.hdr)
+        if resp == None:
+            print('companyfactsarchivezip: no data', file=sys.stderr)
+            return
         self.uq.storequery(resp, file)
         # resp=self.query(self.cfzip)
         # self.storequery(resp, file)
@@ -175,6 +187,9 @@ class EDGARquery():
         if not file:
             file=os.path.join(directory, 'submissions.zip')
         resp = self.uq.query(self.subzip, self.hdr)
+        if resp == None:
+            print('submissionszip: no data', file=sys.stderr)
+            return
         self.uq.storequery(resp, file)
         # resp=self.query(self.subzip)
         # self.storequery(resp, file)
@@ -216,6 +231,10 @@ class EDGARquery():
             m = cya[1]
             url = '%s/%s_%s_notes.zip' % (self.fsanurl, y, m.zfill(2) )
         resp = self.uq.query(url, self.hdr)
+        if resp == None:
+            print('financialstatementandnotesdataset: no data',
+                  file=sys.stderr)
+            return
         self.uq.storequery(resp, file)
         # resp=self.query(url)
         # self.storequery(resp, file)

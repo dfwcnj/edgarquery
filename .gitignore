@@ -1,7 +1,6 @@
 *.pyc
 genusage.sh
+notes.txt
 scripts/
-tests/*.sh
-tests/
 src/edgarquery/*.sh
 src/edgarquery/__pycache__/*.pyc

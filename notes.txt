@@ -2,6 +2,44 @@
 
 # EDGARquery
 
+# all submissions for a CIK
+# all submissions for a CIK including mutual funds
+https://data.sec.gov/submissions/CIK0001018724.json
+
+# top mutual funds
+# https://www.barrons.com/articles/barrons-best-fund-families-of-2023-28d337b2
+# https://www.swfinstitute.org/fund-manager-rankings
+
+# accessing EDGAR data
+# https://www.sec.gov/search-filings/edgar-search-assistance/accessing-edgar-data
+
+# https://www.sec.gov/edgar/browse/?CIK=0000036405 e.g. vanguard
+# 497K submission for a mutual fund
+https://www.sec.gov/Archives/edgar/data/36405/
+https://www.sec.gov/Archives/edgar/data/736054
+https://www.sec.gov/Archives/edgar/data/736054/000168386324004645
+
+# N-CSR N-CSRS
+# N-CSR N-CSRS  in the submissions json file
+# filing data list for mutual funds identified by series id
+# and class id investor shares admiral shares etf institutional
+# CID for series begins with S
+# CID for class begins with C
+https://www.sec.gov/Archives/edgar/data/736054/000168386324004645/0001683863-24-004645-index.html
+# vanguard 500 fund admiral shares
+https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=C000007774
+# vanguard 500 fund admiral shares holdings
+https://www.sec.gov/Archives/edgar/data/36405/000175272424126393/vg_500index.htm
+https://www.sec.gov/Archives/edgar/data/36405/000175272424126393/primary_doc.xml
+
+https://www.sec.gov/Archives/edgar/data/736054/000168386324004645/0001683863-24-004645-index.html
+
+# https://www.sec.gov/Archives/edgar/data//819118 e.g fidelity
+https://www.sec.gov/edgar/browse/?CIK=0000819118
+https://www.sec.gov/Archives/edgar/data/819118/000074482224000050
+https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=S000006027
+https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=C000100045
+
 - [sources of information]
 
   # Note: only a few fact names are returned by EDGAR for a CY

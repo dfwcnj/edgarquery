@@ -1,14 +1,18 @@
-#! /bin/bash
+#! /bin/zsh
 set -ex
 
 echo $EQDIR
 echo $EQODIR
 
 # big files
+# if ! test -f /tmp/companyfacts.zip; then
 # edgarquery --companyfactsarchivezip \
+# fi
 #                                             --ticker amzn
 # edgarquery --submissionszip
-edgarquery  --submissionszip
+if ! test -f /tmp/submissions.zip; then
+    edgarquery  --submissionszip
+fi
 sleep 5
 
 edgarsubmissionsziptocsv --zipfile $EQODIR/submissions.zip \
@@ -26,18 +30,30 @@ for f in company.idx crawler.idx form.idx master.idx \
 done
 
 
-for ticker in tsla amzn nvda; do
+for ticker in msft amzn nvda smci; do
     edgarquery --companyfacts --ticker $ticker
 done
 
-for fct in AccountsPayableCurrent EarningsPerShareBasic; do
-    edgarquery --companyconcept --ticker tsla --fact $fct
-    edgarquery --companyconcept --ticker amzn --fact $fct
+for fct in OperatingIncomeLoss; do
+    edgarquery  --companyconcept --ticker amzn --fact $fct
+done
+for fct in Revenues \
+           GrossProfit \
+           EarningsPerShareBasic \
+           Dividends \
+           EquityPublicFloat \
+           CostofGoodsandServicesSold \
+           OperatingIncomeLoss; do
+    edgarquery --companyconcept --ticker msft --fact $fct
     edgarquery --companyconcept --ticker nvda --fact $fct
+    edgarquery --companyconcept --ticker smci --fact $fct
 done
 
-for fct in AccountsPayableCurrent AssetsCurrent DebtCurrent \
-    LongTermDebt ; do
+for fct in GrossProfit \
+    EarningsPerShareBasic \
+    AssetsCurrent \
+    DebtCurrent \
+    LongTermDebt; do
     for CY in CY2009Q2I CY2023Q1I CY2023Q2I CY2023Q3I; do
         echo $CY
         edgarquery --xbrlframes --cy $CY --fact $fct
@@ -62,7 +78,7 @@ done
 #edgarsubmissionszipṫocsv --zipfile $EQODIR/submissions.zip --all
 
 
-for ticker in avd tsla amzn nvda; do
+for ticker in avd msft amzn nvda smci; do
     #latest10K --ticker $ticker
     #latestsubmissions --ticker $ticker
     edgarsubmissions --ticker $ticker

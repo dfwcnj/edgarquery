@@ -61,7 +61,7 @@ class CompanyFactsShow():
         """
         self.json = json.loads(rstr)
         assert type(self.json) == type({}), 'jsonpart: part not a dictionary'
-        self.cik = self.json['cik']
+        # self.cik = self.json['cik']
         self.enm = self.json['entityName']
         self.jsonfacts(facts=self.json['facts'])
 
@@ -75,7 +75,11 @@ class CompanyFactsShow():
         htmla = []
         htmla.append('<html>')
 
-        cik = '%d' % (self.cik)
+
+        cik = self.cik
+        if type(self.cik) == type(1):
+            cik = '%d' % (self.cik)
+
         ch = self.td.getrecforcik(cik)
         ttl = 'Company Facts: CIK%s' % (cik.zfill(10) )
         if 'title' in ch.keys():
@@ -202,7 +206,9 @@ class CompanyFactsShow():
         name CompanyFactsCIK$cik.html
         directory - where to store the generated html
         """
-        cik = '%d' % (self.cik)
+        cik = self.cik
+        if type(self.cik) == type(1):
+            cik = '%d' % (self.cik)
         self.htmlfile = os.path.join(directory,
             'CompanyFactsCIK%s.html' % cik.zfill(10) )
         with open(self.htmlfile, 'w') as fp:

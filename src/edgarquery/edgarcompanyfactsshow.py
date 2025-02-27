@@ -54,7 +54,7 @@ class CompanyFactsShow():
         ofn = os.path.join(dir, 'companyfacts.zip')
         if os.path.isfile(ofn):
             return ofn
-        resp = self.uq.query(self.cfzurl, {})
+        resp = self.uq.query(self.cfzurl, self.hdr)
         self.uq.storequery(resp, ofn)
         return ofn
 

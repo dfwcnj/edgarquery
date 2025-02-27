@@ -90,7 +90,7 @@ summaries --cy required<br/>
 ##<br/>
 ## edgarcompanyfactsshow<br/>
 ##<br/>
-usage: edgarcompanyfactsshow [-h] [--cik CIK] [--ticker TICKER]<br/>
+usage: edgarcompanyfactsshow [-h] [--cik CIK] [--fromcfz] [--ticker TICKER]<br/>
 [--directory DIRECTORY]<br/>
 <br/>
 parse EDGAR company facts for a ticker or cik and display them in a browser<br/>
@@ -98,6 +98,10 @@ parse EDGAR company facts for a ticker or cik and display them in a browser<br/>
 options:<br/>
 -h, --help            show this help message and exit<br/>
 --cik CIK             Centralized Index Key for the company<br/>
+--fromcfz             download and use SEC companyfacts.zip file to show<br/>
+company data based on CIK. if the file is already<br/>
+downloaded, it is reused, but if not it can take a<br/>
+while to download 1.2gb<br/>
 --ticker TICKER       Ticker for the company<br/>
 --directory DIRECTORY<br/>
 where to store the html file to display<br/>
@@ -126,7 +130,7 @@ directory to store the output<br/>
 ## edgarlatestsubmission<br/>
 ##<br/>
 usage: edgarlatestsubmission [-h] [--cik CIK] [--ticker TICKER]<br/>
-[--submission {4,144,10-Q,8-K,13F-HR,3,SD,PX14A6G,DEFA14A,ARS,DEF 14A,SC 13G/A,10-K,S-3ASR,424B5,FWP,PRE 14A,UPLOAD,CORRESP,SC 13G,424B2,IRANNOTICE,S-8,3/A,5,EFFECT,POS AM,424B3,S-4,S-8 POS,N-CSR,N-CSRS}]<br/>
+[--submission {4,144,10-Q,8-K,13F-HR,3,SD,PX14A6G,DEFA14A,ARS,DEF 14A,SC 13G/A,10-K,S-3ASR,424B5,FWP,PRE 14A,UPLOAD,CORRESP,SC 13G,424B2,IRANNOTICE,S-8,3/A,5,EFFECT,POS AM,424B3,S-4,S-8 POS,N-CSR,N-CSRS,20-F}]<br/>
 [--link] [--directory DIRECTORY] [--show]<br/>
 <br/>
 find the most recent submission for a ticker or cik for some common<br/>
@@ -136,7 +140,9 @@ options:<br/>
 -h, --help            show this help message and exit<br/>
 --cik CIK             10-digit Central Index Key<br/>
 --ticker TICKER       company ticker symbol<br/>
---submission {4,144,10-Q,8-K,13F-HR,3,SD,PX14A6G,DEFA14A,ARS,DEF 14A,SC 13G/A,10-K,S-3ASR,424B5,FWP,PRE 14A,UPLOAD,CORRESP,SC 13G,424B2,IRANNOTICE,S-8,3/A,5,EFFECT,POS AM,424B3,S-4,S-8 POS,N-CSR,N-CSRS}<br/>
+--submission {4,144,10-Q,8-K,13F-HR,3,SD,PX14A6G,DEFA14A,ARS,DEF 14A,SC 13G/A,10-K,S-3ASR,424B5,FWP,PRE 14A,UPLOAD,CORRESP,SC 13G,424B2,I/Users/doncaldwell/Documents/enc/Documents/dfwc/projects/edgarquery/src/edgarquery/edgarcompanyfactstocsv.py:145: SyntaxWarning: invalid escape sequence '\ '
+  argp = argparse.ArgumentParser(description="Parse an SEC EDGAR\
+RANNOTICE,S-8,3/A,5,EFFECT,POS AM,424B3,S-4,S-8 POS,N-CSR,N-CSRS,20-F}<br/>
 submission name (N-CSR for mutual fund)<br/>
 --link                return the url for the latest X-K<br/>
 --directory DIRECTORY<br/>
@@ -166,7 +172,7 @@ directory to store the output<br/>
 ## edgarsubmissions<br/>
 ##<br/>
 usage: edgarsubmissions [-h] [--cik CIK] [--ticker TICKER]<br/>
-[--year {2014,2015,2016,2017,2018,2019,2020,2021,2022,2023,2024}]<br/>
+[--year {2014,2015,2016,2017,2018,2019,2020,2021,2022,2023,2024,2025}]<br/>
 [--file FILE] [--directory DIRECTORY] [--show]<br/>
 <br/>
 find the most recent submissions for ticker or cik<br/>
@@ -175,7 +181,7 @@ options:<br/>
 -h, --help            show this help message and exit<br/>
 --cik CIK             10-digit Central Index Key<br/>
 --ticker TICKER       company ticker symbol<br/>
---year {2014,2015,2016,2017,2018,2019,2020,2021,2022,2023,2024}<br/>
+--year {2014,2015,2016,2017,2018,2019,2020,2021,2022,2023,2024,2025}<br/>
 year to search for submissions if not current year<br/>
 --file FILE           store the output in this file<br/>
 --directory DIRECTORY<br/>

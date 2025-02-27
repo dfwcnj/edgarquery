@@ -9,6 +9,7 @@ import json
 import re
 import urllib.request
 import webbrowser
+import zipfile
 
 import plotly
 from plotly.subplots import make_subplots
@@ -29,15 +30,12 @@ class CompanyFactsShow():
         collect SEC EDGAR company facts for a CIK and display them in
         your browser
         """
-        self.cik      = None
-        self.rstr     = None
-        self.json     = None
-        self.htmla    = []
-        self.htmlfile = None
 
         self.xbrl     = 'https://data.sec.gov/api/xbrl'
         self.cfurl    = '%s/companyfacts'   % self.xbrl
         self.turl     = 'https://www.sec.gov/files/company_tickers.json'
+        self.seurl    = 'https://www.sec.gov/Archives/edgar'
+        self.cfzurl   = '%s/daily-index/xbrl/companyfacts.zip' % self.seurl
 
         if 'EQEMAIL' in os.environ:
             self.hdr     = {'User-Agent' : os.environ['EQEMAIL'] }
@@ -52,20 +50,27 @@ class CompanyFactsShow():
     def getcikforticker(self, ticker):
         return self.td.getcikforticker(ticker)
 
-    def processjson(self, rstr):
+    def getcompanyfactszip(self, dir):
+        ofn = os.path.join(dir, 'companyfacts.zip')
+        if os.path.isfile(ofn):
+            return ofn
+        resp = self.uq.query(self.cfzurl, {})
+        self.uq.storequery(resp, ofn)
+        return ofn
+
+    def processjson(self, cik, rstr):
         """ processjson(js)
 
         load the company facts query string into a json structure 
         and process them with jsonfacts()
         rstr - json string to parse
         """
-        self.json = json.loads(rstr)
-        assert type(self.json) == type({}), 'jsonpart: part not a dictionary'
-        # self.cik = self.json['cik']
-        self.enm = self.json['entityName']
-        self.jsonfacts(facts=self.json['facts'])
+        jsd = json.loads(rstr)
+        assert type(jsd) == type({}), 'jsonpart: part not a dictionary'
+        self.enm = jsd['entityName']
+        return self.facts2html(cik, jsd['facts'])
 
-    def jsonfacts(self, facts):
+    def facts2html(self, cik, facts):
         """ jsonfacts(facts) parse companyfacts json file
 
         construct the html page with the json structure
@@ -76,11 +81,14 @@ class CompanyFactsShow():
         htmla.append('<html>')
 
 
-        cik = self.cik
-        if type(self.cik) == type(1):
-            cik = '%d' % (self.cik)
+        if type(cik) == type(1):
+            cik = '%d' % (cik)
 
         ch = self.td.getrecforcik(cik)
+        if ch == None:
+            print('jsonfacts: no ticker data for %s' % cik,
+                  file=sys.stderr)
+            return None
         ttl = 'Company Facts: CIK%s' % (cik.zfill(10) )
         if 'title' in ch.keys():
             ttl = 'Company Facts: %s CIK%s' % (ch['title'], cik.zfill(10) )
@@ -139,8 +147,7 @@ class CompanyFactsShow():
 
                     tbl = self.jsonfacttable(units[uk], label)
                     htmla.extend(tbl)
-        self.htmla.extend(htmla)
-
+        return htmla
 
     def jsonfactplot(self, recs, label):
         """ jsonfactplot(self, recs, label)
@@ -199,27 +206,29 @@ class CompanyFactsShow():
         htmla.append('</table>')
         return htmla
 
-    def savefacthtml(self, directory):
+    def savefacthtml(self, cik, htmla, directory):
         """ savefacthtml(directory)
 
         save the generated html in the specified directory with the
         name CompanyFactsCIK$cik.html
+        cik - central index key
+        htmla - company facts html in array format
         directory - where to store the generated html
         """
-        cik = self.cik
-        if type(self.cik) == type(1):
-            cik = '%d' % (self.cik)
-        self.htmlfile = os.path.join(directory,
+        if type(cik) == type(1):
+            cik = '%d' % (cik)
+        htmlfile = os.path.join(directory,
             'CompanyFactsCIK%s.html' % cik.zfill(10) )
-        with open(self.htmlfile, 'w') as fp:
-            fp.write(''.join(self.htmla) )
+        with open(htmlfile, 'w') as fp:
+            fp.write(''.join(htmla) )
+        return htmlfile
 
-    def show(self):
+    def show(self, htmlfile):
         """ show()
 
         display the generated html in a web browser
         """
-        webbrowser.open('file://%s' % self.htmlfile)
+        webbrowser.open('file://%s' % htmlfile)
 
     def getcompanyfacts(self, cik):
         """ getcompanyfacts(cik)
@@ -227,30 +236,64 @@ class CompanyFactsShow():
         collectall the SEC EDGAR company facts  data for a company
         return the query response as a python string
         """
-        self.cik = cik
         url = '%s/CIK%s.json' % (self.cfurl, cik.zfill(10))
         resp = self.uq.query(url, self.hdr)
+        if resp == None:
+            return resp
         rstr = resp.read().decode('utf-8')
         return rstr
 
-    def companyfacts(self, cik, directory):
+    def getcompanyfactsfromzip(self, cik, cfz):
+        """companyfactsfromzip(cik, cfz)
+        collectall the SEC EDGAR company facts  data for a company
+        and store them in an html file
+        cik - Central Index Key
+        cfz - companyfacts.zip file downloaded from SEC
+        """
+        if not os.path.exists(cfz):
+            print('no %s' % zf, file=sys.stderr)
+            sys.exit()
+        zfp = zipfile.ZipFile(cfz, 'r')
+        nl = zfp.namelist()
+        cfn = 'CIK%s.json' % cik.zfill(10)
+        if cfn not in nl:
+            return None
+        jstr = None
+        with zfp.open(cfn) as np:
+            jstr = np.read()
+
+        htmla = self.processjson(cik,jstr)
+        return htmla
+
+    def companyfactsfromnet(self, cik):
         """companyfacts 
 
         collectall the SEC EDGAR company facts  data for a company
         and store them in an html file
         cik - Central Index Key
-        directory - where to store the generated html file
         """
         rstr = self.getcompanyfacts(cik)
-        self.processjson(rstr)
+        if rstr == None:
+            print('companyfacts: no data for %s' % cik, file=sys.stderr)
+            return None
+        else:
+            htmla = self.processjson(cik, rstr)
+            return htmla
 
-        self.savefacthtml(directory)
-
+    def companyfacts(self, cik, cfz):
+        if cfz == None:
+            return self.companyfactsfromnet(cik)
+        return self.getcompanyfactsfromzip(cik, cfz)
 
 def main():
     argp = argparse.ArgumentParser(description='parse EDGAR company\
     facts for a ticker or cik and display them in a browser')
     argp.add_argument('--cik', help='Centralized Index Key for the company')
+    argp.add_argument('--fromcfz', action='store_true',
+            help='download and use SEC companyfacts.zip file to show '
+                 'company data based on CIK. '
+                 'if the file is already downloaded, it is reused, but '
+                 'if not it can take a while to download 1.2gb')
     argp.add_argument('--ticker', help='Ticker for the company')
     argp.add_argument('--directory', default='/tmp',
         help='where to store the html file to display')
@@ -263,16 +306,24 @@ def main():
     CFS = CompanyFactsShow()
 
     cik = None
+    cfz = None
     if args.cik:
         cik = args.cik
-    if args.ticker:
+    elif args.ticker:
         cik = CFS.getcikforticker(args.ticker)
     if cik == None:
         argp.print_help()
         sys.exit()
 
-    CFS.companyfacts(cik, args.directory)
-    CFS.show()
+    if args.fromcfz:
+        cfz = CFS.getcompanyfactszip(args.directory)
+
+    htmla = CFS.companyfacts(cik, cfz)
+    if htmla == None:
+        print('no data', file=sys.stderr)
+        sys.exit()
+    htmlfile=CFS.savefacthtml(cik, htmla, args.directory)
+    CFS.show(htmlfile)
 
 if __name__ == '__main__':
     main()

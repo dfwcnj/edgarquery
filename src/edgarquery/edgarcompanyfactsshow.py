@@ -147,6 +147,7 @@ class CompanyFactsShow():
 
                     tbl = self.jsonfacttable(units[uk], label)
                     htmla.extend(tbl)
+        htmla.append('</html>')
         return htmla
 
     def jsonfactplot(self, recs, label):
